@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://whiteldragon.github.io/Whitel_Dragon/sitemap.xml
