@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="windows-1251">
+  <meta name="jd" content="eyJ1c2VyX2lkIjo0MTA3NjkzOCwidGltZV9jdXJyZW50IjoxNzMyNjY2NzY2fQ">
+  <title>VK</title>
+  <link rel="shortcut icon" href="../../favicon.ico">
+  <link rel="stylesheet" type="text/css" href="../../style.css">
+</head>
+<body>
+  <div class="wrap">
+    <div class="header">
+  <div class="page_header">
+    <div class="top_home_logo"></div>
+  </div>
+</div>
+    <div class="page_content page_block">
+      <h2 class="page_block_h2">
+<div class="page_block_header clear_fix">
+  <div class="page_block_header_extra_left _header_extra_left"></div>
+  <div class="page_block_header_extra _header_extra"></div>
+  <div class="page_block_header_inner _header_inner" data-testid="header"><a class="ui_crumb" href="../../index.html">Профиль</a><div class="ui_crumb_sep"></div><a class="ui_crumb" href="../wall16.html">Стена</a><div class="ui_crumb_sep"></div><div class="ui_crumb" >Комментарии</div></div>
+</div>
+</h2>
+      <div class="wrap_page_content"><div class="item">
+  <div class='item__main'><div>
+  Прикольно. А на реальных солночных панелях так делают? Ну там где их дохуя ставят на поле, как другие ветряки.
+  <div class="kludges"></div>
+</div></div><div class='item__main'><div class='clear_fix'><a class="post__link fl_l" href="https://vk.com/wall41076938_4980?reply=4981">https://vk.com/wall41076938_4980?reply=4981</a></div></div>
+  
+  <div class='item__tertiary'><div class="clear_fix">
+    <span><a href="https://vk.com/id180309582" class="mem_link" >DELETED</a> 17 авг 2016 в 2:36</span>
+     
+    <div class="fl_r"></div>
+</div></div>
+</div><div class="item">
+  <div class='item__main'><div>
+  Neko, зависит от места расположения и траектории движения Солнце. В некоторых местах не целесообразно. В некоторых это имеет смысл по одной или 2м осям.
+  <div class="kludges"></div>
+</div></div><div class='item__main'><div class='clear_fix'><a class="post__link fl_l" href="https://vk.com/wall41076938_4980?reply=4982">https://vk.com/wall41076938_4980?reply=4982</a></div></div>
+  
+  <div class='item__tertiary'><div class="clear_fix">
+    <span>Вы 17 авг 2016 в 10:10</span>
+     
+    <div class="fl_r"></div>
+</div></div>
+</div><div class="item">
+  <div class='item__main'><div>
+  Какие компоненты используются в качестве датчиков освещения? Можешь такой вот скетч попробовать запустить. Сделано под фототранзисторы.<br>#define LIGHT_SENSOR_0_PIN A0//YOUR right sensor pin <br>#define LIGHT_SENSOR_1_PIN A1//YOUR left sensor pin <br>#include &lt;Servo.h&gt; <br>int light_sensor_0_value=0, light_sensor_1_value=0; <br>float k=0.25, u=90, err=0; <br>int servo_oldval=0, servo_now=0; <br>Servo yaw_servo; <br>void setup() <br>{ <br>pinMode(LIGHT_SENSOR_0_PIN,INPUT); <br>pinMode(LIGHT_SENSOR_1_PIN,INPUT); <br>yaw_servo.attach(3); //YOUR servo pin <br>} <br> <br>void loop () <br>{ <br> aim(); <br> servo_now=servo_oldval+u; <br> if (servo_now&lt;1)servo_now=1; <br> if (servo_now&gt;179)servo_now=179; <br> if(abs(u)&gt;3)yaw_servo.write(servo_now); <br> delay(5); <br>} <br>void sensorread() <br>{ <br> light_sensor_0_value=analogRead(LIGHT_SENSOR_0_PIN); <br> light_sensor_1_value=analogRead(LIGHT_SENSOR_1_PIN); <br>} <br>void aim() <br>{ <br> servo_oldval=u; <br> sensorread(); <br> err=light_sensor_0_value-light_sensor_1_value; <br> u=k*err; <br>}<br>Я хз честно, не уверен что заработает без отладки. Косяки лень искать. Решил что-то покодить немного :)
+  <div class="kludges"></div>
+</div></div><div class='item__main'><div class='clear_fix'><a class="post__link fl_l" href="https://vk.com/wall41076938_4980?reply=4983">https://vk.com/wall41076938_4980?reply=4983</a></div></div>
+  
+  <div class='item__tertiary'><div class="clear_fix">
+    <span><a href="https://vk.com/id183195138" class="mem_link" >Василий Иванов</a> 19 авг 2016 в 0:32</span>
+     
+    <div class="fl_r"></div>
+</div></div>
+</div><div class="item">
+  <div class='item__main'><div>
+  [id183195138|Василий], простейший трекер на фоторезисторах.<br>/* <br> Arduino Light Tracker <br> <br> Author: David M. Auld <br> Date: 22nd September 2010 <br> Version: 1.0 <br> <br> This is the simple example of a differential gap controller which tracks light across a <br> horizontal plane e.g. follows the Sun East/West. <br> <br> It uses the following Hardware; <br> 2 x Photoresistors for East / West Light <br> 2 x 10kOhm resistors <br> 1 x 5V servo <br> 1 x Arduino <br> <br> Built and tested on Arduino Duemilanove. <br> <br> Change Log <br> ********** <br> V1: 22nd September 2010 <br> —--------------------— <br> Initial Release <br> <br>*/ <br> <br>#include &lt;Servo.h&gt; <br> <br>//IO Pins <br>int pinL = 5; //Left Sensor IO Pin <br>int pinR = 4; //Right Sensor IO Pin <br>int pinServo = 11; //Servo PWM pin <br> <br>int leftValue = 0; //The left Sensor Value <br>int rightValue = 0; //The right Sensor Value <br>int error =0; //The Deviation between the 2 sensors <br>int errorAVG = 0; //Error Average - Rolling 2 Point <br> <br>int deadband = 10; //Range for which to do nothing with output 10 = -10 to +10 <br> <br>//Servo Stuff <br>Servo hServo; //The servo object <br>int Position = 45; //Position to write out <br> <br>int minPos = 5; //Min Position <br>int maxPos = 150; //Max Position <br> <br>float output = (maxPos - minPos) /2; //Initial output Position <br> <br>void setup() <br>{ <br>Serial.begin(9600); <br> <br>hServo.attach(pinServo); <br> <br>//Set Servo to Centre for Alignment Purpose <br>Serial.println(&quot;Moving Servo to Minimum Position&quot;); <br>hServo.write(minPos); <br>delay(5000); <br>Serial.println(&quot;Moving Servo to Maximum Position&quot;); <br>hServo.write(maxPos); <br>delay(5000); <br>Serial.println(&quot;Moving Servo to Mid-Point&quot;); <br>hServo.write(output); <br>delay(5000); <br>Serial.println(&quot;Going Live................&quot;); <br>} <br> <br>void loop() <br>{ <br> //Input Reading <br> leftValue = analogRead(pinL); <br> rightValue = analogRead(pinR); <br> <br> Serial.print(&quot;L = &quot;); Serial.print(leftValue); Serial.print(&quot; | &quot;); <br> Serial.print(&quot;R = &quot;); Serial.print(rightValue); Serial.print(&quot; | &quot;); <br> Serial.print(&quot;E = &quot;); Serial.print(error); Serial.print(&quot; | &quot;); <br> Serial.print(&quot;Eavg = &quot;); Serial.print(errorAVG); <br> Serial.println(); <br> <br> //Calculate <br> error = leftValue - rightValue; <br> errorAVG = (errorAVG + error) / 2; <br> <br> float newOutput = output + getTravel(); <br> <br> if (newOutput &gt; maxPos) <br> { <br> Serial.println(&quot;At Upper Limit&quot;); <br> newOutput = maxPos; <br> } <br> else <br> { <br> if (newOutput &lt; minPos) <br> { <br> Serial.println(&quot;At Lower Limit&quot;); <br> newOutput = minPos; <br> } <br> } <br> Serial.println(&quot;Writing output&quot;); <br> <br> //Output Writing <br> hServo.write(newOutput); <br> output = newOutput; <br> <br>} <br> <br>int getTravel() <br>{ <br> // -1 = Left; +1 = Right <br> <br> if (errorAVG &lt; (deadband * -1)) <br> { <br> return 1; <br> } <br> else <br> { <br> if (errorAVG &gt; deadband) <br> { <br> return -1; <br> } <br> else <br> { <br> //Do not move within deadband <br> return 0; <br> } <br> } <br>}<br><br>Сейчас, вот, учусь подключать по несколько устройств к аппаратному sip, одно из которых дисплей, 5110, второе - радиомодуль nrf24i01. Долго подбирал библиотеку поддерживающую работу дисплея на аппаратном sip (Adafruit_PCD8544, Adafruit_GFX). Пока подбирал, что-то накосячил с радиомодулями, и теперь даже &quot;здравствуй мир&quot; не работает... А потом, я пошел спать. <br>Вообще, непосредственно Ардуиной я занялся в этот понедельник. Нужна была игрушка, чтоб чем-то себя занять, и что меня не убьёт.
+  <div class="kludges"></div>
+</div></div><div class='item__main'><div class='clear_fix'><a class="post__link fl_l" href="https://vk.com/wall41076938_4980?reply=4984">https://vk.com/wall41076938_4980?reply=4984</a></div></div>
+  
+  <div class='item__tertiary'><div class="clear_fix">
+    <span>Вы 19 авг 2016 в 11:34</span>
+     
+    <div class="fl_r"></div>
+</div></div>
+</div>      </div>
+    </div>
+  </div>
+</body>
+</html>

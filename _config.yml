@@ -1,0 +1,16 @@
+title: Мой архив ВКонтакте (в разработке v0.7)
+description: Личная стена
+url: https://whiteldragon.github.io
+baseurl: ""
+google_cx: "7379b4ee9cbbd4769"
+ga4: "G-3L672NMKB9"
+
+plugins:
+  - jekyll-sitemap
+  - jekyll-feed
+  - jekyll-seo-tag
+  - jekyll-paginate
+
+paginate: 10              # по 10 постов на страницу
+paginate_path: "/page:num/"
+

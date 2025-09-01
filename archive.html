@@ -1,0 +1,49 @@
+---
+layout: default
+title: Архив
+permalink: /archive.html
+---
+
+<h1>Архив по годам</h1>
+
+{%- assign years = site.posts
+   | group_by_exp:'post', "post.date | date: '%Y'"
+   | sort:'name' | reverse -%}
+
+<div class="archive-page">
+  {%- for y in years -%}
+    <details id="y{{ y.name }}" class="year">
+      <summary>{{ y.name }} ({{ y.items | size }})</summary>
+      <ul class="post-list">
+        {%- for post in y.items -%}
+          <li>
+            <a href="{{ post.url | relative_url }}">{{ post.title }}</a>
+            <span class="date">{{ post.date | date: "%d %b %Y" }}</span>
+          </li>
+        {%- endfor -%}
+      </ul>
+    </details>
+  {%- endfor -%}
+</div>
+
+<script>
+  (function () {
+    function openByHash() {
+      var id = location.hash && location.hash.slice(1);
+      if (!id) return;
+      var d = document.getElementById(id);
+      if (!d || d.tagName.toLowerCase() !== 'details') return;
+
+      // Закрываем другие годы, открываем нужный
+      document.querySelectorAll('details.year[open]').forEach(function(el){ el.removeAttribute('open'); });
+      d.setAttribute('open', '');  // управляем через атрибут open (см. спецификацию)
+      d.scrollIntoView({ block: 'start' });
+    }
+
+    // при первой загрузке по якорю
+    openByHash();
+
+    // и при последующих кликах по ссылкам вида #y2020 на этой же странице
+    window.addEventListener('hashchange', openByHash);
+  })();
+</script>

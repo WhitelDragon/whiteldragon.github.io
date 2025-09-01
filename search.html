@@ -1,0 +1,27 @@
+---
+layout: default
+title: Поиск
+---
+
+<h1>Поиск</h1>
+
+<!-- Pagefind UI -->
+<link href="{{ '/pagefind/pagefind.css' | relative_url }}" rel="stylesheet">
+<div id="pagefind-search"></div>
+<script src="{{ '/pagefind/pagefind.js' | relative_url }}" type="text/javascript"></script>
+<script>
+  // Pagefind UI сам подхватит ?q= из адресной строки
+  window.addEventListener('DOMContentLoaded', () => {
+    new PagefindUI({
+      element: "#pagefind-search",
+      showImages: true,
+      pageSize: 10,
+      translations: {
+        placeholder: "Искать по сайту…",
+        zero_results: "Ничего не найдено",
+        clear_search: "Очистить",
+        load_more: "Показать ещё"
+      }
+    });
+  });
+</script>
