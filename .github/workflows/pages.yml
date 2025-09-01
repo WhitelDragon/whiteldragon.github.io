@@ -2,8 +2,8 @@ name: Build & Deploy (Jekyll + Pagefind)
 
 on:
   push:
-    branches: [ "main" ]     # если у тебя другая ветка — поменяй
-  workflow_dispatch:          # позволит запустить вручную из вкладки Actions
+    branches: [ "main" ]     # если основная ветка другая — замени тут
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -18,23 +18,27 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+      # 1) Код
       - name: Checkout
         uses: actions/checkout@v4
 
+      # 2) Ruby + зависимости Jekyll
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: '3.3'
+          ruby-version: '3.1'     # стабильная версия под GitHub Pages
           bundler-cache: true
 
       - name: Install gems
         run: bundle install --without development
 
+      # 3) Сборка Jekyll (в _site)
       - name: Build Jekyll
         env:
           JEKYLL_ENV: production
         run: bundle exec jekyll build --trace
 
+      # 4) Node + Pagefind
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
@@ -42,10 +46,13 @@ jobs:
 
       - name: Build Pagefind index
         run: |
-          npm i -g pagefind
-          # создаст _site/pagefind/... (индекс и UI js/css)
-          pagefind --source _site
+          npm i -g pagefind@latest
+          # Собираем индекс по собранному сайту (_site).
+          # Ничего не исключаем: комментарии попадут в индекс.
+          # --force-language ru снимает ворнинги про отсутствие <html lang>.
+          pagefind --site _site --force-language ru
 
+      # 5) Публикация артефакта Pages
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
