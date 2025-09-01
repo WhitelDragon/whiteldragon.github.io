@@ -1,17 +1,83 @@
-<!doctype html>
-<html lang="ru">
-<head>
-  <meta charset="utf-8">
-  <title>Redirecting…</title>
-  <link rel="canonical" href="https://whiteldragon.github.io/Whitel_Dragon/">
-  <meta http-equiv="refresh" content="0; url=/Whitel_Dragon/">
-  <script>
-    // JS-фолбэк (быстрее meta-refresh)
-    location.replace('/Whitel_Dragon/');
-  </script>
-</head>
-<body>
-  <p>Переадресация… Если не сработало, <a href="/Whitel_Dragon/">перейдите по ссылке</a>.</p>
-</body>
-</html>
+---
+layout: default
+title: Лента
+---
 
+<div id="posts-container">
+  {% for post in paginator.posts %}
+    {%- comment -%}
+      Преобразуем slug → pid:
+      - обычно slug = "post-19743" → split:'-' | last = "19743"
+      - на всякий случай поддержим вариант с подчеркиванием: "post_19743"
+    {%- endcomment -%}
+    {% assign pid = post.slug | split:'-' | last %}
+    {% if pid == post.slug %}
+      {% assign pid = post.slug | split:'_' | last %}
+    {% endif %}
+
+    <article class="post" data-pid="{{ pid }}">
+      <h2><a href="{{ post.url | relative_url }}">{{ post.title }}</a></h2>
+      <p class="date">{{ post.date | date: "%d %b %Y" }}</p>
+      {{ post.content }}
+ {% comment %} скрипт комментариев сам подставит кнопку/контейнер по data-pid {% endcomment %}
+    </article>
+  {% endfor %}
+</div>
+
+<nav class="pager">
+  {% if paginator.previous_page %}
+    <a class="newer-link" href="{{ paginator.previous_page_path | relative_url }}">Новее</a>
+  {% endif %}
+  {% if paginator.next_page %}
+    <a class="older-link" id="older-link" href="{{ paginator.next_page_path | relative_url }}">Старее</a>
+  {% endif %}
+</nav>
+
+<script>
+(function(){
+  const olderLink = document.getElementById('older-link');
+  if (!olderLink) return;
+  let loading = false;
+
+  async function loadMoreIfNeeded() {
+    if (loading) return;
+    const nearBottom = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 200;
+    if (!nearBottom) return;
+
+    const nextUrl = olderLink.getAttribute('href');
+    if (!nextUrl) return;
+    loading = true;
+
+    try {
+      const resp = await fetch(nextUrl, { credentials: 'same-origin' });
+      if (!resp.ok) throw new Error(resp.status);
+      const html = await resp.text();
+      const doc = new DOMParser().parseFromString(html, 'text/html');
+
+      const nextPosts = doc.querySelectorAll('#posts-container .post');
+      const container = document.getElementById('posts-container');
+      nextPosts.forEach(node => container.appendChild(node));
+
+      const nextOlder = doc.getElementById('older-link');
+      if (nextOlder) {
+        olderLink.href = nextOlder.getAttribute('href');
+      } else {
+        olderLink.remove();
+        window.removeEventListener('scroll', onScroll);
+      }
+
+      if (window.gtag) {
+        gtag('event', 'infinite_scroll_load', { value: nextPosts.length, next_page: nextUrl });
+      }
+    } catch(e) {
+      console.error(e);
+      window.removeEventListener('scroll', onScroll);
+    } finally {
+      loading = false;
+    }
+  }
+
+  function onScroll(){ loadMoreIfNeeded(); }
+  window.addEventListener('scroll', onScroll, { passive: true });
+})();
+</script>

@@ -1,0 +1,13 @@
+---
+layout: default
+---
+{% assign pid = page.slug | split:'-' | last %}
+{% if pid == page.slug %}
+  {% assign pid = page.slug | split:'_' | last %}
+{% endif %}
+
+<article class="post" data-pid="{{ pid }}">
+  <h1>{{ page.title }}</h1>
+  <p class="date">{{ page.date | date: '%d %b %Y' }}</p>
+  {{ content }}
+</article>
