@@ -7,24 +7,21 @@
 
   {% seo %}
 
-  <!-- Hints for GA & CSE -->
+  <!-- Prefetch for Google Analytics -->
   <link rel="preconnect" href="https://www.googletagmanager.com">
   <link rel="dns-prefetch" href="//www.googletagmanager.com">
-  <link rel="preconnect" href="https://cse.google.com">
-  <link rel="dns-prefetch" href="//cse.google.com">
 
   <link rel="stylesheet" href="{{ '/assets/css/styles.css' | relative_url }}">
 
   {% if jekyll.environment == "production" and site.ga4 %}
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-3L672NMKB9"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-3L672NMKB9');
-</script>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id={{ site.ga4 }}"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){ dataLayer.push(arguments); }
+    gtag('js', new Date());
+    gtag('config', '{{ site.ga4 }}');
+  </script>
   {% endif %}
 </head>
 <body>
@@ -48,9 +45,7 @@
       <details class="archive">
         <summary>Архив по годам</summary>
         <ul class="year-list">
-          {% assign years = site.posts
-             | group_by_exp:'post',"post.date | date: '%Y'"
-             | sort:'name' | reverse %}
+          {% assign years = site.posts | group_by_exp:'post',"post.date | date: '%Y'" | sort:'name' | reverse %}
           {% for y in years %}
             <li>
               <a href="{{ '/archive.html#y' | append: y.name | relative_url }}">
@@ -79,21 +74,19 @@
       var layout = document.querySelector('.layout');
       var d = document.querySelector('.sidebar details.archive');
       if (!layout || !d) return;
-
       function apply() {
         layout.classList.toggle('side-open', d.open);
       }
-
-      // гарантируем старт со свёрнутого состояния
+      // старт со свёрнутого состояния
       if (!d.open && d.hasAttribute('open')) d.removeAttribute('open');
-
       d.addEventListener('toggle', apply);
       apply();
     })();
   </script>
 
-  <!-- Подмена ссылок на локальные -->
+  <!-- Подключение скриптов для фото и комментариев -->
   <script defer src="{{ '/assets/js/vk-photos.js' | relative_url }}"></script>
   <script defer src="{{ '/assets/js/comments.js' | relative_url }}"></script>
 </body>
 </html>
+
