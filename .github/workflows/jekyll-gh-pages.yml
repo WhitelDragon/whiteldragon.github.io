@@ -1,7 +1,9 @@
+# Build Jekyll, inject comments, build Pagefind index, deploy to GitHub Pages
 name: Deploy Jekyll with Pagefind
+
 on:
   push:
-    branches: ["main"]
+    branches: ["main"]    # если основная ветка другая — поменяй
   workflow_dispatch:
 
 permissions:
@@ -23,113 +25,122 @@ jobs:
       - name: Setup Pages
         uses: actions/configure-pages@v5
 
+      # 1) Сборка Jekyll в _site (официальный экшен GitHub Pages)
       - name: Build with Jekyll
         uses: actions/jekyll-build-pages@v1
         with:
           source: ./
           destination: ./_site
 
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
+      # 2) Готовим записываемую копию сайта (_site_index)
+      - name: Make writable copy (_site_index)
+        run: |
+          rm -rf _site_index
+          mkdir -p _site_index
+          cp -r _site/* _site_index/
 
+      # 3) Вшиваем HTML комментариев в страницы постов (для индексации Pagefind)
       - name: Inject comments into posts
         run: |
           cat <<'JS' | node
           const fs = require('fs');
           const path = require('path');
           const { TextDecoder } = require('util');
+
+          // Декодер с автоподбором UTF-8 / Win-1251
           function decodeBuffer(buf) {
-              let headBytes = buf.slice(0, 2048);
-              let ascii = '';
-              for (let i = 0; i < headBytes.length; i++) {
-                  let byte = headBytes[i];
-                  ascii += (byte < 128 ? String.fromCharCode(byte) : ' ');
-              }
-              const hasWin1251Meta = /charset\s*=\s*windows-1251/i.test(ascii);
-              const utf8Decoder = new TextDecoder('utf-8');
-              const win1251Decoder = new TextDecoder('windows-1251');
-              let txt;
-              if (hasWin1251Meta) {
-                  txt = win1251Decoder.decode(buf);
-              } else {
-                  txt = utf8Decoder.decode(buf);
-                  if (txt.includes('�')) {
-                      txt = win1251Decoder.decode(buf);
-                  }
-              }
-              return txt;
+            const head = buf.slice(0, 2048).toString('ascii');
+            const utf8 = new TextDecoder('utf-8');
+            const cp1251 = new TextDecoder('windows-1251');
+            const has1251 = /charset\s*=\s*windows-1251/i.test(head);
+            let txt = has1251 ? cp1251.decode(buf) : utf8.decode(buf);
+            if (txt.includes('�')) txt = cp1251.decode(buf);
+            return txt;
           }
-          const siteDir = path.join(process.cwd(), '_site');
-          if (!fs.existsSync(siteDir)) {
-              console.error("Site directory not found:", siteDir);
-              process.exit(1);
-          }
+
+          const siteDir = path.join(process.cwd(), '_site_index');
+
           function walk(dir) {
-              let results = [];
-              for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
-                  const fullPath = path.join(dir, entry.name);
-                  if (entry.isDirectory()) {
-                      results = results.concat(walk(fullPath));
-                  } else if (entry.isFile()) {
-                      results.push(fullPath);
-                  }
-              }
-              return results;
+            let out = [];
+            for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
+              const p = path.join(dir, e.name);
+              if (e.isDirectory()) out = out.concat(walk(p));
+              else if (e.isFile()) out.push(p);
+            }
+            return out;
           }
-          const files = walk(siteDir);
+
+          // Ищем все сгенерированные HTML
+          const files = walk(siteDir).filter(p => p.endsWith('.html'));
+
           for (const file of files) {
-              if (!file.endsWith('.html')) continue;
-              const buf = fs.readFileSync(file);
-              let text;
-              try { text = decodeBuffer(buf); } catch { text = buf.toString(); }
-              if (!text.match(/<article[^>]+data-pid/) || !text.includes('<h1')) continue;
-              const pidMatch = text.match(/<article[^>]+data-pid="([^"]+)"/);
-              if (!pidMatch) continue;
-              const pid = pidMatch[1];
-              const commentPath = path.join(siteDir, 'assets', 'comments', pid, 'comments0.html');
-              if (!fs.existsSync(commentPath)) continue;
-              const commentBuf = fs.readFileSync(commentPath);
-              let commentText = decodeBuffer(commentBuf);
-              const bodyMatch = commentText.match(/<body[^>]*>([\s\S]*?)<\/body>/i);
-              let bodyContent = bodyMatch ? bodyMatch[1] : commentText;
-              bodyContent = bodyContent.replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '');
-              bodyContent = bodyContent.replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '');
-              bodyContent = bodyContent.replace(/<meta[^>]*>/gi, '');
-              bodyContent = bodyContent.replace(/<link[^>]*>/gi, '');
-              if (text.includes('<div class="hidden-comments"')) {
-                  text = text.replace('<div class="hidden-comments" style="display:none"></div>', `<div class="hidden-comments" style="display:none">\n${bodyContent}\n</div>`);
-              } else {
-                  const closingIdx = text.lastIndexOf('</article>');
-                  if (closingIdx !== -1) {
-                      text = text.slice(0, closingIdx) + `<div class="hidden-comments" style="display:none">\n${bodyContent}\n</div>` + text.slice(closingIdx);
-                  } else {
-                      text += `\n<div class="hidden-comments" style="display:none">\n${bodyContent}\n</div>\n`;
-                  }
+            const buf = fs.readFileSync(file);
+            let html;
+            try { html = decodeBuffer(buf); } catch { html = buf.toString(); }
+
+            // Берём только страницы постов: у нас там есть <article ... data-pid="...">
+            if (!html.includes('data-pid=')) continue;
+
+            const pidMatch = html.match(/<article[^>]+data-pid="([^"]+)"/i);
+            if (!pidMatch) continue;
+            const pid = pidMatch[1];
+
+            const commPath = path.join(siteDir, 'assets', 'comments', pid, 'comments0.html');
+            if (!fs.existsSync(commPath)) continue;
+
+            // Читаем комментарии и вырезаем служебные теги
+            const cbuf = fs.readFileSync(commPath);
+            let chtml = decodeBuffer(cbuf);
+            const body = chtml.match(/<body[^>]*>([\s\S]*?)<\/body>/i);
+            let content = body ? body[1] : chtml;
+            content = content
+              .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '')
+              .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '')
+              .replace(/<meta[^>]*>/gi, '')
+              .replace(/<link[^>]*>/gi, '');
+
+            // Вставляем в скрытый контейнер внутри <article>
+            const marker = '<div class="hidden-comments" style="display:none"></div>';
+            if (html.includes(marker)) {
+              html = html.replace(marker,
+                `<div class="hidden-comments" style="display:none">\n${content}\n</div>`);
+            } else {
+              const idx = html.lastIndexOf('</article>');
+              if (idx !== -1) {
+                html = html.slice(0, idx)
+                  + `<div class="hidden-comments" style="display:none">\n${content}\n</div>`
+                  + html.slice(idx);
               }
-              fs.writeFileSync(file, text);
+            }
+
+            fs.writeFileSync(file, html);
           }
           JS
+
+      # 4) Строим индекс Pagefind по _site_index
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
 
       - name: Build Pagefind index
         run: |
           npm i -g pagefind@latest
-          # Собираем индекс по готовому сайту (_site) и кладём UI-файлы в _site/pagefind
-          # Комментарии включены в индекс, язык принудительно ru
-          pagefind --site _site --force-language ru
+          # --site вместо устаревшего --source; фиксируем язык на ru
+          pagefind --site _site_index --force-language ru
 
+      # 5) Публикуем именно _site_index (там уже есть /pagefind и вшитые комменты)
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: _site
+          path: _site_index
 
   deploy:
+    needs: build
+    runs-on: ubuntu-latest
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
-    needs: build
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
