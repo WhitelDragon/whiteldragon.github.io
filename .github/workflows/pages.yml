@@ -1,8 +1,7 @@
 name: Build & Deploy (Jekyll + Pagefind)
-
 on:
   push:
-    branches: [ "main" ]     # если основная ветка другая — замени тут
+    branches: [ "main" ]
   workflow_dispatch:
 
 permissions:
@@ -26,7 +25,7 @@ jobs:
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: '3.1'     # стабильная версия под GitHub Pages
+          ruby-version: '3.1'
           bundler-cache: true
 
       - name: Install gems
@@ -44,12 +43,89 @@ jobs:
         with:
           node-version: '20'
 
+      - name: Inject comments into posts
+        run: |
+          cat <<'JS' | node
+          const fs = require('fs');
+          const path = require('path');
+          const { TextDecoder } = require('util');
+          function decodeBuffer(buf) {
+              let headBytes = buf.slice(0, 2048);
+              let ascii = '';
+              for (let i = 0; i < headBytes.length; i++) {
+                  let byte = headBytes[i];
+                  ascii += (byte < 128 ? String.fromCharCode(byte) : ' ');
+              }
+              const hasWin1251Meta = /charset\s*=\s*windows-1251/i.test(ascii);
+              const utf8Decoder = new TextDecoder('utf-8');
+              const win1251Decoder = new TextDecoder('windows-1251');
+              let txt;
+              if (hasWin1251Meta) {
+                  txt = win1251Decoder.decode(buf);
+              } else {
+                  txt = utf8Decoder.decode(buf);
+                  if (txt.includes('�')) {
+                      txt = win1251Decoder.decode(buf);
+                  }
+              }
+              return txt;
+          }
+          const siteDir = path.join(process.cwd(), '_site');
+          if (!fs.existsSync(siteDir)) {
+              console.error("Site directory not found:", siteDir);
+              process.exit(1);
+          }
+          function walk(dir) {
+              let results = [];
+              for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+                  const fullPath = path.join(dir, entry.name);
+                  if (entry.isDirectory()) {
+                      results = results.concat(walk(fullPath));
+                  } else if (entry.isFile()) {
+                      results.push(fullPath);
+                  }
+              }
+              return results;
+          }
+          const files = walk(siteDir);
+          for (const file of files) {
+              if (!file.endsWith('.html')) continue;
+              const buf = fs.readFileSync(file);
+              let text;
+              try { text = decodeBuffer(buf); } catch { text = buf.toString(); }
+              if (!text.match(/<article[^>]+data-pid/) || !text.includes('<h1')) continue;
+              const pidMatch = text.match(/<article[^>]+data-pid="([^"]+)"/);
+              if (!pidMatch) continue;
+              const pid = pidMatch[1];
+              const commentPath = path.join(siteDir, 'assets', 'comments', pid, 'comments0.html');
+              if (!fs.existsSync(commentPath)) continue;
+              const commentBuf = fs.readFileSync(commentPath);
+              let commentText = decodeBuffer(commentBuf);
+              const bodyMatch = commentText.match(/<body[^>]*>([\s\S]*?)<\/body>/i);
+              let bodyContent = bodyMatch ? bodyMatch[1] : commentText;
+              bodyContent = bodyContent.replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '');
+              bodyContent = bodyContent.replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '');
+              bodyContent = bodyContent.replace(/<meta[^>]*>/gi, '');
+              bodyContent = bodyContent.replace(/<link[^>]*>/gi, '');
+              if (text.includes('<div class="hidden-comments"')) {
+                  text = text.replace('<div class="hidden-comments" style="display:none"></div>', `<div class="hidden-comments" style="display:none">\n${bodyContent}\n</div>`);
+              } else {
+                  const closingIdx = text.lastIndexOf('</article>');
+                  if (closingIdx !== -1) {
+                      text = text.slice(0, closingIdx) + `<div class="hidden-comments" style="display:none">\n${bodyContent}\n</div>` + text.slice(closingIdx);
+                  } else {
+                      text += `\n<div class="hidden-comments" style="display:none">\n${bodyContent}\n</div>\n`;
+                  }
+              }
+              fs.writeFileSync(file, text);
+          }
+          JS
+
       - name: Build Pagefind index
         run: |
           npm i -g pagefind@latest
           # Собираем индекс по собранному сайту (_site).
-          # Ничего не исключаем: комментарии попадут в индекс.
-          # --force-language ru снимает ворнинги про отсутствие <html lang>.
+          # --force-language ru убирает предупреждения о <html lang>.
           pagefind --site _site --force-language ru
 
       # 5) Публикация артефакта Pages
@@ -68,3 +144,4 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+
