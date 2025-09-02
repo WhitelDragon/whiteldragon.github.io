@@ -12,3 +12,5 @@ layout: default
   {{ content }}
   <div class="hidden-comments" style="display:none"></div>
 </article>
+<!-- В _layouts/post.html (или в том layout, который отрисовывает одиночные посты) -->
+<span hidden data-pagefind-meta="date:{{ page.date | date: '%Y-%m-%d' }}"></span>
