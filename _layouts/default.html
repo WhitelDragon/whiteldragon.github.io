@@ -31,10 +31,11 @@
         <a href="{{ site.baseurl }}/">{{ site.title }}</a>
       </div>
       <div class="searchbox">
-        <form class="site-search" action="{{ '/search.html' | relative_url }}" role="search">
+        <form class="site-search" action="{{ '/search.html' | relative_url }}" method="get" role="search">
           <input type="search" name="q" placeholder="Поиск по сайту…" aria-label="Поиск">
           <button type="submit">Поиск</button>
         </form>
+
       </div>
     </div>
   </header>
