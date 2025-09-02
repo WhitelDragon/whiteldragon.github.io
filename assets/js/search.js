@@ -1,15 +1,86 @@
 // assets/js/search.js
 
-// Функция для получения параметра q из URL
-function getQueryParam(name) {
+// ----- helpers -----
+function getParam(name) {
   return new URLSearchParams(window.location.search).get(name);
 }
+function setParam(name, value) {
+  const url = new URL(window.location.href);
+  if (value && String(value).length) url.searchParams.set(name, value);
+  else url.searchParams.delete(name);
+  history.replaceState(null, "", url.toString());
+}
 
-// Инициализация Pagefind UI
-window.addEventListener('DOMContentLoaded', () => {
-  const searchQuery = getQueryParam('q') || "";  
-  // Создаём Pagefind UI без сортировки (по умолчанию - релевантность)
-  let searchUI = new PagefindUI({
+// ----- state -----
+let lastQuery = getParam("q") || "";
+let lastSort  = getParam("sort") || "relevance"; // relevance | date_desc | date_asc
+let searchUI  = null;
+
+// ----- DOM ready -----
+window.addEventListener("DOMContentLoaded", () => {
+  const sortSelect = document.getElementById("sort-order");
+  if (sortSelect) sortSelect.value = lastSort;
+
+  // Создаём UI с учётом выбранной сортировки
+  createUI();
+
+  // Если q уже есть в URL — сразу запускаем поиск
+  if (lastQuery) {
+    // Небольшая задержка, чтобы инпут успел появиться
+    requestAnimationFrame(() => {
+      restoreInputValue();
+      searchUI.triggerSearch(lastQuery);
+    });
+  }
+
+  // Слежение за DOM: убрать префикс "Date:" в выдаче
+  const resultsContainer = document.getElementById("pagefind-search");
+  if (resultsContainer) {
+    const observer = new MutationObserver((mutations) => {
+      for (const m of mutations) {
+        for (const node of m.addedNodes) {
+          if (node.nodeType !== 1) continue;
+          // Удаляем "Date: " в метаданных даты
+          node.querySelectorAll('[data-pagefind-ui-meta="date"]').forEach((el) => {
+            el.textContent = el.textContent.replace(/^Date:\s*/, "");
+          });
+          // Если появился новый инпут поиска — привязываем listener
+          const input = node.matches?.('input[type="search"]')
+            ? node
+            : node.querySelector?.('#pagefind-search input[type="search"]');
+          if (input && !input.dataset.listenerAttached) {
+            attachInputListener(input);
+          }
+        }
+      }
+    });
+    observer.observe(resultsContainer, { childList: true, subtree: true });
+  }
+
+  // Смена сортировки
+  if (sortSelect) {
+    sortSelect.addEventListener("change", () => {
+      lastSort = sortSelect.value;
+      setParam("sort", lastSort === "relevance" ? "" : lastSort);
+
+      // Сохраняем текущий текст запроса из инпута (на всякий)
+      const input = document.querySelector('#pagefind-search input[type="search"]');
+      if (input) lastQuery = input.value || lastQuery;
+
+      // Пересоздаём UI с новой сортировкой и восстанавливаем запрос
+      if (searchUI) searchUI.destroy();
+      createUI();
+      requestAnimationFrame(() => {
+        restoreInputValue();
+        if (lastQuery) searchUI.triggerSearch(lastQuery);
+      });
+    });
+  }
+});
+
+// ----- functions -----
+function createUI() {
+  const baseOpts = {
     element: "#pagefind-search",
     showImages: true,
     pageSize: 10,
@@ -17,88 +88,40 @@ window.addEventListener('DOMContentLoaded', () => {
       placeholder: "Искать по сайту…",
       zero_results: "Ничего не найдено",
       clear_search: "Очистить",
-      load_more: "Показать ещё"
-    }
-    // sort не указываем, чтобы сначала была релевантность
-  });
-  // Если при загрузке уже есть запрос в URL, выполняем поиск
-  if (searchQuery) {
-    searchUI.triggerSearch(searchQuery);
+      load_more: "Показать ещё",
+    },
+  };
+
+  if (lastSort === "date_desc") {
+    baseOpts.sort = { date: "desc" };
+  } else if (lastSort === "date_asc") {
+    baseOpts.sort = { date: "asc" };
   }
+  searchUI = new PagefindUI(baseOpts);
 
-  // Отслеживаем изменения DOM, чтобы удалить префикс "Date:" в метаданных даты
-  const resultsContainer = document.getElementById('pagefind-search');
-  if (resultsContainer) {
-    const observer = new MutationObserver(mutations => {
-      mutations.forEach(mutation => {
-        mutation.addedNodes.forEach(node => {
-          if (node.nodeType === 1) { // элемент
-            const dateMetaElems = node.querySelectorAll('[data-pagefind-ui-meta="date"]');
-            dateMetaElems.forEach(elem => {
-              // Удаляем "Date: " в начале текста, если есть
-              elem.textContent = elem.textContent.replace(/^Date:\s*/, '');
-            });
-          }
-        });
-      });
-    });
-    observer.observe(resultsContainer, { childList: true, subtree: true });
-  }
-
-  // Обработчик изменения сортировки
-  const sortSelect = document.getElementById('sort-order');
-  sortSelect.addEventListener('change', () => {
-    const sortValue = sortSelect.value;
-    // Получаем текущий поисковый запрос из поля ввода Pagefind UI
-    const currentQuery = document.querySelector('#pagefind-search input[type="search"]')?.value || "";
-
-    // Удаляем старый UI и создаём новый с нужной сортировкой
-    searchUI.destroy();
-    if (sortValue === 'relevance') {
-      // Релевантность (без параметра sort)
-      searchUI = new PagefindUI({
-        element: "#pagefind-search",
-        showImages: true,
-        pageSize: 10,
-        translations: {
-          placeholder: "Искать по сайту…",
-          zero_results: "Ничего не найдено",
-          clear_search: "Очистить",
-          load_more: "Показать ещё"
-        }
-      });
-    } else if (sortValue === 'date_desc') {
-      // Новые сначала (сортировка по дате по убыванию)
-      searchUI = new PagefindUI({
-        element: "#pagefind-search",
-        showImages: true,
-        pageSize: 10,
-        sort: { date: "desc" },
-        translations: {
-          placeholder: "Искать по сайту…",
-          zero_results: "Ничего не найдено",
-          clear_search: "Очистить",
-          load_more: "Показать ещё"
-        }
-      });
-    } else if (sortValue === 'date_asc') {
-      // Старые сначала (сортировка по дате по возрастанию)
-      searchUI = new PagefindUI({
-        element: "#pagefind-search",
-        showImages: true,
-        pageSize: 10,
-        sort: { date: "asc" },
-        translations: {
-          placeholder: "Искать по сайту…",
-          zero_results: "Ничего не найдено",
-          clear_search: "Очистить",
-          load_more: "Показать ещё"
-        }
-      });
-    }
-    // Запускаем поиск заново с тем же запросом (если он не пустой)
-    if (currentQuery) {
-      searchUI.triggerSearch(currentQuery);
+  // Как только инпут появится — проставим значение и listener
+  requestAnimationFrame(() => {
+    const input = document.querySelector('#pagefind-search input[type="search"]');
+    if (input) {
+      restoreInputValue();
+      attachInputListener(input);
     }
   });
-});
+}
+
+function restoreInputValue() {
+  const input = document.querySelector('#pagefind-search input[type="search"]');
+  if (input && input.value !== lastQuery) {
+    input.value = lastQuery;
+  }
+}
+
+function attachInputListener(input) {
+  if (!input || input.dataset.listenerAttached) return;
+  input.dataset.listenerAttached = "1";
+  input.addEventListener("input", () => {
+    lastQuery = input.value || "";
+    // Синхронизируем адресную строку
+    setParam("q", lastQuery);
+  }, { passive: true });
+}
