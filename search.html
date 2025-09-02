@@ -6,11 +6,12 @@ title: Поиск
 <h1>Поиск</h1>
 
 <!-- Pagefind UI -->
-<link href="{{ '/pagefind/pagefind.css' | relative_url }}" rel="stylesheet">
+<link href="{{ '/pagefind/pagefind-ui.css' | relative_url }}" rel="stylesheet">
 <div id="pagefind-search"></div>
 <script src="{{ '/pagefind/pagefind.js' | relative_url }}" type="text/javascript"></script>
+<script src="{{ '/pagefind/pagefind-ui.js' | relative_url }}" type="text/javascript"></script>
 <script>
-  // Pagefind UI сам подхватит ?q= из адресной строки
+  // PagefindUI автоматически подхватывает ?q= из адресной строки
   window.addEventListener('DOMContentLoaded', () => {
     new PagefindUI({
       element: "#pagefind-search",
