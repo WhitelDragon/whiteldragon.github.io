@@ -154,3 +154,7 @@ main { max-width: 760px; margin: 0 auto; padding: 0; }
   .searchbox { flex: 1 1 auto; min-width: 140px; }
   .post { margin: 12px auto; padding: 14px; max-width: 100%; }
 }
+/* assets/css/styles.css */
+.pagefind-ui__result-metadata { margin-top: 6px; font-size: .9rem; color:#666; }
+/* если хотите показывать только значение без «date:» */
+.pagefind-ui__result-metadata dt { display:none; }
