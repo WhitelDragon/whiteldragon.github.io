@@ -9,8 +9,13 @@ layout: default
 <article class="post" data-pid="{{ pid }}" data-pagefind-body>
   <h1>{{ page.title }}</h1>
   <p class="date">{{ page.date | date: '%d %b %Y' }}</p>
+
+  <!-- Метаданные для Pagefind -->
+  <span hidden data-pagefind-meta="date:{{ page.date | date: '%d %b %Y' }}"></span>
+  <span hidden data-pagefind-sort="date:{{ page.date | date: '%Y-%m-%d' }}"></span>
+
   {{ content }}
   <div class="hidden-comments" style="display:none"></div>
 </article>
-<!-- В _layouts/post.html (или в том layout, который отрисовывает одиночные посты) -->
-<span hidden data-pagefind-meta="date:{{ page.date | date: '%Y-%m-%d' }}"></span>
+
+
