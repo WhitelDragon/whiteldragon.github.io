@@ -6,8 +6,9 @@ layout: default
   {% assign pid = page.slug | split:'_' | last %}
 {% endif %}
 
-<article class="post" data-pid="{{ pid }}">
+<article class="post" data-pid="{{ pid }}" data-pagefind-body>
   <h1>{{ page.title }}</h1>
   <p class="date">{{ page.date | date: '%d %b %Y' }}</p>
   {{ content }}
+  <div class="hidden-comments" style="display:none"></div>
 </article>
