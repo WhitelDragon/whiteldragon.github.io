@@ -1,4 +1,4 @@
-/* ====== Тема и базовые ====== */
+/* ====== Тема и базовые стили ====== */
 :root {
   --brand: #3f51b5;
   --bg: #f2f3f5;
@@ -20,8 +20,8 @@ a:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
 img, video { max-width: 100%; height: auto; border-radius: 6px; }
 h1, h2, h3 { line-height: 1.25; margin: 0 0 .6em; }
 p { margin: .6em 0; }
-/* якоря не прячутся под липкой шапкой */
-h2, h3, h4 { scroll-margin-top: 84px; } /* фикс для липкой шапки, см. идею scroll-margin-top. :contentReference[oaicite:1]{index=1} */
+/* Якоря не прячутся под липкой шапкой */
+h2, h3, h4 { scroll-margin-top: 84px; }
 
 /* ====== Шапка ====== */
 .site-header {
@@ -29,13 +29,13 @@ h2, h3, h4 { scroll-margin-top: 84px; } /* фикс для липкой шапк
   background: var(--brand); color: #fff;
 }
 .site-header .wrap {
-  display:flex; align-items:center; gap:16px;
-  max-width:980px; margin:0 auto; padding:12px 20px;
+  display: flex; align-items: center; gap: 16px;
+  max-width: 980px; margin: 0 auto; padding: 12px 20px;
 }
-.brand a { color:#fff; font-weight:700; text-decoration:none; }
+.brand a { color: #fff; font-weight: 700; text-decoration: none; }
 
-/* Поиск в шапке (локальный, Pagefind) */
-.site-search { display:flex; gap:8px; margin-left:auto; }
+/* Поиск в шапке (форма Pagefind) */
+.site-search { display: flex; gap: 8px; margin-left: auto; }
 .site-search input[type="search"] {
   width: 100%;
   max-width: 420px;
@@ -52,44 +52,43 @@ h2, h3, h4 { scroll-margin-top: 84px; } /* фикс для липкой шапк
   cursor: pointer;
 }
 
-
 /* ====== Макет (контейнер) ====== */
-/* По умолчанию — одна колонка, лента по центру. Сайдбар показываем СВЕРХУ,
-   чтобы на узких и средних ширинах он не мешал чтению. */
+/* По умолчанию — одна колонка, лента по центру. Сайдбар показывается сверху
+   на узких экранах, чтобы не мешал чтению. */
 .layout {
-  display:grid;
+  display: grid;
   grid-template-columns: 1fr;
-  gap:20px;
-  max-width:980px;
-  margin:0 auto;
-  padding:16px 20px;
+  gap: 20px;
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 16px 20px;
 }
 
 /* Когда архив раскрыт — включаем 2 колонки на средних ширинах */
 .layout.side-open { grid-template-columns: 260px minmax(0, 1fr); }
 
-/* Сайдбар по умолчанию обычный, "прилипает" при прокрутке */
+/* Сайдбар — позиционирование и стили */
 .sidebar { position: sticky; top: 72px; align-self: start; }
-.archive summary { cursor:pointer; font-weight:700; }
-.year-list { list-style:none; padding:8px 0 0; margin:0; }
-.year-list li { margin:6px 0; }
-.year-list a { text-decoration:none; }
-.year-list a:hover { text-decoration:underline; }
+.archive summary { cursor: pointer; font-weight: 700; }
+.year-list { list-style: none; padding: 8px 0 0; margin: 0; }
+.year-list li { margin: 6px 0; }
+.year-list a { text-decoration: none; }
+.year-list a:hover { text-decoration: underline; }
 
-/* ====== ЛЕВАЯ РЕЙКА (широкие экраны) ======
-   На очень широких экранах выносим сайдбар в левую "гутту",
-   чтобы он не сдвигал/не опускал ленту. Контент остаётся строго по центру. */
+/* ====== Левая панель (очень широкие экраны) ======
+   На очень широких экранах выносим сайдбар отдельно слева,
+   чтобы он не сдвигал и не опускал основную ленту. Контент остаётся по центру. */
 @media (min-width: 1360px) {
-  /* На больших экранах всегда рисуем одну центральную колонку,
-     а .sidebar превращаем в независимую "рейку" слева. */
+  /* На больших экранах всегда одна центральная колонка,
+     а .sidebar превращаем в независимую колонку слева. */
   .layout, .layout.side-open { grid-template-columns: 1fr; }
 
   .sidebar {
-    position: fixed;                 /* независим от потока, не толкает контент */
-    top: 72px;                       /* отступ под шапку (липкая) */
+    position: fixed;                 /* выводим из потока, не смещает контент */
+    top: 72px;                       /* отступ под фиксированную шапку */
     left: calc(50vw - 660px);        /* 50vw - (380 контент-полуширина + 20 зазор + 260 ширина сайдбара) */
     width: 260px;
-    max-height: calc(100vh - 96px);  /* чтобы влезал на экран */
+    max-height: calc(100vh - 96px);  /* чтобы сайдбар полностью помещался */
     overflow: auto;
     z-index: 10;
   }
@@ -105,41 +104,23 @@ main { max-width: 760px; margin: 0 auto; padding: 0; }
   max-width: 760px;
   box-shadow: 0 2px 6px rgba(0,0,0,.08);
 }
-.post h2 { margin-top:0; color: var(--brand); }
-.post .date { font-size:.85rem; color: var(--muted); margin-bottom:10px; }
+.post h2 { margin-top: 0; color: var(--brand); }
+.post .date { font-size: .85rem; color: var(--muted); margin-bottom: 10px; }
 
 /* Фото, подставленные скриптом */
 .post-photo { margin: 8px 0; }
-.post-photo img { display:block; max-width:100%; height:auto; border-radius:6px; }
+.post-photo img { display: block; max-width: 100%; height: auto; border-radius: 6px; }
 
-/* Пейджер */
-.pager { display:flex; gap:12px; justify-content:center; margin:24px 0; }
+/* Пейджер (навигация страниц ленты) */
+.pager { display: flex; gap: 12px; justify-content: center; margin: 24px 0; }
 .pager a {
-  background:#fff; border:1px solid #e5e7eb; border-radius:999px;
-  padding:8px 14px; text-decoration:none;
+  background: #fff; border: 1px solid #e5e7eb; border-radius: 999px;
+  padding: 8px 14px; text-decoration: none;
 }
-.pager a:hover { background:#f3f4f6; }
+.pager a:hover { background: #f3f4f6; }
 
-/* Результаты поиска (CSE) */
-.gcse-searchresults-only,
-.gsc-results,
-.gsc-control-cse {
-  max-width:980px;
-  margin:16px auto;
-  background:transparent;
-  border:0;
-}
-.gsc-webResult.gsc-result { border:0; padding:12px 0; }
-.gsc-thumbnail-inside, .gsc-url-top { padding:0; }
-.gsc-result .gs-title { font-size:1.05rem; }
-.gsc-result .gs-snippet { color:#444; }
-.gsc-cursor-box { text-align:center; padding:12px 0; }
-
-/* Футер */
-.site-footer .wrap { max-width:980px; margin:0 auto; padding:20px; color:#999; font-size:.9rem; }
-
-/* ===== VK comments ===== */
-.vkcom-bar { display:flex; justify-content:flex-end; margin-top:8px; }
+/* ====== VK Comments (кнопка и контейнеры) ====== */
+.vkcom-bar { display: flex; justify-content: flex-end; margin-top: 8px; }
 .vkcom-toggle {
   border: 1px solid #d6d8e0;
   background: #eef2ff;
@@ -152,21 +133,24 @@ main { max-width: 760px; margin: 0 auto; padding: 0; }
 .vkcom-toggle.loading { opacity: .6; cursor: progress; }
 .vkcom-box { margin-top: 8px; border-top: 1px dashed #e5e7eb; padding-top: 8px; }
 .vkcom-list .item {
-  background: #fff; border: 1px solid #eef0f4; border-radius: 8px;
-  padding: 10px 12px; margin: 10px 0; box-shadow: 0 1px 2px rgba(0,0,0,.03);
+  background: #fff;
+  border: 1px solid #eef0f4;
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin: 10px 0;
+  box-shadow: 0 1px 2px rgba(0,0,0,.03);
 }
 .vkcom-list .item a { color: #3f51b5; }
-.vkcom-list .item__tertiary { color:#666; font-size: .85rem; margin-top: 6px; }
+.vkcom-list .item__tertiary { color: #666; font-size: .85rem; margin-top: 6px; }
 .vkcom-list img { max-width: 100%; height: auto; border-radius: 6px; }
 
-
-/* Мобилки */
+/* ====== Адаптив для мобильных ====== */
 @media (max-width: 900px) {
   .layout, .layout.side-open { grid-template-columns: 1fr; }
-  .sidebar { position: static; } /* обычный поток */
+  .sidebar { position: static; } /* возвращаем обычный поток */
 }
 @media (max-width: 720px) {
-  .site-header .wrap { gap:10px; padding:10px 12px; }
-  .searchbox { flex:1 1 auto; min-width:140px; }
-  .post { margin:12px auto; padding:14px; max-width:100%; }
+  .site-header .wrap { gap: 10px; padding: 10px 12px; }
+  .searchbox { flex: 1 1 auto; min-width: 140px; }
+  .post { margin: 12px auto; padding: 14px; max-width: 100%; }
 }
