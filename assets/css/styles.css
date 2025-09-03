@@ -158,3 +158,10 @@ main { max-width: 760px; margin: 0 auto; padding: 0; }
 .pagefind-ui__result-metadata { margin-top: 6px; font-size: .9rem; color:#666; }
 /* если хотите показывать только значение без «date:» */
 .pagefind-ui__result-metadata dt { display:none; }
+
+
+figure.media { margin: 1.25rem 0; }
+figure.media img, figure.media video, figure.media audio { max-width: 100%; height: auto; display: block; }
+figure.media figcaption { color: #666; font-size: .9rem; margin-top: .4rem; }
+
+
