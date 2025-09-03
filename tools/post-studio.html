@@ -32,8 +32,6 @@
     .ok { color: #059669; }
     .warn { color: #b45309; }
     .err { color: #dc2626; }
-
-    /* HTML-превью */
     .tabs { display:flex; gap:8px; margin: 10px 0 0; }
     .tab { padding:.4rem .8rem; border:1px solid var(--bd); border-bottom:none; border-radius:8px 8px 0 0; background:#f8fafc; cursor:pointer; }
     .tab.active { background:#fff; border-color:#cbd5e1; }
@@ -56,7 +54,7 @@
   </header>
 
   <main>
-    <p class="hint">Открой в Chrome/Edge. Нажми «Выбрать папку репозитория…», заполни форму, добавь файлы, проверь предпросмотр и жми «Создать пост».</p>
+    <p class="hint">Открой в Chrome/Edge. Выбери папку репозитория, заполни форму, добавь файлы, посмотри предпросмотр и жми «Создать пост».</p>
 
     <fieldset>
       <legend>Параметры поста</legend>
@@ -111,7 +109,7 @@
     </fieldset>
 
     <fieldset>
-      <legend>Медиа: изображения / видео / аудио</legend>
+      <legend>Медиа</legend>
       <div class="row-3">
         <div>
           <label>Изображения</label>
@@ -136,7 +134,7 @@
       <legend>Текст поста</legend>
       <label for="body">Тело поста (Markdown)</label>
       <textarea id="body" placeholder="Вводный абзац…"></textarea>
-      <label><input id="autoIncludes" type="checkbox" checked> Вставить снизу include-строчки для выбранных медиа</label>
+      <label><input id="autoIncludes" type="checkbox" checked> Вставить снизу include-строчки для выбранных медиа (с полными путями)</label>
     </fieldset>
 
     <div style="display:flex; gap:12px; align-items:center; margin:16px 0; flex-wrap:wrap;">
@@ -155,23 +153,12 @@
       <pre id="previewMd" class="preview"></pre>
       <article id="previewHtml" class="preview-article" hidden></article>
     </div>
-
-    <section>
-      <h3>Подсказки</h3>
-      <ul>
-        <li>Предпросмотр подменяет include <code>{% include media.html f="..." %}</code> на реальные элементы &lt;img&gt;/&lt;video&gt;/&lt;audio&gt; с <em>временными</em> blob-URL (покажет даже до записи файлов).</li>
-        <li>Финальные пути будут вида: <code>/assets/&lt;тип&gt;/&lt;год&gt;/&lt;slug&gt;/&lt;файл&gt;</code>.</li>
-        <li>Запись в репозиторий — через File System Access API (Chrome/Edge), без сервера. Потом — обычный <code>git add/commit/push</code>.</li>
-      </ul>
-    </section>
   </main>
 
-  <!-- Markdown рендер -->
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
 <script>
 (() => {
-  /*** ========== Утилиты ========== ***/
   const $  = sel => document.querySelector(sel);
   const $$ = sel => Array.from(document.querySelectorAll(sel));
 
@@ -179,12 +166,12 @@
     const map = { а:'a',б:'b',в:'v',г:'g',д:'d',е:'e',ё:'e',ж:'zh',з:'z',и:'i',й:'j',к:'k',л:'l',м:'m',
       н:'n',о:'o',п:'p',р:'r',с:'s',т:'t',у:'u',ф:'f',х:'h',ц:'c',ч:'ch',ш:'sh',щ:'sch',ъ:'',
       ы:'y',ь:'',э:'e',ю:'yu',я:'ya' };
-    return (str||"").toString().toLowerCase()
+    return (str||"").toLowerCase()
       .replace(/[\u0400-\u04FF]/g, ch => map[ch] ?? '')
       .replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').replace(/--+/g,'-').slice(0,80);
   }
   const pad = n => String(n).padStart(2,'0');
-  function fmtDateForName(d){ return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`; }
+  const fmtDateForName = d => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
   function fmtTimeOffset(d){
     const off = -d.getTimezoneOffset(), sign = off>=0?'+':'-';
     const h = Math.floor(Math.abs(off)/60), m = Math.abs(off)%60;
@@ -195,43 +182,23 @@
     return '[' + arr.map(v => `"${v.replace(/"/g,'\\"')}"`).join(', ') + ']';
   }
 
-  /*** ========== FS Access helpers ========== ***/
-  let repoHandle = null;
-  let postsDir = null, draftsDir = null;
-  let imgBase = null, videoBase = null, audioBase = null;
+  // FS Access
+  let repoHandle=null, postsDir=null, draftsDir=null, imgBase=null, videoBase=null, audioBase=null;
+  async function ensureDir(base, parts){ let cur=base; for (const p of parts) cur=await cur.getDirectoryHandle(p,{create:true}); return cur; }
+  async function getFileHandleByPath(root, parts, create=false){ let dir=root; for(let i=0;i<parts.length-1;i++) dir=await dir.getDirectoryHandle(parts[i],{create}); return await dir.getFileHandle(parts[parts.length-1],{create}); }
+  async function writeTextFile(root, parts, content){ const fh=await getFileHandleByPath(root,parts,true); const w=await fh.createWritable(); await w.write(content); await w.close(); return fh; }
+  async function writeBinaryFile(root, parts, blob){ const fh=await getFileHandleByPath(root,parts,true); const w=await fh.createWritable(); await w.write(blob); await w.close(); return fh; }
 
-  async function ensureDir(base, parts){
-    let cur = base;
-    for (const p of parts) cur = await cur.getDirectoryHandle(p, { create: true });
-    return cur;
-  }
-  async function getFileHandleByPath(root, parts, create=false){
-    let dir = root;
-    for (let i=0; i<parts.length-1; i++) dir = await dir.getDirectoryHandle(parts[i], { create });
-    return await dir.getFileHandle(parts[parts.length-1], { create });
-  }
-  async function writeTextFile(root, parts, content){
-    const fh = await getFileHandleByPath(root, parts, true);
-    const w = await fh.createWritable(); await w.write(content); await w.close(); return fh;
-  }
-  async function writeBinaryFile(root, parts, blob){
-    const fh = await getFileHandleByPath(root, parts, true);
-    const w = await fh.createWritable(); await w.write(blob); await w.close(); return fh;
-  }
-
-  /*** ========== DOM refs ========== ***/
   const pickRepoBtn = $('#pickRepo'), repoPathEl = $('#repoPath');
-  const titleEl = $('#title'), slugEl = $('#slug'), dtEl = $('#dt'), descEl = $('#description');
-  const tagsEl = $('#tags'), catsEl = $('#cats'), heroSel = $('#hero');
-  const imgInp = $('#images'), vidInp = $('#videos'), audInp = $('#audios');
-  const imagesList = $('#imagesList'), videosList = $('#videosList'), audiosList = $('#audiosList');
-  const bodyEl = $('#body'), autoIncludesEl = $('#autoIncludes');
-  const createBtn = $('#createBtn'), previewMdBtn = $('#previewMdBtn'), previewHtmlBtn = $('#previewHtmlBtn');
-  const autoUpdateEl = $('#autoUpdate');
-  const statusEl = $('#status'), tabsEl = $('#tabs'), panelsEl = $('#panels');
-  const previewMdEl = $('#previewMd'), previewHtmlEl = $('#previewHtml');
+  const titleEl=$('#title'), slugEl=$('#slug'), dtEl=$('#dt'), descEl=$('#description');
+  const tagsEl=$('#tags'), catsEl=$('#cats'), heroSel=$('#hero');
+  const imgInp=$('#images'), vidInp=$('#videos'), audInp=$('#audios');
+  const imagesList=$('#imagesList'), videosList=$('#videosList'), audiosList=$('#audiosList');
+  const bodyEl=$('#body'), autoIncludesEl=$('#autoIncludes');
+  const createBtn=$('#createBtn'), previewMdBtn=$('#previewMdBtn'), previewHtmlBtn=$('#previewHtmlBtn'), autoUpdateEl=$('#autoUpdate');
+  const statusEl=$('#status'), tabsEl=$('#tabs'), panelsEl=$('#panels');
+  const previewMdEl=$('#previewMd'), previewHtmlEl=$('#previewHtml');
 
-  /*** ========== Repo pick ========== ***/
   pickRepoBtn.addEventListener('click', async () => {
     try{
       repoHandle = await window.showDirectoryPicker({ mode:'readwrite' });
@@ -241,136 +208,35 @@
       videoBase = await ensureDir(repoHandle, ['assets','video']);
       audioBase = await ensureDir(repoHandle, ['assets','audio']);
       repoPathEl.textContent = '✓ Папка выбрана';
-      createBtn.disabled = false; previewMdBtn.disabled = false; previewHtmlBtn.disabled = false;
-      status('Готово к работе', 'ok');
-    }catch(e){ console.error(e); status('Доступ к папке отклонён', 'err'); }
+      createBtn.disabled = previewMdBtn.disabled = previewHtmlBtn.disabled = false;
+      status('Готово к работе','ok');
+    }catch(e){ console.error(e); status('Доступ к папке отклонён','err'); }
   });
 
-  /*** ========== UI helpers ========== ***/
-  function renderChosen(listEl, files){
-    listEl.innerHTML = '';
-    files.forEach(f => {
-      const div = document.createElement('div');
-      div.className = 'filecard';
-      div.innerHTML = `<span class="muted">${f.name}</span><span>${Math.ceil(f.size/1024)} KB</span>`;
-      listEl.appendChild(div);
-    });
+  function renderChosen(el, files){
+    el.innerHTML=''; files.forEach(f=>{ const d=document.createElement('div'); d.className='filecard'; d.innerHTML=`<span class="muted">${f.name}</span><span>${Math.ceil(f.size/1024)} KB</span>`; el.appendChild(d); });
   }
   function refreshHeroOptions(files){
     heroSel.innerHTML = '<option value="">— не задавать —</option>' + files.map(f=>`<option>${f.name}</option>`).join('');
   }
-  imgInp.addEventListener('change', () => { renderChosen(imagesList,[...imgInp.files]); refreshHeroOptions([...imgInp.files]); triggerAutoPreview(); });
-  vidInp.addEventListener('change', () => { renderChosen(videosList,[...vidInp.files]); triggerAutoPreview(); });
-  audInp.addEventListener('change', () => { renderChosen(audiosList,[...audInp.files]); triggerAutoPreview(); });
+  imgInp.addEventListener('change', ()=>{ renderChosen(imagesList,[...imgInp.files]); refreshHeroOptions([...imgInp.files]); triggerAutoPreview(); });
+  vidInp.addEventListener('change', ()=>{ renderChosen(videosList,[...vidInp.files]); triggerAutoPreview(); });
+  audInp.addEventListener('change', ()=>{ renderChosen(audiosList,[...audInp.files]); triggerAutoPreview(); });
 
-  titleEl.addEventListener('input', () => { if (!slugEl.value.trim()) slugEl.value = slugify(titleEl.value); triggerAutoPreview(); });
-  [slugEl, dtEl, descEl, tagsEl, catsEl, heroSel, bodyEl, autoIncludesEl].forEach(el =>
-    el.addEventListener('input', triggerAutoPreview)
-  );
+  titleEl.addEventListener('input', ()=>{ if(!slugEl.value.trim()) slugEl.value = slugify(titleEl.value); triggerAutoPreview(); });
+  [slugEl, dtEl, descEl, tagsEl, catsEl, heroSel, bodyEl, autoIncludesEl].forEach(el => el.addEventListener('input', triggerAutoPreview));
 
-  /*** ========== Markdown & include -> HTML ========== ***/
-  const IMG_EXT = ['jpg','jpeg','png','webp','gif','avif','svg'];
-  const VID_EXT = ['mp4','webm','ogv'];
-  const AUD_EXT = ['mp3','ogg','wav','m4a','flac'];
+  // helpers
+  const IMG_EXT=['jpg','jpeg','png','webp','gif','avif','svg'];
+  const VID_EXT=['mp4','webm','ogv'];
+  const AUD_EXT=['mp3','ogg','wav','m4a','flac'];
   const ext = f => (f.split('.').pop()||'').toLowerCase();
   const kindOf = f => IMG_EXT.includes(ext(f)) ? 'img' : VID_EXT.includes(ext(f)) ? 'video' : AUD_EXT.includes(ext(f)) ? 'audio' : 'file';
+  const buildTargetPath = (type, year, slug, name) => `/assets/${type}/${year}/${slug}/${name}`;
 
-  function buildTargetPath(type, year, slug, name){ return `/assets/${type}/${year}/${slug}/${name}`; }
+  function fileByName(name){ const all=[...imgInp.files,...vidInp.files,...audInp.files]; return all.find(f=>f.name===name); }
 
-  function fileByName(name){
-    const all = [...imgInp.files, ...vidInp.files, ...audInp.files];
-    return all.find(f => f.name === name);
-  }
-
-  function mediaIncludeToHtml(params, ctx) {
-    // params: {f, alt, cap, class, width, height, poster, preload, autoplay, muted, loop}
-    const f = params.f || ''; if (!f) return '';
-    const k = kindOf(f);
-    const isAbs = /^https?:\/\//i.test(f) || f.startsWith('/');
-    const targetUrl = isAbs ? f :
-      buildTargetPath(k==='video'?'video':k==='audio'?'audio':'img', ctx.year, ctx.slug, f);
-
-    const file = fileByName(f);
-    let src = targetUrl;
-    if (file) src = URL.createObjectURL(file); // blob для предпросмотра
-
-    const cap = params.cap ? `<figcaption>${escapeHtml(params.cap)}</figcaption>` : '';
-    const cls = `media media-${k}` + (params.class ? ' '+params.class : '');
-    if (k === 'img') {
-      const wh = (params.width?` width="${params.width}"`:'') + (params.height?` height="${params.height}"`:'');
-      const alt = params.alt ? escapeHtml(params.alt) : '';
-      return `<figure class="${cls}">
-  <img src="${src}" alt="${alt}" loading="lazy" decoding="async"${wh} data-final-src="${targetUrl}">
-  ${cap}
-  ${file?`<div class="blob-note">Предпросмотр blob; финальный путь: ${targetUrl}</div>`:''}
-</figure>`;
-    } else if (k === 'audio') {
-      const mime = ext(f)==='m4a' ? 'audio/mp4' : `audio/${ext(f)}`;
-      const preload = params.preload || 'metadata';
-      return `<figure class="${cls}">
-  <audio controls preload="${preload}">
-    <source src="${src}" type="${mime}">
-    Ваш браузер не поддерживает аудио.
-  </audio>
-  ${cap}
-  ${file?`<div class="blob-note">Предпросмотр blob; финальный путь: ${targetUrl}</div>`:''}
-</figure>`;
-    } else if (k === 'video') {
-      const mime = ext(f)==='ogv' ? 'video/ogg' : `video/${ext(f)}`;
-      const preload = params.preload || 'metadata';
-      let posterAttr = '';
-      if (params.poster) {
-        const p = params.poster;
-        const posterIsAbs = /^https?:\/\//i.test(p) || p.startsWith('/');
-        const posterTarget = posterIsAbs ? p : buildTargetPath('img', ctx.year, ctx.slug, p);
-        const posterFile = fileByName(p);
-        const posterSrc = posterFile ? URL.createObjectURL(posterFile) : posterTarget;
-        posterAttr = ` poster="${posterSrc}"`;
-      }
-      const flags = (params.autoplay?' autoplay':'') + (params.muted?' muted':'') + (params.loop?' loop':'');
-      return `<figure class="${cls}">
-  <video controls playsinline preload="${preload}"${posterAttr}${flags} style="max-width:100%">
-    <source src="${src}" type="${mime}">
-    Ваш браузер не поддерживает видео.
-  </video>
-  ${cap}
-  ${file?`<div class="blob-note">Предпросмотр blob; финальный путь: ${targetUrl}</div>`:''}
-</figure>`;
-    }
-    return `<p><a href="${src}" data-final-href="${targetUrl}">${f}</a></p>`;
-  }
-
-  function parseInclude(line){
-    // {% include media.html f="hero.jpg" alt="..." cap="..." poster="..." width="1200" height="800" autoplay muted loop %}
-    const m = line.match(/^\s*\{%\s*include\s+media\.html\s+(.+?)\s*%\}\s*$/);
-    if (!m) return null;
-    const paramsStr = m[1];
-    const params = {};
-    // key="value" или булевые флаги без значения
-    const re = /([a-zA-Z_]+)\s*=\s*"([^"]*)"|(\bautoplay\b|\bmuted\b|\bloop\b)/g;
-    let mm;
-    while ((mm = re.exec(paramsStr))) {
-      if (mm[1]) { params[mm[1]] = mm[2]; }
-      else if (mm[3]) { params[mm[3]] = true; }
-    }
-    return params.f ? params : null;
-  }
-
-  function replaceIncludesToHtml(md, ctx){
-    return md.split('\n').map(line => {
-      const p = parseInclude(line);
-      return p ? mediaIncludeToHtml(p, ctx) : line;
-    }).join('\n');
-  }
-
-  function escapeHtml(s){ return (s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
-
-  /*** ========== Генерация Markdown (front matter + body) ========== ***/
-  function generateMarkdown(params){
-    const {
-      title, slug, dateObj, description, tags, cats, heroPath, body, images, videos, audios, autoIncludes
-    } = params;
-
+  function generateMarkdown({title, slug, dateObj, description, tags, cats, heroPath, body, images, videos, audios, autoIncludes}) {
     const dateStrName = fmtDateForName(dateObj);
     const timeOffset  = fmtTimeOffset(dateObj);
     const year        = dateObj.getFullYear();
@@ -385,34 +251,103 @@
     if (autoIncludes){
       if (images.length){
         content += '## Изображения\n\n';
-        images.forEach(f => { content += `{% include media.html f="${f.name}" alt="" %}\n\n`; });
+        images.forEach(f => { content += `{% include media.html f="${buildTargetPath('img', year, slug, f.name)}" alt="" %}\n\n`; });
       }
       if (videos.length){
         content += '## Видео\n\n';
-        videos.forEach(f => { content += `{% include media.html f="${f.name}" cap="" %}\n\n`; });
+        videos.forEach(f => { content += `{% include media.html f="${buildTargetPath('video', year, slug, f.name)}" cap="" %}\n\n`; });
       }
       if (audios.length){
         content += '## Аудио\n\n';
-        audios.forEach(f => { content += `{% include media.html f="${f.name}" cap="" %}\n\n`; });
+        audios.forEach(f => { content += `{% include media.html f="${buildTargetPath('audio', year, slug, f.name)}" cap="" %}\n\n`; });
       }
     }
     return { frontmatter: fm, body: content, dateStrName, year };
   }
 
-  /*** ========== Предпросмотры ========== ***/
+  function parseInclude(line){
+    const m = line.match(/^\s*\{%\s*include\s+media\.html\s+(.+?)\s*%\}\s*$/);
+    if (!m) return null;
+    const params = {};
+    const re = /([a-zA-Z_]+)\s*=\s*"([^"]*)"|(\bautoplay\b|\bmuted\b|\bloop\b)/g;
+    let mm; while ((mm = re.exec(m[1]))) { if (mm[1]) params[mm[1]] = mm[2]; else if (mm[3]) params[mm[3]] = true; }
+    return params.f ? params : null;
+  }
+
+  function mediaIncludeToHtml(params){
+    const f = params.f; if (!f) return '';
+    const name = f.split('/').pop();
+    const k = kindOf(name);
+    const isHttp = /^https?:\/\//i.test(f);
+    const finalUrl = f; // абсолютный путь/URL из include
+    const file = fileByName(name);
+    const src = file ? URL.createObjectURL(file) : finalUrl;
+
+    const cap = params.cap ? `<figcaption>${escapeHtml(params.cap)}</figcaption>` : '';
+    const cls = `media media-${k}` + (params.class ? ' '+params.class : '');
+
+    if (k==='img'){
+      const wh = (params.width?` width="${params.width}"`:'') + (params.height?` height="${params.height}"`:'');
+      const alt = params.alt ? escapeHtml(params.alt) : '';
+      return `<figure class="${cls}">
+  <img src="${src}" alt="${alt}" loading="lazy" decoding="async"${wh} data-final-src="${finalUrl}">
+  ${cap}${file?`<div class="blob-note">Предпросмотр blob; финальный путь: ${finalUrl}</div>`:''}
+</figure>`;
+    } else if (k==='audio'){
+      const mime = ext(name)==='m4a' ? 'audio/mp4' : `audio/${ext(name)}`;
+      const preload = params.preload || 'metadata';
+      return `<figure class="${cls}">
+  <audio controls preload="${preload}">
+    <source src="${src}" type="${mime}">
+    Ваш браузер не поддерживает аудио.
+  </audio>
+  ${cap}${file?`<div class="blob-note">Предпросмотр blob; финальный путь: ${finalUrl}</div>`:''}
+</figure>`;
+    } else if (k==='video'){
+      const mime = ext(name)==='ogv' ? 'video/ogg' : `video/${ext(name)}`;
+      const preload = params.preload || 'metadata';
+      let posterAttr = '';
+      if (params.poster){
+        const p = params.poster;
+        const posterName = p.split('/').pop();
+        const posterFile = fileByName(posterName);
+        const posterSrc = posterFile ? URL.createObjectURL(posterFile) : p;
+        posterAttr = ` poster="${posterSrc}"`;
+      }
+      const flags = (params.autoplay?' autoplay':'') + (params.muted?' muted':'') + (params.loop?' loop':'');
+      return `<figure class="${cls}">
+  <video controls playsinline preload="${preload}"${posterAttr}${flags} style="max-width:100%">
+    <source src="${src}" type="${mime}">
+    Ваш браузер не поддерживает видео.
+  </video>
+  ${cap}${file?`<div class="blob-note">Предпросмотр blob; финальный путь: ${finalUrl}</div>`:''}
+</figure>`;
+    }
+    return `<p><a href="${src}" data-final-href="${finalUrl}">${name}</a></p>`;
+  }
+
+  function replaceIncludesToHtml(md){
+    return md.split('\n').map(line => {
+      const p = parseInclude(line);
+      return p ? mediaIncludeToHtml(p) : line;
+    }).join('\n');
+  }
+
+  function escapeHtml(s){ return (s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
   function computeCtx(){
     const title = titleEl.value.trim() || '(без названия)';
     const slug  = (slugEl.value.trim() || slugify(title));
     const dt    = dtEl.value ? new Date(dtEl.value) : new Date();
     const year  = dt.getFullYear();
     const heroName = heroSel.value || '';
-    const heroPath = heroName ? `/assets/img/${year}/${slug}/${heroName}` : '';
+    const heroPath = heroName ? buildTargetPath('img', year, slug, heroName) : '';
     return { title, slug, dt, year, heroName, heroPath };
   }
 
   function buildMdSource(){
     const ctx = computeCtx();
-    const imgs = [...imgInp.files], vids = [...vidInp.files], auds = [...audInp.files];
+    const imgs=[...imgInp.files], vids=[...vidInp.files], auds=[...audInp.files];
     const { frontmatter, body } = generateMarkdown({
       title: ctx.title, slug: ctx.slug, dateObj: ctx.dt,
       description: descEl.value, tags: tagsEl.value, cats: catsEl.value,
@@ -424,15 +359,12 @@
   }
 
   function renderMdSource(){
-    tabsEl.hidden = false; panelsEl.hidden = false;
-    previewMdEl.textContent = buildMdSource();
-    setActiveTab('md');
+    showPanels(); previewMdEl.textContent = buildMdSource(); setActive('md');
   }
-
   function renderHtmlPreview(){
-    tabsEl.hidden = false; panelsEl.hidden = false;
+    showPanels();
     const ctx = computeCtx();
-    const imgs = [...imgInp.files], vids = [...vidInp.files], auds = [...audInp.files];
+    const imgs=[...imgInp.files], vids=[...vidInp.files], auds=[...audInp.files];
     const { body } = generateMarkdown({
       title: ctx.title, slug: ctx.slug, dateObj: ctx.dt,
       description: descEl.value, tags: tagsEl.value, cats: catsEl.value,
@@ -441,92 +373,69 @@
       autoIncludes: autoIncludesEl.checked
     });
 
-    // 1) заменить include на реальный HTML
-    const withMedia = replaceIncludesToHtml(body, { year: ctx.year, slug: ctx.slug });
-
-    // 2) прогнать Markdown -> HTML
+    const withMedia = replaceIncludesToHtml(body);
     const htmlContent = marked.parse(withMedia, { mangle:false, headerIds:false });
 
-    // 3) собрать «страницу поста»
-    let heroHtml = '';
-    if (ctx.heroName) {
+    let heroHtml='';
+    if (ctx.heroName){
       const heroFile = fileByName(ctx.heroName);
-      const heroSrc = heroFile ? URL.createObjectURL(heroFile) : buildTargetPath('img', ctx.year, ctx.slug, ctx.heroName);
+      const heroSrc = heroFile ? URL.createObjectURL(heroFile) : ctx.heroPath;
       heroHtml = `<figure class="media media-img">
   <img src="${heroSrc}" alt="" loading="lazy" decoding="async" />
-  ${heroFile?`<div class="blob-note">Предпросмотр blob; финальный путь: ${buildTargetPath('img', ctx.year, ctx.slug, ctx.heroName)}</div>`:''}
+  ${heroFile?`<div class="blob-note">Предпросмотр blob; финальный путь: ${ctx.heroPath}</div>`:''}
 </figure>`;
     }
-
-    const dateHuman = ctx.dt.toLocaleDateString('ru-RU', { day:'2-digit', month:'long', year:'numeric' });
-    previewHtmlEl.innerHTML = `
-      <article class="preview-article">
-        <h1>${escapeHtml(ctx.title)}</h1>
-        <div class="meta">${dateHuman}</div>
-        ${heroHtml}
-        ${htmlContent}
-      </article>
-    `;
-    setActiveTab('html');
+    const dateHuman = ctx.dt.toLocaleDateString('ru-RU',{day:'2-digit',month:'long',year:'numeric'});
+    previewHtmlEl.innerHTML = `<article class="preview-article">
+  <h1>${escapeHtml(ctx.title)}</h1>
+  <div class="meta">${dateHuman}</div>
+  ${heroHtml}
+  ${htmlContent}
+</article>`;
+    setActive('html');
   }
 
-  function setActiveTab(which){
+  function showPanels(){ $('#tabs').hidden=false; $('#panels').hidden=false; }
+  function setActive(which){
     $$('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab===which));
-    if (which==='md'){ previewMdEl.hidden=false; previewHtmlEl.hidden=true; }
-    else { previewMdEl.hidden=true; previewHtmlEl.hidden=false; }
+    if (which==='md'){ $('#previewMd').hidden=false; $('#previewHtml').hidden=true; }
+    else { $('#previewMd').hidden=true; $('#previewHtml').hidden=false; }
   }
 
-  // Кнопки предпросмотра
-  previewMdBtn.addEventListener('click', renderMdSource);
-  previewHtmlBtn.addEventListener('click', renderHtmlPreview);
+  $('#previewMdBtn').addEventListener('click', renderMdSource);
+  $('#previewHtmlBtn').addEventListener('click', renderHtmlPreview);
+  $('#tabs').addEventListener('click', e => { const t=e.target.closest('.tab'); if(!t) return; setActive(t.dataset.tab); });
 
-  // Вкладки
-  tabsEl.addEventListener('click', (e) => {
-    const tab = e.target.closest('.tab'); if (!tab) return;
-    setActiveTab(tab.dataset.tab);
-  });
-
-  // Автообновление предпросмотра
   let updTimer=null;
   function triggerAutoPreview(){
     if (!autoUpdateEl.checked) return;
     clearTimeout(updTimer);
-    // если сейчас активна HTML-вкладка — обновим HTML, иначе MD
-    updTimer = setTimeout(() => {
-      if (!panelsEl.hidden && !previewHtmlEl.hidden) renderHtmlPreview();
-      else if (!panelsEl.hidden && !previewMdEl.hidden) renderMdSource();
-    }, 250);
+    updTimer = setTimeout(()=>{ if(!$('#panels').hidden && !$('#previewHtml').hidden) renderHtmlPreview(); else if(!$('#panels').hidden) renderMdSource(); }, 250);
   }
 
-  /*** ========== Создание поста и копирование медиа ========== ***/
-  function status(msg, level=''){ statusEl.textContent = msg; statusEl.className = level ? level : ''; }
+  function status(msg, level=''){ statusEl.textContent = msg; statusEl.className = level?level:''; }
 
-  createBtn.addEventListener('click', async () => {
-    if (!repoHandle) return status('Сначала выберите папку репозитория', 'warn');
-    const title = titleEl.value.trim(); if (!title) return status('Введите заголовок', 'warn');
+  $('#createBtn').addEventListener('click', async () => {
+    if (!repoHandle) return status('Сначала выберите папку репозитория','warn');
+    const title = titleEl.value.trim(); if(!title) return status('Введите заголовок','warn');
 
-    const slug = (slugEl.value.trim() || slugify(title));
-    const isDraft = ($('#published').value === 'false');
-
+    const slug=(slugEl.value.trim()||slugify(title));
+    const isDraft = ($('#published').value==='false');
     const dt = dtEl.value ? new Date(dtEl.value) : new Date();
-    const year = dt.getFullYear();
-    const dateStrName = fmtDateForName(dt);
+    const year = dt.getFullYear(); const dateStrName = fmtDateForName(dt);
 
-    // каталоги медиа
-    const imgDir = await ensureDir(imgBase,   [String(year), slug]);
-    const vidDir = await ensureDir(videoBase, [String(year), slug]);
-    const audDir = await ensureDir(audioBase, [String(year), slug]);
+    const imgDir = await ensureDir(imgBase,[String(year),slug]);
+    const vidDir = await ensureDir(videoBase,[String(year),slug]);
+    const audDir = await ensureDir(audioBase,[String(year),slug]);
 
-    const imgs = [...imgInp.files], vids = [...vidInp.files], auds = [...audInp.files];
-
+    const imgs=[...imgInp.files], vids=[...vidInp.files], auds=[...audInp.files];
     try{
-      for (const f of imgs) await writeBinaryFile(imgDir, [f.name], f);
-      for (const f of vids) await writeBinaryFile(vidDir, [f.name], f);
-      for (const f of auds) await writeBinaryFile(audDir, [f.name], f);
-    }catch(e){ console.error(e); return status('Ошибка записи файлов (права? доступ?). См. консоль.', 'err'); }
+      for (const f of imgs) await writeBinaryFile(imgDir,[f.name],f);
+      for (const f of vids) await writeBinaryFile(vidDir,[f.name],f);
+      for (const f of auds) await writeBinaryFile(audDir,[f.name],f);
+    }catch(e){ console.error(e); return status('Ошибка записи файлов. См. консоль.','err'); }
 
-    const heroName = heroSel.value || '';
-    const heroPath = heroName ? `/assets/img/${year}/${slug}/${heroName}` : '';
+    const heroName=heroSel.value||''; const heroPath=heroName?buildTargetPath('img',year,slug,heroName):'';
 
     const { frontmatter, body } = generateMarkdown({
       title, slug, dateObj: dt,
@@ -537,20 +446,16 @@
     });
 
     try{
-      const postsYearDir  = await ensureDir(postsDir,  [String(year)]);
-      const draftsYearDir = await ensureDir(draftsDir, [String(year)]);
+      const postsYearDir  = await ensureDir(postsDir,[String(year)]);
+      const draftsYearDir = await ensureDir(draftsDir,[String(year)]);
       if (isDraft){
-        await writeTextFile(draftsYearDir, [`${slug}.md`],
-          frontmatter.replace('published: true','published: false') + body
-        );
+        await writeTextFile(draftsYearDir,[`${slug}.md`], frontmatter.replace('published: true','published: false') + body);
       } else {
-        await writeTextFile(postsYearDir,  [`${dateStrName}-${slug}.md`],
-          frontmatter + body
-        );
+        await writeTextFile(postsYearDir,[`${dateStrName}-${slug}.md`], frontmatter + body);
       }
-    }catch(e){ console.error(e); return status('Ошибка записи Markdown-файла', 'err'); }
+    }catch(e){ console.error(e); return status('Ошибка записи Markdown-файла','err'); }
 
-    status('Готово! Файлы записаны. Сделайте commit & push.', 'ok');
+    status('Готово! Файлы записаны. Сделайте commit & push.','ok');
   });
 })();
 </script>
