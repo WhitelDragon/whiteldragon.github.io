@@ -15,86 +15,118 @@
 Пути по умолчанию:
   /assets/img/   /assets/video/   /assets/audio/
 Структура: /<тип>/<год>/<slug>/<файл>
-  <год> берётся из page.date, <slug> из page.slug|title|url
 {%- endcomment -%}
 
-{%- assign f = include.f | append: '' | strip -%}
-{%- unless f == '' -%}
+{%- assign f = include.f | default: '' | strip -%}
+{%- unless f == '' or f == nil -%}
 
-{%- assign ext = f | split: '.' | last | downcase -%}
+  {%- assign ext = f | split: '.' | last | downcase -%}
+  {%- assign year = page.date | date: '%Y' -%}
+  {%- if year == '' or year == nil -%}{% assign year = 'misc' %}{%- endif -%}
 
-{%- assign year = page.date | date: '%Y' -%}
-{%- if year == '' -%}{% assign year = 'misc' %}{% endif -%}
+  {%- assign slug_src  = page.slug | default: page.title | default: page.url -%}
+  {%- assign slug_base = slug_src | split: '/' | last -%}
+  {%- assign slug      = slug_base | slugify -%}
 
-{%- assign slug_src  = page.slug | default: page.title | default: page.url -%}
-{%- assign slug_base = slug_src | split: '/' | last -%}
-{%- assign slug      = slug_base | slugify -%}
+  {%- assign img_exts = 'jpg,jpeg,png,webp,gif,avif,svg' | split: ',' -%}
+  {%- assign vid_exts = 'mp4,webm,ogv' | split: ',' -%}
+  {%- assign aud_exts = 'mp3,ogg,wav,m4a,flac' | split: ',' -%}
 
-{%- assign ext_img = 'jpg,jpeg,png,webp,gif,avif,svg' | split: ',' -%}
-{%- assign ext_vid = 'mp4,webm,ogv' | split: ',' -%}
-{%- assign ext_aud = 'mp3,ogg,wav,m4a,flac' | split: ',' -%}
-
-{%- if ext_img contains ext -%}
-  {%- assign kind = 'img' -%}
-{%- elsif ext_vid contains ext -%}
-  {%- assign kind = 'video' -%}
-{%- elsif ext_aud contains ext -%}
-  {%- assign kind = 'audio' -%}
-{%- else -%}
-  {%- assign kind = 'file' -%}
-{%- endif -%}
-
-{%- comment -%}
-Определяем окончательный URL:
-  1) Если f начинается с "http(s)://" — берём как есть.
-  2) Если f начинается с "/assets/" — берём как есть.
-  3) Если f содержит "/" (подпуть), считаем его относит. к типовой папке: "/assets/<тип>/<подпуть>".
-  4) Иначе: "/assets/<тип>/<год>/<slug>/<файл>".
-{%- endcomment -%}
-{%- assign is_http    = f contains '://' -%}
-{%- assign f_first1   = f | slice: 0,1 -%}
-{%- assign f_first8   = f | slice: 0,8 -%}
-{%- assign starts_assets = f_first8 == '/assets/' -%}
-{%- assign has_slash  = f contains '/' -%}
-
-{%- if kind == 'video' -%}{% assign folder = 'video' %}
-{%- elsif kind == 'audio' -%}{% assign folder = 'audio' %}
-{%- else -%}{% assign folder = 'img' %}{% endif -%}
-
-{%- if is_http -%}
-  {%- assign url = f -%}
-{%- elsif starts_assets -%}
-  {%- assign url = f -%}
-{%- elsif has_slash -%}
-  {%- assign url = '/assets/' | append: folder | append: '/' | append: f -%}
-{%- else -%}
-  {%- assign url = '/assets/' | append: folder | append: '/' | append: year | append: '/' | append: slug | append: '/' | append: f -%}
-{%- endif -%}
-{%- assign url_rel = url | relative_url -%}
-
-{%- comment -%} Постер для видео {%- endcomment -%}
-{%- assign poster_attr = '' -%}
-{%- if include.poster and include.poster != '' -%}
-  {%- assign p = include.poster | append: '' | strip -%}
-  {%- assign p_http = p contains '://' -%}
-  {%- assign p_first8 = p | slice: 0,8 -%}
-  {%- assign p_assets = p_first8 == '/assets/' -%}
-  {%- if p_http or p_assets -%}
-    {%- assign poster_url = p -%}
-  {%- elsif p contains '/' -%}
-    {%- assign poster_url = '/assets/img/' | append: p -%}
+  {%- if img_exts contains ext -%}
+    {%- assign kind = 'img' -%}
+  {%- elsif vid_exts contains ext -%}
+    {%- assign kind = 'video' -%}
+  {%- elsif aud_exts contains ext -%}
+    {%- assign kind = 'audio' -%}
   {%- else -%}
-    {%- assign poster_url = '/assets/img/' | append: year | append: '/' | append: slug | append: '/' | append: p -%}
+    {%- assign kind = 'file' -%}
   {%- endif -%}
-  {%- assign poster_attr = ' poster="' | append: (poster_url | relative_url) | append: '"' -%}
-{%- endif -%}
 
-{%- assign figure_class = 'media media-' | append: kind -%}
-{%- if include.class and include.class != '' -%}
-  {%- assign figure_class = figure_class | append: ' ' | append: include.class -%}
-{%- endif -%}
+  {%- comment -%}
+  Определяем итоговый URL:
+    1) http(s)://  → как есть
+    2) начинается с /assets/ → как есть
+    3) есть поддиректория в f (содержит "/") → /assets/<тип>/<f>
+    4) иначе → /assets/<тип>/<год>/<slug>/<f>
+  {%- endcomment -%}
+  {%- assign is_http = f contains '://' -%}
+  {%- assign f_prefix8 = f | slice: 0,8 -%}
+  {%- assign is_assets = f_prefix8 == '/assets/' -%}
+  {%- assign has_slash = f contains '/' -%}
 
-{%- capture caption_html -%}{% if include.cap and include.cap != '' %}<figcaption>{{ include.cap }}</figcaption>{% endif %}{%- endcapture -%}
+  {%- if kind == 'video' -%}{% assign folder = 'video' %}
+  {%- elsif kind == 'audio' -%}{% assign folder = 'audio' %}
+  {%- else -%}{% assign folder = 'img' %}{% endif -%}
 
-{%- if kind == 'img' -%}
-<figure class="{
+  {%- if is_http -%}
+    {%- assign final_url = f -%}
+  {%- elsif is_assets -%}
+    {%- assign final_url = f -%}
+  {%- elsif has_slash -%}
+    {%- assign final_url = '/assets/' | append: folder | append: '/' | append: f -%}
+  {%- else -%}
+    {%- assign final_url = '/assets/' | append: folder | append: '/' | append: year | append: '/' | append: slug | append: '/' | append: f -%}
+  {%- endif -%}
+  {%- assign final_url_rel = final_url | relative_url -%}
+
+  {%- comment -%} Постер для видео {%- endcomment -%}
+  {%- assign poster_attr = '' -%}
+  {%- if include.poster and include.poster != '' -%}
+    {%- assign p = include.poster | strip -%}
+    {%- assign p_http = p contains '://' -%}
+    {%- assign p_prefix8 = p | slice: 0,8 -%}
+    {%- assign p_is_assets = p_prefix8 == '/assets/' -%}
+    {%- if p_http or p_is_assets -%}
+      {%- assign poster_url = p -%}
+    {%- elsif p contains '/' -%}
+      {%- assign poster_url = '/assets/img/' | append: p -%}
+    {%- else -%}
+      {%- assign poster_url = '/assets/img/' | append: year | append: '/' | append: slug | append: '/' | append: p -%}
+    {%- endif -%}
+    {%- assign poster_attr = ' poster="' | append: (poster_url | relative_url) | append: '"' -%}
+  {%- endif -%}
+
+  {%- assign figure_class = 'media media-' | append: kind -%}
+  {%- if include.class and include.class != '' -%}
+    {%- assign figure_class = figure_class | append: ' ' | append: include.class -%}
+  {%- endif -%}
+
+  {%- capture caption_html -%}{% if include.cap and include.cap != '' %}<figcaption>{{ include.cap }}</figcaption>{% endif %}{%- endcapture -%}
+
+  {%- if kind == 'img' -%}
+    <figure class="{{ figure_class }}">
+      <img src="{{ final_url_rel }}"
+           alt="{{ include.alt | default: '' | escape }}"
+           loading="lazy" decoding="async"{% if include.width %} width="{{ include.width | escape }}"{% endif %}{% if include.height %} height="{{ include.height | escape }}"{% endif %}>
+      {{ caption_html }}
+    </figure>
+
+  {%- elsif kind == 'audio' -%}
+    {%- assign mime = 'audio/' | append: ext -%}
+    {%- if ext == 'm4a' -%}{% assign mime = 'audio/mp4' %}{%- endif -%}
+    <figure class="{{ figure_class }}">
+      <audio controls preload="{{ include.preload | default: 'metadata' }}">
+        <source src="{{ final_url_rel }}" type="{{ mime }}">
+        Ваш браузер не поддерживает аудио.
+      </audio>
+      {{ caption_html }}
+    </figure>
+
+  {%- elsif kind == 'video' -%}
+    {%- assign mime = 'video/' | append: ext -%}
+    {%- if ext == 'ogv' -%}{% assign mime = 'video/ogg' %}{%- endif -%}
+    <figure class="{{ figure_class }}">
+      <video controls playsinline
+             preload="{{ include.preload | default: 'metadata' }}"{{ poster_attr }}{% if include.autoplay %} autoplay{% endif %}{% if include.muted %} muted{% endif %}{% if include.loop %} loop{% endif %}
+             style="max-width:100%">
+        <source src="{{ final_url_rel }}" type="{{ mime }}">
+        Ваш браузер не поддерживает видео.
+      </video>
+      {{ caption_html }}
+    </figure>
+
+  {%- else -%}
+    <p><a href="{{ final_url_rel }}">{{ f }}</a></p>
+  {%- endif -%}
+
+{%- endunless -%}
