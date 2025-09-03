@@ -1,0 +1,422 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <title>Post Studio — локальный редактор постов Jekyll</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root { --fg:#111; --bg:#fff; --muted:#666; --pri:#1d4ed8; --bd:#e5e7eb; }
+    * { box-sizing: border-box; }
+    body { font: 14px/1.5 system-ui, -apple-system, Segoe UI, Roboto, sans-serif; color:var(--fg); background:var(--bg); margin:0; }
+    header { padding: 16px 20px; border-bottom:1px solid var(--bd); display:flex; align-items:center; gap:12px; }
+    header h1 { font-size:18px; margin:0; }
+    main { max-width: 980px; margin: 20px auto 64px; padding: 0 16px; }
+    fieldset { border:1px solid var(--bd); border-radius:12px; padding:16px; margin: 16px 0; }
+    legend { padding:0 6px; color:var(--muted); }
+    label { display:block; margin:.35rem 0 .2rem; font-weight:600; }
+    input[type="text"], input[type="datetime-local"], textarea, select {
+      width:100%; padding:.55rem .65rem; border:1px solid var(--bd); border-radius:8px;
+    }
+    textarea { min-height: 140px; }
+    .row { display:grid; grid-template-columns: 1fr 1fr; gap:12px; }
+    .row-3 { display:grid; grid-template-columns: 1fr 1fr 1fr; gap:12px; }
+    .muted { color:var(--muted); }
+    .hint { font-size: 12px; color: var(--muted); }
+    .btn { display:inline-flex; align-items:center; gap:.5rem; padding:.6rem .9rem; border:1px solid var(--pri); background:var(--pri); color:#fff; border-radius:8px; cursor:pointer; text-decoration:none; }
+    .btn.secondary { border-color:var(--bd); background:#f3f4f6; color:#111; }
+    .btn:disabled { opacity:.6; cursor:not-allowed; }
+    .files { display:grid; gap:8px; margin-top:8px; }
+    .filecard { border:1px solid var(--bd); border-radius:8px; padding:8px 10px; display:flex; align-items:center; justify-content:space-between; gap:10px; }
+    .w50 { max-width: 50ch; }
+    pre.preview { background:#0b1020; color:#d1e7ff; padding:12px; border-radius:8px; overflow:auto; max-height: 50vh; }
+    .ok { color: #059669; }
+    .warn { color: #b45309; }
+    .err { color: #dc2626; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Post Studio</h1>
+    <button id="pickRepo" class="btn">Выбрать папку репозитория…</button>
+    <span id="repoPath" class="muted"></span>
+  </header>
+
+  <main>
+    <p class="hint">Работает локально в браузере (лучше Chrome/Edge). Нажмите «Выбрать папку репозитория…», затем заполните форму и нажмите «Создать пост».</p>
+
+    <fieldset>
+      <legend>Параметры поста</legend>
+      <div class="row">
+        <div>
+          <label for="title">Заголовок *</label>
+          <input id="title" type="text" placeholder="Например: Ещё кусочек весёлых историй" required>
+        </div>
+        <div>
+          <label for="slug">Slug (если пусто, сгенерируется из заголовка)</label>
+          <input id="slug" type="text" placeholder="kusok-istorij">
+        </div>
+      </div>
+
+      <div class="row">
+        <div>
+          <label for="dt">Дата и время</label>
+          <input id="dt" type="datetime-local">
+          <div class="hint">Если пусто — возьмём текущее локальное (Europe/Berlin).</div>
+        </div>
+        <div>
+          <label for="published">Публикация</label>
+          <select id="published">
+            <option value="true">Опубликовано сразу (в _posts/)</option>
+            <option value="false">Черновик (в _drafts/, published: false)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="row">
+        <div>
+          <label for="description">Короткое описание</label>
+          <input id="description" type="text" class="w50" placeholder="2–3 предложения аннотации">
+        </div>
+        <div>
+          <label for="hero">Hero-картинка (из выбранных изображений)</label>
+          <select id="hero"><option value="">— не задавать —</option></select>
+          <div class="hint">Если выбрать, попадёт в front matter как image: …</div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div>
+          <label for="tags">Теги (через запятую)</label>
+          <input id="tags" type="text" placeholder="заметки, мысли">
+        </div>
+        <div>
+          <label for="cats">Категории (через запятую)</label>
+          <input id="cats" type="text" placeholder="личное">
+        </div>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Медиа: изображения / видео / аудио</legend>
+      <div class="row-3">
+        <div>
+          <label>Изображения</label>
+          <input id="images" type="file" accept=".jpg,.jpeg,.png,.webp,.gif,.avif,.svg" multiple>
+          <div id="imagesList" class="files"></div>
+        </div>
+        <div>
+          <label>Видео (папка /assets/video/)</label>
+          <input id="videos" type="file" accept=".mp4,.webm,.ogv" multiple>
+          <div id="videosList" class="files"></div>
+        </div>
+        <div>
+          <label>Аудио (папка /assets/audio/)</label>
+          <input id="audios" type="file" accept=".mp3,.ogg,.wav,.m4a,.flac" multiple>
+          <div id="audiosList" class="files"></div>
+        </div>
+      </div>
+      <p class="hint">Файлы будут скопированы в: <code>/assets/img|video|audio/&lt;год&gt;/&lt;slug&gt;/</code></p>
+    </fieldset>
+
+    <fieldset>
+      <legend>Текст поста</legend>
+      <label for="body">Тело поста (Markdown)</label>
+      <textarea id="body" placeholder="Вводный абзац…"></textarea>
+      <label><input id="autoIncludes" type="checkbox" checked> Вставить снизу include-строчки для выбранных медиа</label>
+    </fieldset>
+
+    <div style="display:flex; gap:12px; align-items:center; margin:16px 0;">
+      <button id="createBtn" class="btn" disabled>Создать пост</button>
+      <button id="previewBtn" class="btn secondary" disabled>Предпросмотр Markdown</button>
+      <span id="status" class="muted"></span>
+    </div>
+
+    <pre id="preview" class="preview" hidden></pre>
+
+    <section>
+      <h3>Подсказки</h3>
+      <ul>
+        <li>Для копирования файлов и записи в репозиторий используется File System Access API (работает в Chrome/Edge). Браузер спросит разрешение на доступ к папке.</li>
+        <li>Проверьте, что в репозитории есть <code>_includes/media.html</code> (наш универсальный include для медиа). Если нет — добавьте его (я давал полный код ранее; могу повторить).</li>
+        <li>Скоммитить изменения: <code>git add . && git commit -m "post: новый пост" && git push</code></li>
+      </ul>
+    </section>
+  </main>
+
+<script>
+(() => {
+  /*** ========== Утилиты ========== ***/
+  const $ = sel => document.querySelector(sel);
+  const $$ = sel => Array.from(document.querySelectorAll(sel));
+
+  // Транслитерация RU -> латиница + slugify
+  function slugify(str) {
+    const map = {
+      а:'a', б:'b', в:'v', г:'g', д:'d', е:'e', ё:'e', ж:'zh', з:'z', и:'i', й:'j', к:'k', л:'l', м:'m',
+      н:'n', о:'o', п:'p', р:'r', с:'s', т:'t', у:'u', ф:'f', х:'h', ц:'c', ч:'ch', ш:'sh', щ:'sch', ъ:'',
+      ы:'y', ь:'', э:'e', ю:'yu', я:'ya'
+    };
+    return (str||"")
+      .toString().toLowerCase()
+      .replace(/[\u0400-\u04FF]/g, ch => map[ch] ?? '')
+      .replace(/[^a-z0-9]+/g,'-')
+      .replace(/^-+|-+$/g,'')
+      .replace(/--+/g,'-')
+      .slice(0,80);
+  }
+
+  function fmtDateForName(d){
+    const pad = n => String(n).padStart(2,'0');
+    return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+  }
+  function fmtTimeOffset(d){
+    const pad = n => String(n).padStart(2,'0');
+    const off = -d.getTimezoneOffset(); // minutes east of UTC
+    const sign = off>=0?'+':'-';
+    const h = Math.floor(Math.abs(off)/60), m=Math.abs(off)%60;
+    return `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())} ${sign}${pad(h)}${pad(m)}`;
+  }
+
+  function yamlArray(csv){
+    const arr = (csv||"").split(",").map(s=>s.trim()).filter(Boolean);
+    return '[' + arr.map(v => `"${v.replace(/"/g,'\\"')}"`).join(', ') + ']';
+  }
+
+  /*** ========== FS Access helpers ========== ***/
+  let repoHandle = null;
+  let postsDir = null, draftsDir = null;
+  let imgBase = null, videoBase = null, audioBase = null;
+
+  async function ensureDir(base, pathArr){
+    let cur = base;
+    for (const part of pathArr) {
+      cur = await cur.getDirectoryHandle(part, { create: true });
+    }
+    return cur;
+  }
+  async function getFileHandleByPath(root, pathArr, create=false){
+    let dir = root;
+    for (let i=0; i<pathArr.length-1; i++){
+      dir = await dir.getDirectoryHandle(pathArr[i], { create });
+    }
+    return await dir.getFileHandle(pathArr[pathArr.length-1], { create });
+  }
+  async function writeTextFile(root, pathArr, content){
+    const fh = await getFileHandleByPath(root, pathArr, true);
+    const w = await fh.createWritable();
+    await w.write(content);
+    await w.close();
+    return fh;
+  }
+  async function writeBinaryFile(root, pathArr, blob){
+    const fh = await getFileHandleByPath(root, pathArr, true);
+    const w = await fh.createWritable();
+    await w.write(blob);
+    await w.close();
+    return fh;
+  }
+
+  /*** ========== UI refs ========== ***/
+  const pickRepoBtn = $('#pickRepo');
+  const repoPathEl = $('#repoPath');
+  const titleEl = $('#title');
+  const slugEl = $('#slug');
+  const dtEl = $('#dt');
+  const descEl = $('#description');
+  const tagsEl = $('#tags');
+  const catsEl = $('#cats');
+  const heroSel = $('#hero');
+  const imgInp = $('#images'), vidInp = $('#videos'), audInp = $('#audios');
+  const imagesList = $('#imagesList'), videosList = $('#videosList'), audiosList = $('#audiosList');
+  const bodyEl = $('#body');
+  const autoIncludesEl = $('#autoIncludes');
+  const createBtn = $('#createBtn'), previewBtn = $('#previewBtn');
+  const statusEl = $('#status'), previewEl = $('#preview');
+
+  /*** ========== Repo pick ========== ***/
+  pickRepoBtn.addEventListener('click', async () => {
+    try{
+      repoHandle = await window.showDirectoryPicker({ mode:'readwrite' });
+      // базовая структура
+      postsDir  = await ensureDir(repoHandle, ['_posts']);
+      draftsDir = await ensureDir(repoHandle, ['_drafts']);
+      imgBase   = await ensureDir(repoHandle, ['assets','img']);
+      videoBase = await ensureDir(repoHandle, ['assets','video']);
+      audioBase = await ensureDir(repoHandle, ['assets','audio']);
+      repoPathEl.textContent = '✓ Папка выбрана';
+      createBtn.disabled = false;
+      previewBtn.disabled = false;
+      status('Готово к работе', 'ok');
+    }catch(e){
+      console.error(e);
+      status('Доступ к папке отклонён', 'err');
+    }
+  });
+
+  /*** ========== Hero список по выбранным картинкам ========== ***/
+  function refreshHeroOptions(files){
+    const opts = ['<option value="">— не задавать —</option>'];
+    files.forEach(f => opts.push(`<option>${f.name}</option>`));
+    heroSel.innerHTML = opts.join('');
+  }
+
+  function renderChosen(listEl, files){
+    listEl.innerHTML = '';
+    files.forEach(f => {
+      const div = document.createElement('div');
+      div.className = 'filecard';
+      div.innerHTML = `<span class="muted">${f.name}</span><span>${Math.ceil(f.size/1024)} KB</span>`;
+      listEl.appendChild(div);
+    });
+  }
+
+  imgInp.addEventListener('change', () => {
+    renderChosen(imagesList, Array.from(imgInp.files));
+    refreshHeroOptions(Array.from(imgInp.files));
+  });
+  vidInp.addEventListener('change', () => renderChosen(videosList, Array.from(vidInp.files)));
+  audInp.addEventListener('change', () => renderChosen(audiosList, Array.from(audInp.files)));
+
+  /*** ========== Автослаг по заголовку ========== ***/
+  titleEl.addEventListener('input', () => {
+    if (!slugEl.value.trim()) slugEl.value = slugify(titleEl.value);
+  });
+
+  /*** ========== Генерация Markdown ========== ***/
+  function generateMarkdown(params){
+    const {
+      title, slug, dateObj, description, tags, cats, heroPath, body, images, videos, audios, autoIncludes
+    } = params;
+
+    const dateStrName  = fmtDateForName(dateObj);                 // 2025-09-03
+    const timeOffset   = fmtTimeOffset(dateObj);                  // 21:10:00 +0300
+    const year         = dateObj.getFullYear();
+
+    let fm = `---\nlayout: post\ntitle: "${title.replace(/"/g,'\\"')}"\ndate: ${dateStrName} ${timeOffset}\ndescription: "${(description||'').replace(/"/g,'\\"')}"\n`;
+    if (heroPath) fm += `image: ${heroPath}\n`;
+    fm += `tags: ${yamlArray(tags)}\n`;
+    fm += `categories: ${yamlArray(cats)}\n`;
+    fm += `published: true\n---\n`;
+
+    let content = (body||'').trim() + '\n\n';
+
+    if (autoIncludes){
+      if (images.length){
+        content += '## Изображения\n\n';
+        images.forEach(f => {
+          content += `{% include media.html f="${f.name}" alt="" %}\n\n`;
+        });
+      }
+      if (videos.length){
+        content += '## Видео\n\n';
+        videos.forEach(f => {
+          content += `{% include media.html f="${f.name}" cap="" %}\n\n`;
+        });
+      }
+      if (audios.length){
+        content += '## Аудио\n\n';
+        audios.forEach(f => {
+          content += `{% include media.html f="${f.name}" cap="" %}\n\n`;
+        });
+      }
+    }
+    return { frontmatter: fm, body: content, dateStrName, year };
+  }
+
+  /*** ========== Создание поста и копирование медиа ========== ***/
+  createBtn.addEventListener('click', async () => {
+    if (!repoHandle) return status('Сначала выберите папку репозитория', 'warn');
+    const title = titleEl.value.trim();
+    if (!title) return status('Введите заголовок', 'warn');
+
+    const slug = (slugEl.value.trim() || slugify(title));
+    const isDraft = ($('#published').value === 'false');
+
+    // дата
+    const dt = dtEl.value ? new Date(dtEl.value) : new Date();
+    const year = dt.getFullYear();
+
+    // каталоги медиа
+    const imgDir = await ensureDir(imgBase,   [String(year), slug]);
+    const vidDir = await ensureDir(videoBase, [String(year), slug]);
+    const audDir = await ensureDir(audioBase, [String(year), slug]);
+
+    // копирование файлов
+    const imgs = Array.from(imgInp.files);
+    const vids = Array.from(vidInp.files);
+    const auds = Array.from(audInp.files);
+
+    try{
+      for (const f of imgs)  await writeBinaryFile(imgDir, [f.name], f);
+      for (const f of vids)  await writeBinaryFile(vidDir, [f.name], f);
+      for (const f of auds)  await writeBinaryFile(audDir, [f.name], f);
+    }catch(e){
+      console.error(e);
+      return status('Ошибка записи файлов (права? доступ?). Подробности в консоли.', 'err');
+    }
+
+    // hero path
+    const heroName = heroSel.value || '';
+    const heroPath = heroName ? `/assets/img/${year}/${slug}/${heroName}` : '';
+
+    // Markdown
+    const { frontmatter, body, dateStrName } = generateMarkdown({
+      title, slug, dateObj: dt,
+      description: descEl.value,
+      tags: tagsEl.value,
+      cats: catsEl.value,
+      heroPath, body: bodyEl.value,
+      images: imgs, videos: vids, audios: auds,
+      autoIncludes: autoIncludesEl.checked
+    });
+
+    // запись .md
+    try{
+      if (isDraft){
+        await writeTextFile(draftsDir, [`${slug}.md`], frontmatter.replace('published: true','published: false') + body);
+      } else {
+        await writeTextFile(postsDir,  [`${dateStrName}-${slug}.md`], frontmatter + body);
+      }
+    }catch(e){
+      console.error(e);
+      return status('Ошибка записи Markdown-файла', 'err');
+    }
+
+    status('Готово! Файлы записаны в репозиторий. Не забудьте сделать commit & push.', 'ok');
+  });
+
+  /*** ========== Предпросмотр ========== ***/
+  previewBtn.addEventListener('click', () => {
+    const title = titleEl.value.trim() || '(без названия)';
+    const slug = (slugEl.value.trim() || slugify(title));
+    const dt = dtEl.value ? new Date(dtEl.value) : new Date();
+    const year = dt.getFullYear();
+    const heroName = heroSel.value || '';
+    const heroPath = heroName ? `/assets/img/${year}/${slug}/${heroName}` : '';
+
+    const imgs = Array.from(imgInp.files);
+    const vids = Array.from(vidInp.files);
+    const auds = Array.from(audInp.files);
+
+    const { frontmatter, body } = generateMarkdown({
+      title, slug, dateObj: dt,
+      description: descEl.value,
+      tags: tagsEl.value,
+      cats: catsEl.value,
+      heroPath, body: bodyEl.value,
+      images: imgs, videos: vids, audios: auds,
+      autoIncludes: autoIncludesEl.checked
+    });
+
+    previewEl.hidden = false;
+    previewEl.textContent = frontmatter + body;
+  });
+
+  function status(msg, level=''){
+    statusEl.textContent = msg;
+    statusEl.className = level ? level : '';
+  }
+})();
+</script>
+</body>
+</html>
