@@ -236,34 +236,44 @@
 
   function fileByName(name){ const all=[...imgInp.files,...vidInp.files,...audInp.files]; return all.find(f=>f.name===name); }
 
-  function generateMarkdown({title, slug, dateObj, description, tags, cats, heroPath, body, images, videos, audios, autoIncludes}) {
-    const dateStrName = fmtDateForName(dateObj);
-    const timeOffset  = fmtTimeOffset(dateObj);
-    const year        = dateObj.getFullYear();
+function generateMarkdown(params){
+  const {
+    title, slug, dateObj, description, tags, cats, heroPath, body,
+    images, videos, audios, autoIncludes
+  } = params;
 
-    let fm = `---\nlayout: post\ntitle: "${title.replace(/"/g,'\\"')}"\ndate: ${dateStrName} ${timeOffset}\ndescription: "${(description||'').replace(/"/g,'\\"')}"\n`;
-    if (heroPath) fm += `image: ${heroPath}\n`;
-    fm += `tags: ${yamlArray(tags)}\n`;
-    fm += `categories: ${yamlArray(cats)}\n`;
-    fm += `published: true\n---\n`;
+  const dateStrName = fmtDateForName(dateObj);
+  const timeOffset  = fmtTimeOffset(dateObj);
+  const year        = dateObj.getFullYear();
 
-    let content = (body||'').trim() + '\n\n';
-    if (autoIncludes){
-      if (images.length){
-        content += '## Изображения\n\n';
-        images.forEach(f => { content += `{% include media.html f="${buildTargetPath('img', year, slug, f.name)}" alt="" %}\n\n`; });
-      }
-      if (videos.length){
-        content += '## Видео\n\n';
-        videos.forEach(f => { content += `{% include media.html f="${buildTargetPath('video', year, slug, f.name)}" cap="" %}\n\n`; });
-      }
-      if (audios.length){
-        content += '## Аудио\n\n';
-        audios.forEach(f => { content += `{% include media.html f="${buildTargetPath('audio', year, slug, f.name)}" cap="" %}\n\n`; });
-      }
-    }
-    return { frontmatter: fm, body: content, dateStrName, year };
+  let fm = `---\n` +
+           `layout: post\n` +
+           `title: "${title.replace(/"/g,'\\"')}"\n` +
+           `date: ${dateStrName} ${timeOffset}\n` +
+           `description: "${(description||'').replace(/"/g,'\\"')}"\n`;
+  if (heroPath) fm += `image: ${heroPath}\n`;
+  fm += `tags: ${yamlArray(tags)}\n`;
+  fm += `categories: ${yamlArray(cats)}\n`;
+  fm += `published: true\n---\n`;
+
+  let content = (body || '').trim();
+  if (content.length) content += '\n\n';
+
+  if (autoIncludes){
+    images.forEach(f => {
+      content += `{% include media.html f="${buildTargetPath('img', year, slug, f.name)}" alt="" %}\n\n`;
+    });
+    videos.forEach(f => {
+      content += `{% include media.html f="${buildTargetPath('video', year, slug, f.name)}" cap="" %}\n\n`;
+    });
+    audios.forEach(f => {
+      content += `{% include media.html f="${buildTargetPath('audio', year, slug, f.name)}" cap="" %}\n\n`;
+    });
   }
+
+  return { frontmatter: fm, body: content, dateStrName, year };
+}
+
 
   function parseInclude(line){
     const m = line.match(/^\s*\{%\s*include\s+media\.html\s+(.+?)\s*%\}\s*$/);
