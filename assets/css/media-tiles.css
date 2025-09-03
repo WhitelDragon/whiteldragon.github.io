@@ -1,0 +1,39 @@
+:root { --thumb-size: 220px; }
+
+.media.media-img { margin: .5rem; }
+.media.media-img img { display: block; max-width: 100%; height: auto; }
+
+.media.media-img.expandable.thumb {
+  width: var(--thumb-size);
+  height: var(--thumb-size);
+  overflow: hidden;
+  border-radius: 12px;
+  display: inline-block;
+  vertical-align: top;
+  cursor: zoom-in;
+  position: relative;
+  background: #f3f4f6;
+  box-shadow: 0 1px 4px rgba(0,0,0,.06);
+}
+.media.media-img.expandable.thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+.media.media-img.expandable.thumb figcaption { display: none; }
+
+.media.media-img.expandable.thumb.expanded {
+  width: auto;
+  height: auto;
+  display: block;
+  margin: 1rem 0;
+  cursor: zoom-out;
+}
+.media.media-img.expandable.thumb.expanded img {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+}
+
+.media.media-img.expandable { outline: none; }
