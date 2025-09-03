@@ -370,14 +370,20 @@
       autoIncludes: autoIncludesEl.checked
     });
 
-    // запись .md
-    try{
+    // запись .md в подпапки по году
+    try {
+      const postsYearDir  = await ensureDir(postsDir,  [String(year)]);
+      const draftsYearDir = await ensureDir(draftsDir, [String(year)]);
+
       if (isDraft){
-        await writeTextFile(draftsDir, [`${slug}.md`], frontmatter.replace('published: true','published: false') + body);
+        await writeTextFile(draftsYearDir, [`${slug}.md`],
+          frontmatter.replace('published: true','published: false') + body
+        );
       } else {
-        await writeTextFile(postsDir,  [`${dateStrName}-${slug}.md`], frontmatter + body);
-      }
-    }catch(e){
+        await writeTextFile(postsYearDir,  [`${dateStrName}-${slug}.md`],
+          frontmatter + body
+        );
+      }{
       console.error(e);
       return status('Ошибка записи Markdown-файла', 'err');
     }
