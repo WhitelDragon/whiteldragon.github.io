@@ -1,7 +1,7 @@
 {%- comment -%}
 Универсальная обёртка медиа (картинки — квадратные превью с раскрытием).
 
-Как пользоваться (всегда полный путь):
+Использование (всегда полный путь):
   {% include media.html f="/assets/img/2025/slug/photo.jpg" alt="..." %}
   {% include media.html f="/assets/video/2025/slug/clip.mp4" poster="/assets/img/2025/slug/poster.jpg" %}
   {% include media.html f="/assets/audio/2025/slug/voice.m4a" %}
@@ -9,7 +9,7 @@
 Параметры:
   f          — обязателен. Абсолютный путь (/assets/...) или http(s)
   alt, cap, class, width, height — стандартно
-  poster     — для видео (абс. путь /assets... или URL)
+  poster     — для видео
   preload    — metadata|auto|none (по умолчанию metadata)
   autoplay, muted, loop — флаги для видео
   noexpand   — если указать, картинка не кликабельна
@@ -54,54 +54,6 @@
            loading="lazy" decoding="async"{% if include.width %} width="{{ include.width | escape }}"{% endif %}{% if include.height %} height="{{ include.height | escape }}"{% endif %}>
       {{ caption_html }}
     </figure>
-
-    <!-- Вставляем стили и JS один раз -->
-    <script>
-    (function(){
-      if (window.__expandableTilesInit) return;
-      window.__expandableTilesInit = true;
-
-      // Стили
-      if (!document.getElementById('expandable-tiles-style')) {
-        var css = `
-:root{--thumb-size:220px}
-.media.media-img{margin:.5rem}
-.media.media-img img{display:block;max-width:100%;height:auto}
-.media.media-img.expandable.thumb{
-  width:var(--thumb-size); height:var(--thumb-size);
-  overflow:hidden; border-radius:12px; display:inline-block; vertical-align:top;
-  cursor:zoom-in; position:relative; background:#f3f4f6;
-}
-.media.media-img.expandable.thumb img{width:100%; height:100%; object-fit:cover; object-position:center;}
-.media.media-img.expandable.thumb figcaption{display:none}
-.media.media-img.expandable.thumb.expanded{
-  width:auto; height:auto; display:block; margin:1rem 0; cursor:zoom-out;
-}
-.media.media-img.expandable.thumb.expanded img{width:100%; height:auto; object-fit:contain}
-.media.media-img.expandable{outline:none}
-        `.trim();
-        var st=document.createElement('style'); st.id='expandable-tiles-style'; st.textContent=css; document.head.appendChild(st);
-      }
-
-      // Делегирование клика
-      document.addEventListener('click', function(e){
-        var fig = e.target.closest && e.target.closest('.media.media-img.expandable:not(.noexpand)');
-        if (!fig) return;
-        if (!fig.classList.contains('thumb')) return; // полноразмерные не переключаем
-        fig.classList.toggle('expanded');
-        fig.setAttribute('aria-expanded', fig.classList.contains('expanded') ? 'true' : 'false');
-      });
-
-      // Клавиатура
-      document.addEventListener('keydown', function(e){
-        if ((e.key === 'Enter' || e.key === ' ') && e.target.matches && e.target.matches('.media.media-img.expandable.thumb')) {
-          e.preventDefault();
-          e.target.classList.toggle('expanded');
-          e.target.setAttribute('aria-expanded', e.target.classList.contains('expanded') ? 'true' : 'false');
-        }
-      });
-    })();
-    </script>
 
   {%- elsif kind == 'audio' -%}
     {%- assign mime = 'audio/' | append: ext -%}
