@@ -1,41 +1,19 @@
-{%- comment -%}
-Usage (в посте Markdown/HTML):
-
-{% include media.html f="hero.jpg" alt="Обложка" width="1200" height="800" %}
-{% include media.html f="clip-720p.mp4" cap="Небольшой ролик" poster="poster.jpg" %}
-{% include media.html f="voice.m4a" cap="Аудиозаметка" %}
-
-Параметры:
-  f        — имя файла или полный путь/URL
-  alt      — alt-текст (для изображений)
-  cap      — подпись (figcaption) под медиа
-  class    — доп. CSS-классы на <figure>
-  width    — ширина (для <img>)
-  height   — высота (для <img>)
-  poster   — постер для <video> (можно только имя файла)
-  preload  — preload для audio/video (по умолчанию metadata)
-  autoplay, muted, loop — булевы флаги для <video>
-
-Директории по типам:
-  /assets/img/   /assets/video/   /assets/audio/
-Структура внутри по умолчанию: /год/slug-поста/файл
-(год берётся из page.date, slug — из имени файла поста)
-{%- endcomment -%}
-
-{%- assign f = include.f | to_s | strip -%}
-{%- if f == "" -%}{% comment %} Нет файла — ничего не выводим {% endcomment %}{%- exit -%}{%- endif -%}
+{%- assign f = include.f | append: '' | strip -%}
+{%- unless f == '' -%}
 
 {%- assign ext = f | split: '.' | last | downcase -%}
-{%- assign has_slash = f contains '/' -%}
-{%- assign is_url = f contains '://' -%}
-{%- assign is_abs = has_slash or is_url or f startswith '/' -%}
 
 {%- assign year = page.date | date: '%Y' -%}
-{%- if year == "" -%}{%- assign year = 'misc' -%}{%- endif -%}
-{%- assign slug_guess = page.slug | default: page.title | default: page.url -%}
-{%- assign slug = slug_guess | split: '/' | last | slugify -%}
+{%- if year == '' -%}{% assign year = 'misc' %}{% endif -%}
 
-{%- comment -%} Определяем тип по расширению {%- endcomment -%}
+{%- assign slug_src = page.slug | default: page.title | default: page.url -%}
+{%- assign slug_base = slug_src | split: '/' | last -%}
+{%- assign slug = slug_base | slugify -%}
+
+{%- assign is_url = f contains '://' -%}
+{%- assign first_char = f | slice: 0,1 -%}
+{%- assign is_root = first_char == '/' -%}
+
 {%- assign ext_img = 'jpg,jpeg,png,webp,gif,avif,svg' | split: ',' -%}
 {%- assign ext_vid = 'mp4,webm,ogv' | split: ',' -%}
 {%- assign ext_aud = 'mp3,ogg,wav,m4a,flac' | split: ',' -%}
@@ -50,26 +28,23 @@ Usage (в посте Markdown/HTML):
   {%- assign kind = 'file' -%}
 {%- endif -%}
 
-{%- comment -%} Базовый URL к файлу {%- endcomment -%}
-{%- if is_abs -%}
+{%- if is_url or is_root -%}
   {%- assign url = f -%}
 {%- else -%}
-  {%- if kind == 'video' -%}
-    {%- assign folder = 'video' -%}
-  {%- elsif kind == 'audio' -%}
-    {%- assign folder = 'audio' -%}
-  {%- else -%}
-    {%- assign folder = 'img' -%}
-  {%- endif -%}
+  {%- if kind == 'video' -%}{% assign folder = 'video' %}
+  {%- elsif kind == 'audio' -%}{% assign folder = 'audio' %}
+  {%- else -%}{% assign folder = 'img' %}{% endif -%}
   {%- assign url = '/assets/' | append: folder | append: '/' | append: year | append: '/' | append: slug | append: '/' | append: f -%}
 {%- endif -%}
 {%- assign url_rel = url | relative_url -%}
 
-{%- comment -%} Постер для видео: если задан только именем — строим путь так же, как для файла {%- endcomment -%}
 {%- assign poster_attr = '' -%}
 {%- if include.poster and include.poster != '' -%}
-  {%- assign p = include.poster | to_s | strip -%}
-  {%- if p contains '://' or p startswith '/' -%}
+  {%- assign p = include.poster | append: '' | strip -%}
+  {%- assign is_p_url = p contains '://' -%}
+  {%- assign p_first = p | slice: 0,1 -%}
+  {%- assign is_p_root = p_first == '/' -%}
+  {%- if is_p_url or is_p_root -%}
     {%- assign poster_url = p -%}
   {%- else -%}
     {%- assign poster_url = '/assets/img/' | append: year | append: '/' | append: slug | append: '/' | append: p -%}
@@ -85,41 +60,37 @@ Usage (в посте Markdown/HTML):
 {%- capture caption_html -%}{% if include.cap and include.cap != '' %}<figcaption>{{ include.cap }}</figcaption>{% endif %}{%- endcapture -%}
 
 {%- if kind == 'img' -%}
-  <figure class="{{ figure_class }}">
-    <img src="{{ url_rel }}"
-         alt="{{ include.alt | default: '' | escape }}"
-         loading="lazy" decoding="async"
-         {%- if include.width  and include.width  != '' -%} width="{{ include.width | escape }}"{%- endif -%}
-         {%- if include.height and include.height != '' -%} height="{{ include.height | escape }}"{%- endif -%}>
-    {{ caption_html }}
-  </figure>
+<figure class="{{ figure_class }}">
+  <img src="{{ url_rel }}"
+       alt="{{ include.alt | default: '' | escape }}"
+       loading="lazy" decoding="async"{% if include.width %} width="{{ include.width | escape }}"{% endif %}{% if include.height %} height="{{ include.height | escape }}"{% endif %}>
+  {{ caption_html }}
+</figure>
 
 {%- elsif kind == 'audio' -%}
-  {%- assign mime = 'audio/' | append: ext -%}
-  {%- if ext == 'm4a' -%}{%- assign mime = 'audio/mp4' -%}{%- endif -%}
-  <figure class="{{ figure_class }}">
-    <audio controls preload="{{ include.preload | default: 'metadata' }}">
-      <source src="{{ url_rel }}" type="{{ mime }}">
-      Ваш браузер не поддерживает аудио.
-    </audio>
-    {{ caption_html }}
-  </figure>
+{%- assign mime = 'audio/' | append: ext -%}
+{%- if ext == 'm4a' -%}{% assign mime = 'audio/mp4' %}{%- endif -%}
+<figure class="{{ figure_class }}">
+  <audio controls preload="{{ include.preload | default: 'metadata' }}">
+    <source src="{{ url_rel }}" type="{{ mime }}">
+    Ваш браузер не поддерживает аудио.
+  </audio>
+  {{ caption_html }}
+</figure>
 
 {%- elsif kind == 'video' -%}
-  {%- assign mime = 'video/' | append: ext -%}
-  {%- if ext == 'ogv' -%}{%- assign mime = 'video/ogg' -%}{%- endif -%}
-  <figure class="{{ figure_class }}">
-    <video controls playsinline
-           {%- if include.autoplay %} autoplay{% endif -%}
-           {%- if include.muted    %} muted{% endif -%}
-           {%- if include.loop     %} loop{% endif -%}
-           preload="{{ include.preload | default: 'metadata' }}"{{ poster_attr }} style="max-width:100%">
-      <source src="{{ url_rel }}" type="{{ mime }}">
-      Ваш браузер не поддерживает видео.
-    </video>
-    {{ caption_html }}
-  </figure>
+{%- assign mime = 'video/' | append: ext -%}
+{%- if ext == 'ogv' -%}{% assign mime = 'video/ogg' %}{%- endif -%}
+<figure class="{{ figure_class }}">
+  <video controls playsinline preload="{{ include.preload | default: 'metadata' }}"{{ poster_attr }}{% if include.autoplay %} autoplay{% endif %}{% if include.muted %} muted{% endif %}{% if include.loop %} loop{% endif %} style="max-width:100%">
+    <source src="{{ url_rel }}" type="{{ mime }}">
+    Ваш браузер не поддерживает видео.
+  </video>
+  {{ caption_html }}
+</figure>
 
 {%- else -%}
-  <p><a href="{{ url_rel }}">{{ f }}</a></p>
+<p><a href="{{ url_rel }}">{{ f }}</a></p>
 {%- endif -%}
+
+{%- endunless -%}
