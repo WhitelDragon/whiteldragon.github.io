@@ -9,5 +9,6 @@ gem "jekyll-seo-tag"
 gem "jekyll-feed"
 gem "jekyll-sitemap"
 
-# For GitHub Flavored Markdown (autolink bare URLs, etc.)
-gem "kramdown-parser-gfm", "~> 1.1"
+group :jekyll_plugins do
+  gem "jekyll-commonmark-ghpages", "~> 0.5"
+end
