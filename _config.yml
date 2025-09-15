@@ -1,4 +1,4 @@
-title: Мой архив ВКонтакте (в разработке v0.160925.1)
+title: Мой архив ВКонтакте (в разработке v0.160925.2)
 description: Личная стена
 url: https://whiteldragon.github.io
 baseurl: ""
@@ -12,9 +12,12 @@ plugins:
 
 paginate: 10              # по 10 постов на страницу
 paginate_path: "/page:num/"
-markdown: kramdown
-kramdown:
-  input: GFM
-  # необязательно, просто типичные опции:
-  hard_wrap: false
-  auto_ids: true
+
+markdown: CommonMarkGhPages
+
+commonmark:
+  # Нужен для пропуска HTML из Markdown (у вас встречается)
+  options: ["UNSAFE", "SMART", "FOOTNOTES"]
+  # Тут как раз autolink
+  extensions: ["autolink", "strikethrough", "table", "tagfilter"]
+
