@@ -8,3 +8,6 @@ gem "jekyll-paginate"
 gem "jekyll-seo-tag"
 gem "jekyll-feed"
 gem "jekyll-sitemap"
+
+# For GitHub Flavored Markdown (autolink bare URLs, etc.)
+gem "kramdown-parser-gfm", "~> 1.1"
