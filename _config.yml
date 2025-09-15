@@ -13,11 +13,6 @@ plugins:
 paginate: 10              # по 10 постов на страницу
 paginate_path: "/page:num/"
 
-markdown: CommonMarkGhPages
+markdown: kramdown
 
-commonmark:
-  # Нужен для пропуска HTML из Markdown (у вас встречается)
-  options: ["UNSAFE", "SMART", "FOOTNOTES"]
-  # Тут как раз autolink
-  extensions: ["autolink", "strikethrough", "table", "tagfilter"]
 
