@@ -12,3 +12,9 @@ plugins:
 
 paginate: 10              # по 10 постов на страницу
 paginate_path: "/page:num/"
+markdown: kramdown
+kramdown:
+  input: GFM
+  # необязательно, просто типичные опции:
+  hard_wrap: false
+  auto_ids: true
