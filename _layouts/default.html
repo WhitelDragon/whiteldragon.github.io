@@ -23,6 +23,10 @@
     gtag('config', '{{ site.ga4 }}');
   </script>
   {% endif %}
+
+
+  <link rel="stylesheet" href="{{ '/assets/css/media-tiles.css' | relative_url }}">
+
 </head>
 <body>
   <header class="site-header">
@@ -88,6 +92,8 @@
   <!-- Подключение скриптов для фото и комментариев -->
   <script defer src="{{ '/assets/js/vk-photos.js' | relative_url }}"></script>
   <script defer src="{{ '/assets/js/comments.js' | relative_url }}"></script>
+  <script defer src="{{ '/assets/js/media-tiles.js' | relative_url }}"></script>
+
 </body>
 </html>
 
