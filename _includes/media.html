@@ -1,17 +1,20 @@
 {%- comment -%}
-Универсальная обёртка медиа.
-Использование (теперь всегда с полным путём):
+Универсальная обёртка медиа (картинки — квадратные превью с раскрытием).
+
+Использование (всегда полный путь):
   {% include media.html f="/assets/img/2025/slug/photo.jpg" alt="..." %}
   {% include media.html f="/assets/video/2025/slug/clip.mp4" poster="/assets/img/2025/slug/poster.jpg" %}
   {% include media.html f="/assets/audio/2025/slug/voice.m4a" %}
 
-Опции:
-  f (или src) — обязательный абсолютный путь /assets/... или внешний URL
-  alt, cap, class, width, height — как обычно
-  poster — для видео
-  preload — metadata|auto|none
+Параметры:
+  f          — обязателен. Абсолютный путь (/assets/...) или http(s)
+  alt, cap, class, width, height — стандартно
+  poster     — для видео
+  preload    — metadata|auto|none (по умолчанию metadata)
   autoplay, muted, loop — флаги для видео
-  noexpand=true — не делать изображение кликабельным (по умолчанию кликабельно)
+  noexpand   — если указать, картинка не кликабельна
+  full       — если указать, для этой картинки ОТКЛЮЧИТЬ квадратное превью (сразу полноразмерная)
+  thumb      — размер плитки в px (по умолчанию 220). Пример: thumb=180
 {%- endcomment -%}
 
 {%- assign src = include.f | default: include.src | default: '' | strip -%}
@@ -43,52 +46,14 @@
   {%- capture caption_html -%}{% if include.cap and include.cap != '' %}<figcaption>{{ include.cap }}</figcaption>{% endif %}{%- endcapture -%}
 
   {%- if kind == 'img' -%}
-    {%- assign expandable = true -%}
-    {%- if include.noexpand and include.noexpand != '' -%}{% assign expandable = false %}{%- endif -%}
-    <figure class="{{ figure_class }}{% if expandable %} expandable{% endif %}"{% if expandable %} tabindex="0" role="button" aria-expanded="false"{% endif %}>
+    {%- assign is_thumb = true -%}{% if include.full %}{% assign is_thumb = false %}{% endif -%}
+    {%- capture thumb_style -%}{% if include.thumb %} style="--thumb-size: {{ include.thumb | append: 'px' }}"{% endif %}{%- endcapture -%}
+    <figure class="{{ figure_class }}{% if is_thumb %} expandable thumb{% else %} expandable{% endif %}"{% if is_thumb %}{{ thumb_style }}{% endif %}{% unless include.noexpand %} tabindex="0" role="button" aria-expanded="false"{% endunless %}>
       <img src="{{ url }}"
            alt="{{ include.alt | default: '' | escape }}"
            loading="lazy" decoding="async"{% if include.width %} width="{{ include.width | escape }}"{% endif %}{% if include.height %} height="{{ include.height | escape }}"{% endif %}>
       {{ caption_html }}
     </figure>
-
-    {%- comment -%} Вставляем стили/скрипт один раз на страницу {%- endcomment -%}
-    <script>
-    (function(){
-      if (window.__expandableImagesInit) return;
-      window.__expandableImagesInit = true;
-
-      // CSS один раз
-      if (!document.getElementById('expandable-images-style')) {
-        var css = `
-.media.media-img.expandable{position:relative;max-height:420px;overflow:hidden;cursor:zoom-in;border-radius:12px}
-.media.media-img.expandable::after{content:"";position:absolute;left:0;right:0;bottom:0;height:64px;background:linear-gradient(to bottom,rgba(255,255,255,0),rgba(255,255,255,.94));pointer-events:none}
-.media.media-img.expandable.expanded{max-height:none;cursor:zoom-out}
-.media.media-img.expandable.expanded::after{display:none}
-.media.media-img img{display:block;max-width:100%;height:auto}
-        `.trim();
-        var st = document.createElement('style'); st.id='expandable-images-style'; st.textContent = css;
-        document.head.appendChild(st);
-      }
-
-      // Делегирование кликов
-      document.addEventListener('click', function(e){
-        var fig = e.target.closest && e.target.closest('.media.media-img.expandable');
-        if (!fig) return;
-        fig.classList.toggle('expanded');
-        fig.setAttribute('aria-expanded', fig.classList.contains('expanded') ? 'true' : 'false');
-      });
-
-      // Клавиатура: Enter/Space
-      document.addEventListener('keydown', function(e){
-        if ((e.key === 'Enter' || e.key === ' ') && e.target.matches && e.target.matches('.media.media-img.expandable')) {
-          e.preventDefault();
-          e.target.classList.toggle('expanded');
-          e.target.setAttribute('aria-expanded', e.target.classList.contains('expanded') ? 'true' : 'false');
-        }
-      });
-    })();
-    </script>
 
   {%- elsif kind == 'audio' -%}
     {%- assign mime = 'audio/' | append: ext -%}
@@ -104,14 +69,12 @@
   {%- elsif kind == 'video' -%}
     {%- assign mime = 'video/' | append: ext -%}
     {%- if ext == 'ogv' -%}{% assign mime = 'video/ogg' %}{%- endif -%}
-
     {%- assign poster_attr = '' -%}
     {%- if include.poster and include.poster != '' -%}
       {%- assign p = include.poster | strip -%}
       {%- if p contains '://' -%}{% assign poster_url = p %}{%- else -%}{% assign poster_url = p | relative_url %}{%- endif -%}
       {%- assign poster_attr = ' poster="' | append: poster_url | append: '"' -%}
     {%- endif -%}
-
     <figure class="{{ figure_class }}">
       <video controls playsinline
              preload="{{ include.preload | default: 'metadata' }}"{{ poster_attr }}{% if include.autoplay %} autoplay{% endif %}{% if include.muted %} muted{% endif %}{% if include.loop %} loop{% endif %}
