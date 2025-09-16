@@ -1,127 +1,107 @@
-// assets/js/search.js
+// /assets/js/search.js
+(function () {
+  const $ = (sel, root = document) => root.querySelector(sel);
+  const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
 
-// ----- helpers -----
-function getParam(name) {
-  return new URLSearchParams(window.location.search).get(name);
-}
-function setParam(name, value) {
-  const url = new URL(window.location.href);
-  if (value && String(value).length) url.searchParams.set(name, value);
-  else url.searchParams.delete(name);
-  history.replaceState(null, "", url.toString());
-}
+  const searchContainer = document.getElementById('pagefind-search');
+  if (!searchContainer) return;
 
-// ----- state -----
-let lastQuery = getParam("q") || "";
-let lastSort  = getParam("sort") || "relevance"; // relevance | date_desc | date_asc
-let searchUI  = null;
+  const externalForm = document.getElementById('search-form');
+  const externalInput = document.getElementById('q');
+  const sortSelect = document.getElementById('sort-order');
 
-// ----- DOM ready -----
-window.addEventListener("DOMContentLoaded", () => {
-  const sortSelect = document.getElementById("sort-order");
-  if (sortSelect) sortSelect.value = lastSort;
+  // Получаем ?q= из адресной строки
+  const params = new URLSearchParams(location.search);
+  const initialTerm = params.get('q') || '';
 
-  // Создаём UI с учётом выбранной сортировки
-  createUI();
+  // Функция создания UI с нужной сортировкой
+  let uiInstance = null;
+  function buildUI(sortMode) {
+    // Очищаем контейнер перед пересозданием
+    searchContainer.innerHTML = '';
 
-  // Если q уже есть в URL — сразу запускаем поиск
-  if (lastQuery) {
-    // Небольшая задержка, чтобы инпут успел появиться
-    requestAnimationFrame(() => {
-      restoreInputValue();
-      searchUI.triggerSearch(lastQuery);
+    // Подбираем объект сортировки для Pagefind
+    // Требует наличия data-pagefind-sort="date:YYYY-MM-DD" на страницах (у нас есть):contentReference[oaicite:2]{index=2}.
+    let sortOption = undefined;
+    if (sortMode === 'date_desc') sortOption = { date: 'desc' };
+    if (sortMode === 'date_asc') sortOption = { date: 'asc' };
+    // relevance — сортировка по умолчанию, не передаём sort вовсе
+
+    uiInstance = new PagefindUI({
+      element: "#pagefind-search",
+      showImages: true,                         // включаем миниатюры
+      sort: sortOption,                         // передаём сортировку, если задана
+      processResult: function (result) {        // подстраховка путей к изображениям
+        if (result.meta && result.meta.image) {
+          const img = result.meta.image;
+          if (typeof img === 'string' && !img.startsWith('http') && !img.startsWith('/')) {
+            result.meta.image = '/' + img;
+          }
+        }
+        return result;
+      }
+    });
+
+    // Синхронизируем внешний input с внутренним Pagefind UI
+    const syncTerm = (term) => {
+      // Дождёмся, пока UI вставит свой input
+      requestAnimationFrame(() => {
+        const internalInput = $('#pagefind-search input[type="search"]');
+        if (!internalInput) return;
+        internalInput.value = term;
+        internalInput.dispatchEvent(new Event('input', { bubbles: true }));
+      });
+    };
+
+    // Если уже есть запрос — применяем его
+    if (initialTerm) syncTerm(initialTerm);
+  }
+
+  // Инициализируем UI с текущей сортировкой
+  const initialSort = (sortSelect && sortSelect.value) || 'relevance';
+  buildUI(initialSort);
+
+  // Обработчик «Найти» для внешней формы
+  if (externalForm && externalInput) {
+    externalForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      // Обновим адресную строку (красивая навигация)
+      const q = externalInput.value || '';
+      const order = (sortSelect && sortSelect.value) || 'relevance';
+      const usp = new URLSearchParams(location.search);
+      if (q) usp.set('q', q); else usp.delete('q');
+      usp.set('sort', order);
+      history.replaceState(null, '', `${location.pathname}?${usp.toString()}`);
+
+      // Передадим запрос во внутренний input Pagefind UI
+      const internalInput = $('#pagefind-search input[type="search"]');
+      if (internalInput) {
+        internalInput.value = q;
+        internalInput.dispatchEvent(new Event('input', { bubbles: true }));
+      }
     });
   }
 
-  // Слежение за DOM: убрать префикс "Date:" в выдаче
-  const resultsContainer = document.getElementById("pagefind-search");
-  if (resultsContainer) {
-    const observer = new MutationObserver((mutations) => {
-      for (const m of mutations) {
-        for (const node of m.addedNodes) {
-          if (node.nodeType !== 1) continue;
-          // Удаляем "Date: " в метаданных даты
-          node.querySelectorAll('[data-pagefind-ui-meta="date"]').forEach((el) => {
-            el.textContent = el.textContent.replace(/^Date:\s*/, "");
-          });
-          // Если появился новый инпут поиска — привязываем listener
-          const input = node.matches?.('input[type="search"]')
-            ? node
-            : node.querySelector?.('#pagefind-search input[type="search"]');
-          if (input && !input.dataset.listenerAttached) {
-            attachInputListener(input);
-          }
+  // Пересоздание UI при смене сортировки
+  if (sortSelect) {
+    sortSelect.addEventListener('change', () => {
+      buildUI(sortSelect.value);
+      // После перестройки — протолкнём текущий запрос
+      const q = (externalInput && externalInput.value) || initialTerm || '';
+      if (q) {
+        const internalInput = $('#pagefind-search input[type="search"]');
+        if (internalInput) {
+          internalInput.value = q;
+          internalInput.dispatchEvent(new Event('input', { bubbles: true }));
         }
       }
     });
-    observer.observe(resultsContainer, { childList: true, subtree: true });
-  }
 
-  // Смена сортировки
-  if (sortSelect) {
-    sortSelect.addEventListener("change", () => {
-      lastSort = sortSelect.value;
-      setParam("sort", lastSort === "relevance" ? "" : lastSort);
-
-      // Сохраняем текущий текст запроса из инпута (на всякий)
-      const input = document.querySelector('#pagefind-search input[type="search"]');
-      if (input) lastQuery = input.value || lastQuery;
-
-      // Пересоздаём UI с новой сортировкой и восстанавливаем запрос
-      if (searchUI) searchUI.destroy();
-      createUI();
-      requestAnimationFrame(() => {
-        restoreInputValue();
-        if (lastQuery) searchUI.triggerSearch(lastQuery);
-      });
-    });
-  }
-});
-
-// ----- functions -----
-function createUI() {
-  const baseOpts = {
-    element: "#pagefind-search",
-    showImages: true,
-    pageSize: 10,
-    translations: {
-      placeholder: "Искать по сайту…",
-      zero_results: "Ничего не найдено",
-      clear_search: "Очистить",
-      load_more: "Показать ещё",
-    },
-  };
-
-  if (lastSort === "date_desc") {
-    baseOpts.sort = { date: "desc" };
-  } else if (lastSort === "date_asc") {
-    baseOpts.sort = { date: "asc" };
-  }
-  searchUI = new PagefindUI(baseOpts);
-
-  // Как только инпут появится — проставим значение и listener
-  requestAnimationFrame(() => {
-    const input = document.querySelector('#pagefind-search input[type="search"]');
-    if (input) {
-      restoreInputValue();
-      attachInputListener(input);
+    // Прочитаем ?sort= из URL при первом входе
+    const sortFromUrl = params.get('sort');
+    if (sortFromUrl && sortFromUrl !== sortSelect.value) {
+      sortSelect.value = sortFromUrl;
+      // buildUI(initial) уже вызван выше с initialSort; при различии пользователь увидит выпадашку в нужном положении
     }
-  });
-}
-
-function restoreInputValue() {
-  const input = document.querySelector('#pagefind-search input[type="search"]');
-  if (input && input.value !== lastQuery) {
-    input.value = lastQuery;
   }
-}
-
-function attachInputListener(input) {
-  if (!input || input.dataset.listenerAttached) return;
-  input.dataset.listenerAttached = "1";
-  input.addEventListener("input", () => {
-    lastQuery = input.value || "";
-    // Синхронизируем адресную строку
-    setParam("q", lastQuery);
-  }, { passive: true });
-}
+})();
