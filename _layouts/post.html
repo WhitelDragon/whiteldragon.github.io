@@ -14,14 +14,16 @@ layout: default
   <span hidden data-pagefind-meta="date:{{ page.date | date: '%d %b %Y' }}"></span>
   <span hidden data-pagefind-sort="date:{{ page.date | date: '%Y-%m-%d' }}"></span>
 
-  {%- comment -%} >>> ПРЕВЬЮ ДЛЯ ПОИСКА (image + image_alt) {%- endcomment -%}
+  {%- comment -%}
+    ПРЕВЬЮ ДЛЯ ПОИСКА.
+    Используем "inline" метаданные (key:value), чтобы гарантированно записать
+    image / image_alt в индекс, минуя любые нюансы чтения атрибутов.
+  {%- endcomment -%}
   {%- capture _thumb -%}{% include find-thumb.html post=page %}{%- endcapture -%}
   {%- assign _thumb = _thumb | strip -%}
   {%- if _thumb != "" -%}
-    <img src="{{ _thumb }}"
-         alt="{{ page.title | escape }}"
-         hidden
-         data-pagefind-meta="image[src], image_alt[alt]">
+    <span hidden data-pagefind-meta="image:{{ _thumb }}"></span>
+    <span hidden data-pagefind-meta="image_alt:{{ page.title | escape }}"></span>
   {%- endif -%}
 
   {{ content }}
