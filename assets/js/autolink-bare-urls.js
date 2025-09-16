@@ -1,7 +1,4 @@
-// Делает голые http/https ссылки кликабельными в контенте постов,
-// КРОМЕ ссылок на VK фото/видео: https://vk.com/photo..., https://vk.com/video...
-// (Также пропускаем m.vk.com/photo|video)
-//
+// Делает кликабельными все http/https ссылки в тексте.
 // Не трогаем уже существующие <a>, а также code/pre/script/style/textarea.
 (function () {
   function linkify(container) {
@@ -23,9 +20,8 @@
     const targets = [];
     while (walker.nextNode()) targets.push(walker.currentNode);
 
-    // Матчим любой http(s) URL, но исключаем vk.com/photo... и vk.com/video... (и m.vk.com/…)
-    // Хвостовую пунктуацию (. , ! ? ; : ) выносим за пределы ссылки.
-    const rx = /(https?:\/\/(?!(?:m\.)?vk\.com\/(?:photo|video)\b)[^\s<>"')]+)([.,!?;:)]?)/gi;
+    // Любой http(s) URL. Хвостовую пунктуацию выносим за ссылку.
+    const rx = /(https?:\/\/[^\s<>"')]+)([.,!?;:)]?)/g;
 
     targets.forEach(node => {
       const text = node.nodeValue;
@@ -36,28 +32,17 @@
         const full = m[0];
         const url  = m[1];
         const trail = m[2] || '';
-
-        // Текст до ссылки
         if (m.index > last) frag.appendChild(document.createTextNode(text.slice(last, m.index)));
-
-        // Ссылка
         const a = document.createElement('a');
         a.href = url;
         a.textContent = url;
         a.target = '_blank';
         a.rel = 'nofollow ugc noopener';
         frag.appendChild(a);
-
-        // Хвостовая пунктуация (если была)
         if (trail) frag.appendChild(document.createTextNode(trail));
-
         last = m.index + full.length;
       }
-
-      // Хвост после последнего совпадения
       frag.appendChild(document.createTextNode(text.slice(last)));
-
-      // Замена узла
       node.parentNode.replaceChild(frag, node);
     });
   }
