@@ -1,41 +1,24 @@
 ---
 layout: default
 title: Поиск
-permalink: /search.html
 ---
+<h1>Поиск</h1>
 
-<main class="container search-page">
-  <h1>Поиск</h1>
+<!-- Блок управления сортировкой -->
+<div class="search-controls" style="margin-bottom: 1em;">
+  <label for="sort-order" style="font-weight: 600; margin-right: 8px;">Сортировать:</label>
+  <select id="sort-order">
+    <option value="relevance">по релевантности</option>
+    <option value="date_desc">по дате (новые сначала)</option>
+    <option value="date_asc">по дате (старые сначала)</option>
+  </select>
+</div>
 
-  <div class="search-controls">
-    <form id="search-form" action="/search.html" method="get" role="search">
-      <input id="q" name="q" type="search" placeholder="Поиск по сайту…" aria-label="Запрос" />
-      <button type="submit">Найти</button>
-    </form>
+<!-- Подключение Pagefind UI -->
+<link href="{{ '/pagefind/pagefind-ui.css' | relative_url }}" rel="stylesheet">
+<div id="pagefind-search"></div>
+<script src="{{ '/pagefind/pagefind.js' | relative_url }}" type="text/javascript"></script>
+<script src="{{ '/pagefind/pagefind-ui.js' | relative_url }}" type="text/javascript"></script>
 
-    <label class="sort">
-      Сортировать:
-      <select id="sort-order">
-        <option value="relevance">по релевантности</option>
-        <option value="date_desc">по дате (новые сверху)</option>
-        <option value="date_asc">по дате (старые сверху)</option>
-      </select>
-    </label>
-  </div>
-
-  <!-- Контейнер для Pagefind UI -->
-  <div id="pagefind-search"></div>
-</main>
-
-<!-- Бандл Pagefind UI (обязателен для new PagefindUI) -->
-<link rel="stylesheet" href="/pagefind/pagefind-ui.css">
-<script src="/pagefind/pagefind-ui.js"></script>
-
-<!-- (Можно оставить) pagefind.js — не мешает -->
-<script async src="/pagefind/pagefind.js"></script>
-
-<!-- Твой код, который создаёт PagefindUI и управляет сортировкой -->
-<script defer src="/assets/js/search.js"></script>
-
-<!-- Стили страницы поиска (ниже добавим правило для миниатюр) -->
-<link rel="stylesheet" href="/assets/css/search.css" />
+<!-- Подключение пользовательского скрипта поиска -->
+<script defer src="{{ '/assets/js/search.js' | relative_url }}"></script>

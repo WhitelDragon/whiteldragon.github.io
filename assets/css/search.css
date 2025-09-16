@@ -18,18 +18,3 @@
 .sr-title { font-size: 16px; line-height: 1.25; margin: 0 0 4px; }
 .sr-meta { font-size: 12px; color: #6b7280; margin-bottom: 6px; }
 .sr-excerpt { margin: 0; color: #374151; }
-
-/* Настройки миниатюр Pagefind UI */
-:root {
-  /* Делаем бокс под изображение квадратным (1:1) */
-  --pagefind-ui-image-box-ratio: 1;
-}
-
-/* Само изображение результата: квадрат 64×64 со скруглением */
-#pagefind-search .pagefind-ui__result-thumb img {
-  width: 64px;
-  height: 64px;
-  object-fit: cover;
-  border-radius: 8px;
-  display: block;
-}
