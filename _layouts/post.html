@@ -18,7 +18,8 @@ layout: default
   {%- capture _thumb -%}{% include find-thumb.html post=page %}{%- endcapture -%}
   {%- assign _thumb = _thumb | strip -%}
   {%- if _thumb != "" -%}
-    <span hidden data-pagefind-meta="image:{{ _thumb }}"></span>
+    <img src="{{ _thumb }}" alt="{{ page.title | escape }}" hidden
+         data-pagefind-meta="image[src], image_alt[alt]">
   {%- endif -%}
 
   {{ content }}
