@@ -1,5 +1,3 @@
-// Делает голые http/https ссылки кликабельными в контенте постов.
-// Не трогаем уже существующие <a>, а также code/pre/script/style/textarea.
 (function () {
   function linkify(container) {
     const walker = document.createTreeWalker(
@@ -7,11 +5,12 @@
       NodeFilter.SHOW_TEXT,
       {
         acceptNode(node) {
-          if (!node.nodeValue || !/https?:\/\/\S/.test(node.nodeValue)) return NodeFilter.FILTER_REJECT;
-          // пропускаем, если текст внутри запрещённых контейнеров
+          if (!node.nodeValue) return NodeFilter.FILTER_REJECT;
+          // если нет http/https — мимо
+          if (!/https?:\/\/\S/.test(node.nodeValue)) return NodeFilter.FILTER_REJECT;
+          // пропускаем запрещённые контейнеры
           const el = node.parentElement;
-          if (!el) return NodeFilter.FILTER_REJECT;
-          if (el.closest('a, code, pre, script, style, textarea')) return NodeFilter.FILTER_REJECT;
+          if (!el || el.closest('a, code, pre, script, style, textarea')) return NodeFilter.FILTER_REJECT;
           return NodeFilter.FILTER_ACCEPT;
         }
       }
@@ -20,7 +19,9 @@
     const targets = [];
     while (walker.nextNode()) targets.push(walker.currentNode);
 
-    const rx = /(https?:\/\/[^\s<>"')]+)([.,!?;:)]?)/g; // хвостовую пунктуацию выносим за ссылку
+    // игнорируем vk.com — их обработает vk-photos.js (после VkFix у ссылок будет class="vk-attach")
+    const rx = /(https?:\/\/(?!(?:m\.)?vk\.com\/)[^\s<>"')]+)([.,!?;:)]?)/g;
+
     targets.forEach(node => {
       const text = node.nodeValue;
       let last = 0, m;
