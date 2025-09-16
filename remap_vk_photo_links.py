@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-Конвертирует VK-ссылки в Markdown-постах в инклюды Jekyll вида:
+Конвертирует VK-ссылки в Markdown-постах в инклюды Jekyll формата post-studio:
     {% include media.html f="/assets/vk_photos/<subdir>/<file>" alt="" %}
 
 Ищутся варианты:
@@ -10,10 +10,10 @@
   2) «голые» https://vk.com/photo<owner>_<id>
   3) <a href="https://vk.com/photo<owner>_<id>">...</a>
 
-Соответствия <owner>_<id> -> файл/URL читаются из photos.json.
-Сам файл ищется во всех подпапках assets/vk_photos/** (1/2/3/...).
+Соответствия берём из photos.json (значение может быть именем файла или полным URL).
+Фактический файл ищется во всех подпапках assets/vk_photos/**.
 
-По умолчанию DRY-RUN. Для записи добавь --apply (создаст .bak).
+DRY-RUN по умолчанию. Для записи: --apply (создаст .bak).
 """
 
 import argparse
@@ -23,10 +23,13 @@ import re
 from pathlib import Path
 from urllib.parse import urlparse
 
+# Пути по умолчанию
 DEFAULT_POSTS_DIR = "_posts"
 DEFAULT_ASSETS_ROOT = Path("assets") / "vk_photos"
+
 IMG_EXTS = {".jpg", ".jpeg", ".png", ".webp", ".gif"}
 
+# Паттерны для ссылок на VK-фото
 RE_MD_LINK = re.compile(
     r"\[([^\]]*?)\]\((https?://(?:www\.)?vk\.com/photo(-?\d+)_(\d+))\)",
     flags=re.IGNORECASE,
@@ -45,12 +48,19 @@ def load_mapping(json_path: Path) -> dict[str, str]:
     return {str(k): str(v) for k, v in data.items()}
 
 def value_to_filename(value: str) -> str:
-    # "OUyaq.jpg" | "/assets/vk_photos/3/OUyaq.jpg" | "https://.../OUyaq.jpg" | "3/OUyaq.jpg" -> "OUyaq.jpg"
+    """
+    Значение из photos.json -> имя файла:
+      "OUyaq.jpg" | "3/OUyaq.jpg" | "/assets/vk_photos/3/OUyaq.jpg"
+      | "https://.../assets/vk_photos/3/OUyaq.jpg"  → "OUyaq.jpg"
+    """
     if value.startswith("http://") or value.startswith("https://"):
         value = urlparse(value).path
     return Path(value).name
 
 def index_assets(assets_root: Path) -> dict[str, list[Path]]:
+    """
+    Индекс: имя_файла -> список полных путей (assets/vk_photos/**).
+    """
     idx: dict[str, list[Path]] = {}
     for root, _, files in os.walk(assets_root):
         for fn in files:
@@ -60,7 +70,7 @@ def index_assets(assets_root: Path) -> dict[str, list[Path]]:
             idx.setdefault(fn, []).append(p)
     return idx
 
-def pick_one(paths: list[Path]) -> Path | None:
+def pick_best(paths: list[Path]) -> Path | None:
     if not paths:
         return None
     try:
@@ -68,19 +78,21 @@ def pick_one(paths: list[Path]) -> Path | None:
     except FileNotFoundError:
         return paths[0]
 
-def site_abs(assets_root: Path, actual_file: Path) -> str:
-    # "/assets/vk_photos/<subdir>/<file>"
-    rel = actual_file.relative_to(assets_root)
-    root_parts = list(assets_root.parts)  # ["assets", "vk_photos"]
-    return Path("/", *root_parts, *rel.parts).as_posix()
+def site_abs_from_repo(repo_root: Path, actual_file: Path) -> str:
+    """
+    Делает site-absolute путь вида "/assets/vk_photos/<subdir>/<file>"
+    через относительный путь от корня репозитория.
+    *Никогда* не вернёт "D:/...".
+    """
+    rel = actual_file.resolve().relative_to(repo_root.resolve())
+    return "/" + rel.as_posix()
 
 def build_include(site_path: str, alt_text: str = "") -> str:
-    # Экранируем только двойные кавычки в alt -> &quot;
     safe_alt = alt_text.replace('"', '&quot;')
-    # ВАЖНО: без f-строк (чтобы не экранировать фигурные скобки), просто конкатенация
     return '{% include media.html f="' + site_path + '" alt="' + safe_alt + '" %}'
 
-def replace_in_text(text: str, mapping: dict[str, str], assets_root: Path, assets_idx: dict[str, list[Path]], verbose=False):
+def replace_in_text(text: str, mapping: dict[str, str], repo_root: Path, assets_root: Path,
+                    assets_idx: dict[str, list[Path]], verbose=False):
     changes = 0
 
     def to_include(owner: str, mid: str) -> str | None:
@@ -91,39 +103,43 @@ def replace_in_text(text: str, mapping: dict[str, str], assets_root: Path, asset
                 print(f"  ! нет в photos.json: {key}")
             return None
         filename = value_to_filename(raw)
-        actual = pick_one(assets_idx.get(filename, []))
+        actual = pick_best(assets_idx.get(filename, []))
         if not actual:
             if verbose:
                 print(f"  ! файл не найден в {assets_root}/** : {filename}")
             return None
-        return build_include(site_abs(assets_root, actual), alt_text="")
+        site_path = site_abs_from_repo(repo_root, actual)  # ← всегда "/assets/..."
+        return build_include(site_path, alt_text="")
 
+    # 1) [текст](https://vk.com/photo…)
     def repl_md(m: re.Match) -> str:
         nonlocal changes
         owner, mid = m.group(3), m.group(4)
         inc = to_include(owner, mid)
         if inc:
-            if verbose: print(f"  + {owner}_{mid} -> include")
+            if verbose: print(f"  + {owner}_{mid} -> {inc}")
             changes += 1
             return inc
         return m.group(0)
 
+    # 2) <a href="https://vk.com/photo…">…</a>
     def repl_a(m: re.Match) -> str:
         nonlocal changes
         owner, mid = m.group(2), m.group(3)
         inc = to_include(owner, mid)
         if inc:
-            if verbose: print(f"  + (a) {owner}_{mid} -> include")
+            if verbose: print(f"  + (a) {owner}_{mid} -> {inc}")
             changes += 1
             return inc
         return m.group(0)
 
+    # 3) «голые» URL
     def repl_url(m: re.Match) -> str:
         nonlocal changes
         owner, mid = m.group(1), m.group(2)
         inc = to_include(owner, mid)
         if inc:
-            if verbose: print(f"  + (url) {owner}_{mid} -> include")
+            if verbose: print(f"  + (url) {owner}_{mid} -> {inc}")
             changes += 1
             return inc
         return m.group(0)
@@ -133,9 +149,10 @@ def replace_in_text(text: str, mapping: dict[str, str], assets_root: Path, asset
     text = RE_BARE_URL.sub(repl_url, text)
     return text, changes
 
-def process_file(path: Path, mapping: dict[str, str], assets_root: Path, assets_idx: dict[str, list[Path]], apply=False, verbose=False) -> int:
+def process_file(path: Path, mapping: dict[str, str], repo_root: Path, assets_root: Path,
+                 assets_idx: dict[str, list[Path]], apply=False, verbose=False) -> int:
     src = path.read_text(encoding="utf-8")
-    new, n = replace_in_text(src, mapping, assets_root, assets_idx, verbose=verbose)
+    new, n = replace_in_text(src, mapping, repo_root, assets_root, assets_idx, verbose=verbose)
     if n and apply and new != src:
         bak = path.with_suffix(path.suffix + ".bak")
         if not bak.exists():
@@ -152,9 +169,10 @@ def main():
     ap.add_argument("--verbose", action="store_true", help="Подробный вывод")
     args = ap.parse_args()
 
-    posts_dir = Path(args.posts_dir).resolve()
-    photos_json = Path(args.photos_json).resolve()
-    assets_root = Path(args.assets_root).resolve()
+    repo_root = Path(".").resolve()
+    posts_dir = (repo_root / args.posts_dir).resolve()
+    photos_json = (repo_root / args.photos_json).resolve()
+    assets_root = (repo_root / args.assets_root).resolve()
 
     if not posts_dir.is_dir():
         raise SystemExit(f"Нет каталога постов: {posts_dir}")
@@ -168,7 +186,7 @@ def main():
 
     touched_files, total_changes = 0, 0
     for md in posts_dir.rglob("*.md"):
-        n = process_file(md, mapping, assets_root, assets_idx, apply=args.apply, verbose=args.verbose)
+        n = process_file(md, mapping, repo_root, assets_root, assets_idx, apply=args.apply, verbose=args.verbose)
         if n:
             touched_files += 1
             total_changes += n
