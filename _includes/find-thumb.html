@@ -1,8 +1,8 @@
 {%- comment -%}
 Возвращает URL первой картинки для превью или пустую строку.
 Приоритет:
-1) post.image / post.thumb из фронтматтер
-2) первый <img src="..."> из HTML контента поста
+1) post.image / post.thumb во фронтматтере (если заданы)
+2) первый <img src="..."> из HTML-контента поста
 {%- endcomment -%}
 
 {%- assign thumb = "" -%}
@@ -25,16 +25,11 @@
   {%- endif -%}
 {%- endif -%}
 
-{%- comment -%} Нормализация пути {%- endcomment -%}
+{%- comment -%} Нормализация пути (учёт baseurl) {%- endcomment -%}
 {%- if thumb != "" -%}
-  {%- assign first4 = thumb | slice: 0, 4 -%}
-  {%- assign first1 = thumb | slice: 0, 1 -%}
-  {%- if first4 == "http" -%}
-    {%- assign thumb = thumb -%}
-  {%- elsif first1 == "/" -%}
-    {%- assign thumb = thumb -%}
-  {%- else -%}
-    {%- assign thumb = "/" | append: thumb -%}
+  {%- assign first4 = thumb | slice:0,4 -%}
+  {%- if first4 != "http" -%}
+    {%- assign thumb = thumb | relative_url -%}
   {%- endif -%}
 {%- endif -%}
 
