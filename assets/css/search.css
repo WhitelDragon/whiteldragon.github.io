@@ -18,3 +18,11 @@
 .sr-title { font-size: 16px; line-height: 1.25; margin: 0 0 4px; }
 .sr-meta { font-size: 12px; color: #6b7280; margin-bottom: 6px; }
 .sr-excerpt { margin: 0; color: #374151; }
+
+/* Миниатюры в результатах Pagefind UI */
+#pagefind-search img {
+  width: 64px;
+  height: 64px;
+  object-fit: cover;
+  border-radius: 8px;
+}
