@@ -3,7 +3,7 @@ description: Личная стена
 url: https://whiteldragon.github.io
 baseurl: ""
 ga4: "G-3L672NMKB9"
-
+languageCode = "ru-ru"
 plugins:
   - jekyll-sitemap
   - jekyll-feed
