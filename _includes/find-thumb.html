@@ -1,8 +1,11 @@
 {%- comment -%}
 Возвращает URL первой картинки для превью или пустую строку.
-Порядок:
-1) post.image / post.thumb во фронтматтере (если заданы)
-2) первая <img src="..."> из отрендеренного post.content
+Приоритет:
+1) post.image / post.thumb (фронтматтер)
+2) первый <img src="..."> в HTML
+3) первая <a href="..."> на локальный файл-картинку
+URL нормализуем: http(s) и // — оставляем, остальное — через absolute_url
+(чтобы на GitHub Pages путь всегда был полный).
 {%- endcomment -%}
 
 {%- assign thumb = "" -%}
@@ -18,25 +21,38 @@
     {%- if src_split.size > 1 -%}
       {%- assign after_src = src_split[1] -%}
       {%- assign url = after_src | split:'"' | first -%}
-      {%- if url != "" -%}
-        {%- assign thumb = url -%}
-      {%- endif -%}
+      {%- if url != "" -%}{% assign thumb = url %}{% endif -%}
     {%- endif -%}
   {%- endif -%}
 {%- endif -%}
 
-{#-- Если нужно, можно нормализовать относительный путь: --#}
-{%- if thumb != "" -%}
-  {%- assign has_http = thumb | slice:0,4 -%}
-  {%- assign first_char = thumb | slice:0,1 -%}
-  {%- if has_http == "http" -%}
-    {# уже абсолютный, оставляем как есть #}
-  {%- elsif first_char == "/" -%}
-    {# корневой путь — оставим как есть #}
-  {%- else -%}
-    {# относительный — превратим в относительный с учётом baseurl #}
-    {%- assign thumb = "/" | append: thumb | relative_url -%}
+{%- if thumb == "" and include.post.content -%}
+  {%- assign a_parts = include.post.content | split:'<a ' -%}
+  {%- if a_parts.size > 1 -%}
+    {%- assign found = "" -%}
+    {%- for block in a_parts offset:1 -%}
+      {%- assign h1 = block | split:'href="' -%}
+      {%- if h1.size > 1 -%}
+        {%- assign href = h1[1] | split:'"' | first -%}
+        {%- assign lower = href | downcase -%}
+        {%- assign lower = lower | split:'?' | first | split:'#' | first -%}
+        {%- assign ext = lower | split:'.' | last -%}
+        {%- if ext == 'jpg' or ext == 'jpeg' or ext == 'png' or ext == 'webp' or ext == 'gif' -%}
+          {%- assign found = href -%}
+          {%- break -%}
+        {%- endif -%}
+      {%- endif -%}
+    {%- endfor -%}
+    {%- if found != "" -%}{% assign thumb = found %}{% endif -%}
   {%- endif -%}
 {%- endif -%}
 
-{{ thumb }}
+{%- if thumb != "" -%}
+  {%- assign first4 = thumb | slice:0,4 -%}
+  {%- assign first2 = thumb | slice:0,2 -%}
+  {%- if first4 != "http" and first2 != "//" -%}
+    {%- assign thumb = thumb | absolute_url -%}
+  {%- endif -%}
+{%- endif -%}
+
+{{- thumb -}}
