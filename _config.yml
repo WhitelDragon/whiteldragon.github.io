@@ -1,4 +1,4 @@
-title: Мой архив ВКонтакте (в разработке v0.160925.8)
+title: Мой архив ВКонтакте (в разработке v0.160925.9)
 description: Личная стена
 url: https://whiteldragon.github.io
 baseurl: ""
@@ -12,6 +12,6 @@ plugins:
 paginate: 10              # по 10 постов на страницу
 paginate_path: "/page:num/"
 
-markdown: kramdown
+
 
 
