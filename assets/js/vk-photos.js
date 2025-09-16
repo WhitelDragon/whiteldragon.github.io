@@ -1,45 +1,103 @@
-// Находит <a class="vk-attach" href="https://vk.com/photo...">...</a>
-// и ЗАМЕНЯЕТ её на <figure class="post-photo">...</figure> ОДИН РАЗ.
-(function () {
-  const processed = new Set();
+---
+---
+(() => {
+  // Базовые пути (Liquid подставит baseurl проекта)
+  const MAP_URL = "{{ '/assets/vk_photos/photos.json' | relative_url }}";
+  const BASE    = "{{ '/assets/vk_photos/' | relative_url }}";
 
-  function extractId(href) {
-    // примитивно для photo/album/video/doc — если у тебя другой формат, поправим тут
-    try {
-      const u = new URL(href);
-      if (!/^(?:m\.)?vk\.com$/.test(u.hostname)) return null;
-      return u.pathname.replace(/^\/+/, ''); // напр. "photo41076938_457250737"
-    } catch (_) { return null; }
-  }
+  // В каких подпапках искать, по порядку
+  const FOLDERS = ["1", "2", "3", "4", "5"]; // меняется тут, если добавите 6,7,…
 
-  function makeFigure(href) {
-    const id = extractId(href);
-    const fig = document.createElement('figure');
-    fig.className = 'post-photo';          // СВОЙ класс, не конфликтует с .media .thumb
-    fig.dataset.vkId = id || '';
+  let photoMap = null;
+
+  const idFromHref = (href) => {
+    const m = href && href.match(/photo(\d+_\d+)/);
+    return m ? m[1] : null; // "41076938_457250179"
+  };
+
+  // Список кандидатов для имени: "2/x.jpg" -> только он; "x.jpg" -> 1..5 и корень
+  const candidatesFor = (name) => {
+    if (name.includes("/")) return [name];
+    const list = FOLDERS.map(f => `${f}/${name}`);
+    list.push(name); // на всякий случай поддержим старое размещение в корне
+    return list;
+  };
+
+  // Картинка с fallback по каталогам 1..5
+  const makeImgWithFallback = (name, alt) => {
     const img = document.createElement('img');
-    // тут твоя логика сопоставления id -> локальный файл, либо прокси
-    // временно показываем ссылку как текст (или подставь свою карту путей)
-    img.alt = '';
-    img.loading = 'lazy';
-    // Если у тебя есть карта id -> /assets/vk_photos/<..>.jpg, поставь сюда конечный src:
-    // img.src = '/assets/vk_photos/2/jbS4lfYKC8s.jpg';
-    // Fallback — не ломаем вёрстку:
-    img.src = href;
-    fig.appendChild(img);
+    img.loading = 'lazy'; // нативный lazy-loading, поддерживается браузерами. :contentReference[oaicite:2]{index=2}
+    img.alt = alt || '';
+
+    const candidates = candidatesFor(name);
+    let i = 0;
+
+    const tryNext = () => {
+      if (i >= candidates.length) {
+        img.removeEventListener('error', tryNext);
+        return;
+      }
+      img.src = BASE + candidates[i++];
+    };
+
+    img.addEventListener('error', tryNext);
+    img.addEventListener('load', () => img.removeEventListener('error', tryNext), { once: true });
+    tryNext(); // старт
+
+    return img;
+  };
+
+  const makeFigure = (names, alt) => {
+    const fig = document.createElement('figure');
+    fig.className = 'post-photo';
+    (Array.isArray(names) ? names : [names]).forEach(n => {
+      fig.appendChild(makeImgWithFallback(n, alt));
+    });
     return fig;
+  };
+
+  // Заменяем ссылки vk.com/photo… на локальные <img>
+  const replaceIn = (node) => {
+    const root = node.querySelectorAll ? node : document;
+    const anchors = root.querySelectorAll('a[href*="vk.com/photo"]');
+    anchors.forEach(a => {
+      const id = idFromHref(a.href);
+      if (!id || !photoMap) return;
+
+      const entry = photoMap[id] || photoMap['photo' + id];
+      if (!entry) return;
+
+      const fig = makeFigure(entry, a.textContent || id);
+      a.replaceWith(fig);
+    });
+  };
+
+  // Ловим посты, подгружаемые бесконечной прокруткой (MutationObserver) :contentReference[oaicite:3]{index=3}
+  const observeNewPosts = () => {
+    const container = document.getElementById('posts-container') || document.body;
+    const obs = new MutationObserver((muts) => {
+      for (const m of muts) m.addedNodes.forEach(n => { if (n.nodeType === 1) replaceIn(n); });
+    });
+    obs.observe(container, { childList: true, subtree: true });
+  };
+
+  async function init() {
+    try {
+      const r = await fetch(MAP_URL, { cache: 'no-store' });
+      if (!r.ok) { console.warn('vk-photos: map fetch failed', r.status); return; }
+      photoMap = await r.json();
+      window.VKPhotoMap = photoMap; // для проверки в консоли
+    } catch (e) {
+      console.warn('vk-photos: map load error', e);
+      return;
+    }
+    replaceIn(document);
+    observeNewPosts();
   }
 
-  function processAnchor(a) {
-    const href = a.getAttribute('href') || '';
-    const id = extractId(href);
-    if (!id || processed.has(id)) return;
-    processed.add(id);
-    const fig = makeFigure(href);
-    a.replaceWith(fig); // ЗАМЕНЯЕМ, не добавляем рядом (без дублей)
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init, { once: true });
+  } else {
+    init();
   }
-
-  document.addEventListener('DOMContentLoaded', () => {
-    document.querySelectorAll('a.vk-attach[href^="http"]').forEach(processAnchor);
-  });
 })();
