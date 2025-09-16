@@ -1,11 +1,8 @@
 {%- comment -%}
 Возвращает URL первой картинки для превью или пустую строку.
-Приоритет:
-  1) front matter: image / thumb
-  2) первый <img ... src="..."> в HTML
-     (дополнительно пробуем data-src и srcset)
-  3) первая <a href="..."> на локальный файл-картинку
-URL нормализуем: http(s) и // — оставляем как есть, остальное — через relative_url.
+Порядок:
+1) post.image / post.thumb во фронтматтере (если заданы)
+2) первая <img src="..."> из отрендеренного post.content
 {%- endcomment -%}
 
 {%- assign thumb = "" -%}
@@ -17,63 +14,29 @@ URL нормализуем: http(s) и // — оставляем как есть
   {%- assign parts = include.post.content | split:'<img ' -%}
   {%- if parts.size > 1 -%}
     {%- assign first_img = parts[1] -%}
-
     {%- assign src_split = first_img | split:'src="' -%}
     {%- if src_split.size > 1 -%}
       {%- assign after_src = src_split[1] -%}
       {%- assign url = after_src | split:'"' | first -%}
-      {%- if url != "" -%}{% assign thumb = url %}{% endif -%}
-    {%- endif -%}
-
-    {%- if thumb == "" -%}
-      {%- assign ds_split = first_img | split:'data-src="' -%}
-      {%- if ds_split.size > 1 -%}
-        {%- assign after_ds = ds_split[1] -%}
-        {%- assign url = after_ds | split:'"' | first -%}
-        {%- if url != "" -%}{% assign thumb = url %}{% endif -%}
-      {%- endif -%}
-    {%- endif -%}
-
-    {%- if thumb == "" -%}
-      {%- assign ss_split = first_img | split:'srcset="' -%}
-      {%- if ss_split.size > 1 -%}
-        {%- assign after_ss = ss_split[1] -%}
-        {%- assign srcset = after_ss | split:'"' | first -%}
-        {%- assign first_srcset = srcset | split:',' | first | strip -%}
-        {%- assign first_src = first_srcset | split:' ' | first -%}
-        {%- if first_src != "" -%}{% assign thumb = first_src %}{% endif -%}
+      {%- if url != "" -%}
+        {%- assign thumb = url -%}
       {%- endif -%}
     {%- endif -%}
   {%- endif -%}
 {%- endif -%}
 
-{%- if thumb == "" and include.post.content -%}
-  {%- assign a_parts = include.post.content | split:'<a ' -%}
-  {%- if a_parts.size > 1 -%}
-    {%- assign found = "" -%}
-    {%- for block in a_parts offset:1 -%}
-      {%- assign h1 = block | split:'href="' -%}
-      {%- if h1.size > 1 -%}
-        {%- assign href = h1[1] | split:'"' | first -%}
-        {%- assign lower = href | downcase -%}
-        {%- assign lower = lower | split:'?' | first | split:'#' | first -%}
-        {%- assign ext = lower | split:'.' | last -%}
-        {%- if ext == 'jpg' or ext == 'jpeg' or ext == 'png' or ext == 'webp' or ext == 'gif' -%}
-          {%- assign found = href -%}
-          {%- break -%}
-        {%- endif -%}
-      {%- endif -%}
-    {%- endfor -%}
-    {%- if found != "" -%}{% assign thumb = found %}{% endif -%}
-  {%- endif -%}
-{%- endif -%}
-
+{#-- Если нужно, можно нормализовать относительный путь: --#}
 {%- if thumb != "" -%}
-  {%- assign first4 = thumb | slice:0,4 -%}
-  {%- assign first2 = thumb | slice:0,2 -%}
-  {%- if first4 != "http" and first2 != "//" -%}
-    {%- assign thumb = thumb | relative_url -%}
+  {%- assign has_http = thumb | slice:0,4 -%}
+  {%- assign first_char = thumb | slice:0,1 -%}
+  {%- if has_http == "http" -%}
+    {# уже абсолютный, оставляем как есть #}
+  {%- elsif first_char == "/" -%}
+    {# корневой путь — оставим как есть #}
+  {%- else -%}
+    {# относительный — превратим в относительный с учётом baseurl #}
+    {%- assign thumb = "/" | append: thumb | relative_url -%}
   {%- endif -%}
 {%- endif -%}
 
-{{- thumb -}}
+{{ thumb }}
