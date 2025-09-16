@@ -9,6 +9,4 @@ gem "jekyll-seo-tag"
 gem "jekyll-feed"
 gem "jekyll-sitemap"
 
-group :jekyll_plugins do
-#  gem "jekyll-commonmark-ghpages", "~> 0.5"
-end
+
