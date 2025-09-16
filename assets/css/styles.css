@@ -165,3 +165,20 @@ figure.media img, figure.media video, figure.media audio { max-width: 100%; heig
 figure.media figcaption { color: #666; font-size: .9rem; margin-top: .4rem; }
 
 
+
+/* карточка результата */
+.sr-item { display:block; text-decoration:none; color:inherit; padding:16px 0; }
+.sr-inner { display:flex; gap:14px; align-items:flex-start; }
+.sr-thumb {
+  width:64px; height:64px; object-fit:cover; border-radius:8px; flex:0 0 64px;
+  box-shadow: 0 1px 3px rgba(0,0,0,.08);
+}
+.sr-body { min-width:0; }
+.sr-title { font-size:16px; margin:0 0 4px; line-height:1.25; }
+.sr-meta { font-size:12px; color:#808080; margin-bottom:6px; }
+.sr-excerpt { margin:0; color:#333; font-size:14px; line-height:1.45; }
+
+/* без миниатюры — тело растягиваем */
+.sr-inner:not(:has(.sr-thumb)) .sr-body { margin-left:0; }
+
+
