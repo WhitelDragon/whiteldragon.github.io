@@ -15,15 +15,15 @@ layout: default
   <span hidden data-pagefind-sort="date:{{ page.date | date: '%Y-%m-%d' }}"></span>
 
   {%- comment -%} >>> ДОБАВЛЕНО: превью для поиска {%- endcomment -%}
-  {%- capture _thumb -%}{% include find-thumb.html post=page %}{%- endcapture -%}
-  {%- assign _thumb = _thumb | strip -%}
-  {%- if _thumb != "" -%}
-<img src="{{ _thumb }}"
-     alt="{{ page.title | escape }}"
-     hidden
-     data-pagefind-meta="image[src], image_alt[alt]">
+{%- capture _thumb -%}{% include find-thumb.html post=page %}{%- endcapture -%}
+{%- assign _thumb = _thumb | strip -%}
+{%- if _thumb != "" -%}
+  <img src="{{ _thumb }}"
+       alt="{{ page.title | escape }}"
+       hidden
+       data-pagefind-meta="image[src], image_alt[alt]">
+{%- endif -%}
 
-  {%- endif -%}
 
 
 

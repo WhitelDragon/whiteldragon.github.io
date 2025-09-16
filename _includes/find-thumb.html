@@ -1,8 +1,9 @@
 {%- comment -%}
 Возвращает URL первой картинки для превью или пустую строку.
 Приоритет:
-1) post.image / post.thumb во фронтматтере (если заданы)
-2) первый <img src="..."> из HTML-контента поста
+1) post.image / post.thumb (фронтматтер)
+2) первый <img src="..."> в HTML
+3) первая ссылка <a href="...{jpg|jpeg|png|webp|gif}">
 {%- endcomment -%}
 
 {%- assign thumb = "" -%}
@@ -18,14 +19,30 @@
     {%- if src_split.size > 1 -%}
       {%- assign after_src = src_split[1] -%}
       {%- assign url = after_src | split:'"' | first -%}
-      {%- if url != "" -%}
-        {%- assign thumb = url -%}
-      {%- endif -%}
+      {%- if url != "" -%}{% assign thumb = url %}{% endif -%}
     {%- endif -%}
   {%- endif -%}
 {%- endif -%}
 
-{%- comment -%} Нормализация пути (учёт baseurl) {%- endcomment -%}
+{%- if thumb == "" and include.post.content -%}
+  {%- assign a_parts = include.post.content | split:'<a ' -%}
+  {%- if a_parts.size > 1 -%}
+    {%- assign found = "" -%}
+    {%- for block in a_parts offset:1 -%}
+      {%- assign h1 = block | split:'href="' -%}
+      {%- if h1.size > 1 -%}
+        {%- assign href = h1[1] | split:'"' | first -%}
+        {%- assign lower = href | downcase -%}
+        {%- if lower endswith '.jpg' or lower endswith '.jpeg' or lower endswith '.png' or lower endswith '.webp' or lower endswith '.gif' -%}
+          {%- assign found = href -%}
+          {%- break -%}
+        {%- endif -%}
+      {%- endif -%}
+    {%- endfor -%}
+    {%- if found != "" -%}{% assign thumb = found %}{% endif -%}
+  {%- endif -%}
+{%- endif -%}
+
 {%- if thumb != "" -%}
   {%- assign first4 = thumb | slice:0,4 -%}
   {%- if first4 != "http" -%}
