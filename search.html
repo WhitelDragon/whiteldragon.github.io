@@ -1,24 +1,34 @@
 ---
 layout: default
 title: Поиск
+permalink: /search.html
 ---
-<h1>Поиск</h1>
 
-<!-- Блок управления сортировкой -->
-<div class="search-controls" style="margin-bottom: 1em;">
-  <label for="sort-order" style="font-weight: 600; margin-right: 8px;">Сортировать:</label>
-  <select id="sort-order">
-    <option value="relevance">по релевантности</option>
-    <option value="date_desc">по дате (новые сначала)</option>
-    <option value="date_asc">по дате (старые сначала)</option>
-  </select>
-</div>
+<main class="container search-page">
+  <h1>Поиск</h1>
 
-<!-- Подключение Pagefind UI -->
-<link href="{{ '/pagefind/pagefind-ui.css' | relative_url }}" rel="stylesheet">
-<div id="pagefind-search"></div>
-<script src="{{ '/pagefind/pagefind.js' | relative_url }}" type="text/javascript"></script>
-<script src="{{ '/pagefind/pagefind-ui.js' | relative_url }}" type="text/javascript"></script>
+  <div class="search-controls">
+    <form id="search-form" action="/search.html" method="get">
+      <input id="q" name="q" type="search" placeholder="Поиск по сайту…" aria-label="Запрос" />
+      <button type="submit">Найти</button>
+    </form>
 
-<!-- Подключение пользовательского скрипта поиска -->
-<script defer src="{{ '/assets/js/search.js' | relative_url }}"></script>
+    <label class="sort">
+      Сортировать:
+      <select id="sort">
+        <option value="relevance">по релевантности</option>
+        <option value="date_desc">по дате (новые сверху)</option>
+        <option value="date_asc">по дате (старые сверху)</option>
+      </select>
+    </label>
+  </div>
+
+  <p id="search-stats" class="muted"></p>
+  <div id="search-results" class="sr-list"></div>
+</main>
+
+<!-- Бандл Pagefind (должен существовать после индексации) -->
+<script async src="/pagefind/pagefind.js"></script>
+<!-- Наш кастомный поиск -->
+<script type="module" src="/assets/js/search.js"></script>
+<link rel="stylesheet" href="/assets/css/search.css" />
