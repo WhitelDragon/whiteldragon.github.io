@@ -1,0 +1,28 @@
+{%- comment -%}
+Возвращает URL первой картинки для превью или пустую строку.
+Порядок проверки:
+1) post.image / post.thumb во фронтматтере (если заданы).
+2) первая <img src="..."> в отрендеренном контенте (media.html, markdown, html — всё годится).
+{%- endcomment -%}
+
+{%- assign thumb = "" -%}
+
+{%- if include.post.image %}{% assign thumb = include.post.image %}{% endif -%}
+{%- if include.post.thumb and thumb == "" %}{% assign thumb = include.post.thumb %}{% endif -%}
+
+{%- if thumb == "" and include.post.content -%}
+  {%- assign parts = include.post.content | split:'<img ' -%}
+  {%- if parts.size > 1 -%}
+    {%- assign first_img = parts[1] -%}
+    {%- assign src_split = first_img | split:'src="' -%}
+    {%- if src_split.size > 1 -%}
+      {%- assign after_src = src_split[1] -%}
+      {%- assign url = after_src | split:'"' | first -%}
+      {%- if url contains 'http' or url startswith '/' -%}
+        {%- assign thumb = url -%}
+      {%- endif -%}
+    {%- endif -%}
+  {%- endif -%}
+{%- endif -%}
+
+{{ thumb }}
