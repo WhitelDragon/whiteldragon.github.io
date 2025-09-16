@@ -5,6 +5,7 @@
 .search-controls input[type="search"] { width: 100%; padding: 10px 12px; }
 .search-controls button { padding: 10px 14px; }
 .search-controls .sort select { padding: 8px; }
+
 .muted { color: #6b7280; margin: 6px 0 12px; }
 
 .sr-list { display: grid; gap: 14px; }
