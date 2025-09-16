@@ -1,0 +1,20 @@
+/* /assets/css/search.css */
+.search-page { max-width: 920px; margin: 0 auto; }
+.search-controls { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin: 8px 0 16px; }
+.search-controls form { display: flex; gap: 8px; flex: 1 1 420px; }
+.search-controls input[type="search"] { width: 100%; padding: 10px 12px; }
+.search-controls button { padding: 10px 14px; }
+.search-controls .sort select { padding: 8px; }
+
+.muted { color: #6b7280; margin: 6px 0 12px; }
+
+.sr-list { display: grid; gap: 14px; }
+.sr-item { display: block; text-decoration: none; color: inherit; border: 1px solid #e5e7eb; border-radius: 12px; padding: 12px; background: #fff; transition: box-shadow .15s ease, border-color .15s ease; }
+.sr-item:hover { box-shadow: 0 4px 18px rgba(0,0,0,.06); border-color: #d1d5db; }
+
+.sr-inner { display: flex; gap: 14px; align-items: flex-start; }
+.sr-thumb { width: 64px; height: 64px; flex: 0 0 64px; border-radius: 8px; object-fit: cover; background: #f3f4f6; }
+.sr-body { min-width: 0; }
+.sr-title { font-size: 16px; line-height: 1.25; margin: 0 0 4px; }
+.sr-meta { font-size: 12px; color: #6b7280; margin-bottom: 6px; }
+.sr-excerpt { margin: 0; color: #374151; }
