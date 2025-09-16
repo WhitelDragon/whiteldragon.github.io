@@ -14,8 +14,13 @@ layout: default
   <span hidden data-pagefind-meta="date:{{ page.date | date: '%d %b %Y' }}"></span>
   <span hidden data-pagefind-sort="date:{{ page.date | date: '%Y-%m-%d' }}"></span>
 
+  {%- comment -%} >>> ДОБАВЛЕНО: превью для поиска {%- endcomment -%}
+  {%- capture _thumb -%}{% include find-thumb.html post=page %}{%- endcapture -%}
+  {%- assign _thumb = _thumb | strip -%}
+  {%- if _thumb != "" -%}
+    <span hidden data-pagefind-meta="image:{{ _thumb }}"></span>
+  {%- endif -%}
+
   {{ content }}
   <div class="hidden-comments" style="display:none"></div>
 </article>
-
-
