@@ -3,7 +3,7 @@
 Приоритет:
 1) post.image / post.thumb (фронтматтер)
 2) первый <img src="..."> в HTML
-3) первая ссылка <a href="...{jpg|jpeg|png|webp|gif}">
+3) первая ссылка <a href="..."> на локальный файл-картинку
 {%- endcomment -%}
 
 {%- assign thumb = "" -%}
@@ -33,7 +33,9 @@
       {%- if h1.size > 1 -%}
         {%- assign href = h1[1] | split:'"' | first -%}
         {%- assign lower = href | downcase -%}
-        {%- if lower endswith '.jpg' or lower endswith '.jpeg' or lower endswith '.png' or lower endswith '.webp' or lower endswith '.gif' -%}
+        {%- assign lower = lower | split:'?' | first | split:'#' | first -%}
+        {%- assign ext = lower | split:'.' | last -%}
+        {%- if ext == 'jpg' or ext == 'jpeg' or ext == 'png' or ext == 'webp' or ext == 'gif' -%}
           {%- assign found = href -%}
           {%- break -%}
         {%- endif -%}
