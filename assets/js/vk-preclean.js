@@ -1,34 +1,47 @@
-// Удаляет дубли: если в статье есть <a href="https://vk.com/photo|video...">,
-// то соседний <p> с таким же "голым" VK-URL (photo|video) удаляем.
-// Делать это НУЖНО до запуска vk-photos.js.
+// Удаляет дубли до вставки картинок:
+// если в статье есть <a href="https://vk.com/(photo|video)<id>">,
+// то <p>, где встречается такой же "голый" URL (photo|video), удаляем.
+// Запускать ДО vk-photos.js.
 
 (function () {
-  function isVkMediaUrl(u) {
-    return /^https?:\/\/(?:m\.)?vk\.com\/(?:photo|video)\b/i.test(u);
+  function normVkMedia(url) {
+    try {
+      const u = new URL(url);
+      // только vk.com и m.vk.com
+      if (!/(^|\.)vk\.com$/i.test(u.hostname)) return null;
+      // интересуют только photo|video
+      const m = u.pathname.replace(/^\/+/, '').match(/^(photo|video)\d+_\d+$/i);
+      return m ? m[0].toLowerCase() : null; // например "photo41076938_457251035"
+    } catch (_) { return null; }
+  }
+
+  // извлекаем все media-id из текста абзаца (голые URL)
+  function findRawVkIds(text) {
+    const out = [];
+    const rx = /https?:\/\/(?:m\.)?vk\.com\/((?:photo|video)\d+_\d+)/ig;
+    let m;
+    while ((m = rx.exec(text)) !== null) {
+      out.push(m[1].toLowerCase());
+    }
+    return out;
   }
 
   document.addEventListener('DOMContentLoaded', function () {
     document.querySelectorAll('article.post').forEach(function (article) {
-      // 1) Собираем все href якорей на vk photo/video
-      const hrefs = new Set(
+      // Шаг 1: соберём ID из <a href="…"> внутри статьи
+      const anchorIds = new Set(
         Array.from(article.querySelectorAll('a[href]'))
-          .map(a => a.getAttribute('href'))
-          .filter(h => h && isVkMediaUrl(h))
+          .map(a => normVkMedia(a.getAttribute('href')))
+          .filter(Boolean)
       );
-      if (!hrefs.size) return;
+      if (!anchorIds.size) return;
 
-      // 2) Удаляем <p>, где встречается "голый" vk photo/video URL,
-      //     если такой же href есть среди якорей (во избежание дубля)
+      // Шаг 2: удалим <p>, где есть голые URL на те же ID
       Array.from(article.querySelectorAll('p')).forEach(function (p) {
-        const text = (p.textContent || "").trim();
-        if (!text) return;
-
-        // найдём все vk photo|video URL в этом <p>
-        const matches = text.match(/https?:\/\/(?:m\.)?vk\.com\/(?:photo|video)[^\s<)]+/ig);
-        if (!matches || !matches.length) return;
-
-        // если хотя бы один из них уже есть как <a href="..."> — удаляем параграф
-        if (matches.some(u => hrefs.has(u))) {
+        const ids = findRawVkIds(p.textContent || '');
+        if (!ids.length) return;
+        // есть пересечение с уже имеющимися якорями?
+        if (ids.some(id => anchorIds.has(id))) {
           p.remove();
         }
       });
