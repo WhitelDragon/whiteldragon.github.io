@@ -1,50 +1,75 @@
-// Удаляет дубли до вставки картинок:
-// если в статье есть <a href="https://vk.com/(photo|video)<id>">,
-// то <p>, где встречается такой же "голый" URL (photo|video), удаляем.
+// Удаляем только ГОЛЫЕ vk photo/video URL внутри <p>, если на тот же ID уже есть <a href="...">.
+// Сопроводительный текст в <p> сохраняем. Если после вырезания осталось лишь слово
+// "Фотография/Видео/Видеозапись" и пустота — удаляем весь <p>.
 // Запускать ДО vk-photos.js.
 
 (function () {
   function normVkMedia(url) {
     try {
       const u = new URL(url);
-      // только vk.com и m.vk.com
       if (!/(^|\.)vk\.com$/i.test(u.hostname)) return null;
-      // интересуют только photo|video
-      const m = u.pathname.replace(/^\/+/, '').match(/^(photo|video)\d+_\d+$/i);
-      return m ? m[0].toLowerCase() : null; // например "photo41076938_457251035"
+      const id = u.pathname.replace(/^\/+/, '').toLowerCase();
+      // ожидаем строго photo123_456 или video123_456
+      return /^(photo|video)\d+_\d+$/.test(id) ? id : null;
     } catch (_) { return null; }
   }
 
-  // извлекаем все media-id из текста абзаца (голые URL)
-  function findRawVkIds(text) {
-    const out = [];
-    const rx = /https?:\/\/(?:m\.)?vk\.com\/((?:photo|video)\d+_\d+)/ig;
-    let m;
-    while ((m = rx.exec(text)) !== null) {
-      out.push(m[1].toLowerCase());
+  function cutBareVkMediaInParagraph(p, hasAnchorId) {
+    // режем только совпадения, для которых уже есть anchor с тем же media-id
+    // оставшиеся vk-ссылки (без якорей) не трогаем — их обработает vk-photos.js
+    let html = p.innerHTML;
+
+    // отметим, вырезали ли что-то — чтобы потом проверить "пустую подпись"
+    let cutSomething = false;
+
+    html = html.replace(
+      /https?:\/\/(?:m\.)?vk\.com\/((?:photo|video)\d+_\d+)/ig,
+      (full, id) => {
+        const mediaId = String(id).toLowerCase();
+        if (hasAnchorId(mediaId)) { cutSomething = true; return ""; }
+        return full;
+      }
+    );
+
+    // нормализуем пробелы после вырезания ссылок
+    html = html.replace(/[ \t]{2,}/g, " ")
+               .replace(/\s+(\.|,|!|\?|;|:|\))/g, "$1")
+               .replace(/\(\s+/g, "(")
+               .trim();
+
+    // если осталась только подпись(и) без содержимого — удаляем абзац
+    const onlyLabel = (p) => {
+      const t = p.textContent.trim().toLowerCase();
+      if (!t) return true;
+      // допускаем несколько слов "фотография/видео/видеозапись" с пунктуацией
+      return /^((фотография|видео|видеозапись)[\s.,:;!?-]*)+$/i.test(t);
+    };
+
+    if (cutSomething) {
+      // применяем изменения
+      if (html.length === 0) {
+        p.remove();
+        return;
+      }
+      p.innerHTML = html;
+      if (onlyLabel(p)) p.remove();
     }
-    return out;
   }
 
   document.addEventListener('DOMContentLoaded', function () {
     document.querySelectorAll('article.post').forEach(function (article) {
-      // Шаг 1: соберём ID из <a href="…"> внутри статьи
+      // соберём media-id из якорей внутри статьи
       const anchorIds = new Set(
         Array.from(article.querySelectorAll('a[href]'))
-          .map(a => normVkMedia(a.getAttribute('href')))
+          .map(a => normVkMedia(a.getAttribute('href') || ""))
           .filter(Boolean)
       );
       if (!anchorIds.size) return;
 
-      // Шаг 2: удалим <p>, где есть голые URL на те же ID
-      Array.from(article.querySelectorAll('p')).forEach(function (p) {
-        const ids = findRawVkIds(p.textContent || '');
-        if (!ids.length) return;
-        // есть пересечение с уже имеющимися якорями?
-        if (ids.some(id => anchorIds.has(id))) {
-          p.remove();
-        }
-      });
+      const hasAnchorId = (id) => anchorIds.has(id);
+
+      // для каждого <p> вырезаем только голые vk-media URL с media-id, уже имеющим якорь
+      article.querySelectorAll('p').forEach(p => cutBareVkMediaInParagraph(p, hasAnchorId));
     });
   });
 })();
