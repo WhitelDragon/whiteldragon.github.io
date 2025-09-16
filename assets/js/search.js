@@ -1,127 +1,90 @@
-// assets/js/search.js
+// /assets/js/search.js
+(function () {
+  function init() {
+    if (typeof PagefindUI !== "function") return;
 
-// ----- helpers -----
-function getParam(name) {
-  return new URLSearchParams(window.location.search).get(name);
-}
-function setParam(name, value) {
-  const url = new URL(window.location.href);
-  if (value && String(value).length) url.searchParams.set(name, value);
-  else url.searchParams.delete(name);
-  history.replaceState(null, "", url.toString());
-}
+    const params = new URLSearchParams(location.search);
+    const q = params.get("q") || "";
+    const sortParam = params.get("sort"); // relevance | date_desc | date_asc
 
-// ----- state -----
-let lastQuery = getParam("q") || "";
-let lastSort  = getParam("sort") || "relevance"; // relevance | date_desc | date_asc
-let searchUI  = null;
+    // Подготовим опцию сортировки только на момент создания UI.
+    // Pagefind UI официально принимает объект sort, например { date: "desc" }.
+    // См. доки: https://pagefind.app/docs/ui/ (#Sort)
+    let sortOption;
+    if (sortParam === "date_desc") sortOption = { date: "desc" };
+    else if (sortParam === "date_asc") sortOption = { date: "asc" };
+    // если relevance — сортировку не передаём вовсе (по умолчанию — релевантность)
 
-// ----- DOM ready -----
-window.addEventListener("DOMContentLoaded", () => {
-  const sortSelect = document.getElementById("sort-order");
-  if (sortSelect) sortSelect.value = lastSort;
-
-  // Создаём UI с учётом выбранной сортировки
-  createUI();
-
-  // Если q уже есть в URL — сразу запускаем поиск
-  if (lastQuery) {
-    // Небольшая задержка, чтобы инпут успел появиться
-    requestAnimationFrame(() => {
-      restoreInputValue();
-      searchUI.triggerSearch(lastQuery);
-    });
-  }
-
-  // Слежение за DOM: убрать префикс "Date:" в выдаче
-  const resultsContainer = document.getElementById("pagefind-search");
-  if (resultsContainer) {
-    const observer = new MutationObserver((mutations) => {
-      for (const m of mutations) {
-        for (const node of m.addedNodes) {
-          if (node.nodeType !== 1) continue;
-          // Удаляем "Date: " в метаданных даты
-          node.querySelectorAll('[data-pagefind-ui-meta="date"]').forEach((el) => {
-            el.textContent = el.textContent.replace(/^Date:\s*/, "");
-          });
-          // Если появился новый инпут поиска — привязываем listener
-          const input = node.matches?.('input[type="search"]')
-            ? node
-            : node.querySelector?.('#pagefind-search input[type="search"]');
-          if (input && !input.dataset.listenerAttached) {
-            attachInputListener(input);
+    // Создаём UI максимально «по-стандарту», с включёнными миниатюрами.
+    const ui = new PagefindUI({
+      element: "#pagefind-search",
+      showImages: true,     // миниатюры в выдаче (по умолчанию true, но фиксируем явно)
+      sort: sortOption,
+      // лёгкая подстраховка путей на случай "./img.jpg"
+      processResult(result) {
+        if (result?.meta?.image && typeof result.meta.image === "string") {
+          if (result.meta.image.startsWith("./")) {
+            result.meta.image = result.meta.image.slice(1);
           }
         }
+        return result;
+      },
+      resetStyles: false // оставляем твои стили поверх стандартных
+    });
+
+    // Внешняя форма «Найти» (верхняя строка) — пробрасываем значение во внутренний инпут UI.
+    const form = document.getElementById("search-form");
+    const extInput = document.getElementById("q");
+    const sortSelect = document.getElementById("sort-order");
+
+    if (extInput) extInput.value = q;
+
+    // Когда UI вставит свой input — проставим стартовый запрос из ?q=
+    requestAnimationFrame(() => {
+      const internal = document.querySelector('#pagefind-search input[type="search"]');
+      if (internal && q) {
+        internal.value = q;
+        internal.dispatchEvent(new Event("input", { bubbles: true }));
       }
     });
-    observer.observe(resultsContainer, { childList: true, subtree: true });
-  }
 
-  // Смена сортировки
-  if (sortSelect) {
-    sortSelect.addEventListener("change", () => {
-      lastSort = sortSelect.value;
-      setParam("sort", lastSort === "relevance" ? "" : lastSort);
-
-      // Сохраняем текущий текст запроса из инпута (на всякий)
-      const input = document.querySelector('#pagefind-search input[type="search"]');
-      if (input) lastQuery = input.value || lastQuery;
-
-      // Пересоздаём UI с новой сортировкой и восстанавливаем запрос
-      if (searchUI) searchUI.destroy();
-      createUI();
-      requestAnimationFrame(() => {
-        restoreInputValue();
-        if (lastQuery) searchUI.triggerSearch(lastQuery);
+    // Сабмит внешней формы — ищем без перезагрузки страницы
+    if (form && extInput) {
+      form.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const val = extInput.value || "";
+        const internal = document.querySelector('#pagefind-search input[type="search"]');
+        if (internal) {
+          internal.value = val;
+          internal.dispatchEvent(new Event("input", { bubbles: true }));
+        }
+        // подправим URL (красиво)
+        const usp = new URLSearchParams(location.search);
+        if (val) usp.set("q", val); else usp.delete("q");
+        if (sortParam) usp.set("sort", sortParam); else usp.delete("sort");
+        history.replaceState(null, "", location.pathname + (usp.toString() ? "?" + usp.toString() : ""));
       });
-    });
-  }
-});
-
-// ----- functions -----
-function createUI() {
-  const baseOpts = {
-    element: "#pagefind-search",
-    showImages: true,
-    pageSize: 10,
-    translations: {
-      placeholder: "Искать по сайту…",
-      zero_results: "Ничего не найдено",
-      clear_search: "Очистить",
-      load_more: "Показать ещё",
-    },
-  };
-
-  if (lastSort === "date_desc") {
-    baseOpts.sort = { date: "desc" };
-  } else if (lastSort === "date_asc") {
-    baseOpts.sort = { date: "asc" };
-  }
-  searchUI = new PagefindUI(baseOpts);
-
-  // Как только инпут появится — проставим значение и listener
-  requestAnimationFrame(() => {
-    const input = document.querySelector('#pagefind-search input[type="search"]');
-    if (input) {
-      restoreInputValue();
-      attachInputListener(input);
     }
-  });
-}
 
-function restoreInputValue() {
-  const input = document.querySelector('#pagefind-search input[type="search"]');
-  if (input && input.value !== lastQuery) {
-    input.value = lastQuery;
+    // Переключатель сортировки — делаем просто: меняем параметр и перезагружаем,
+    // т.к. sort применяется только при создании PagefindUI (так стабильнее всего).
+    if (sortSelect) {
+      sortSelect.value = sortParam || "relevance";
+      sortSelect.addEventListener("change", () => {
+        const usp = new URLSearchParams(location.search);
+        const val = sortSelect.value;
+        if (val === "relevance") usp.delete("sort"); else usp.set("sort", val);
+        // сохраним текущий запрос, чтобы он не потерялся
+        const curQ = (extInput && extInput.value) || q;
+        if (curQ) usp.set("q", curQ); else usp.delete("q");
+        location.search = usp.toString();
+      });
+    }
   }
-}
 
-function attachInputListener(input) {
-  if (!input || input.dataset.listenerAttached) return;
-  input.dataset.listenerAttached = "1";
-  input.addEventListener("input", () => {
-    lastQuery = input.value || "";
-    // Синхронизируем адресную строку
-    setParam("q", lastQuery);
-  }, { passive: true });
-}
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
+  } else {
+    init();
+  }
+})();
