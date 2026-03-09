@@ -12,6 +12,14 @@ plugins:
 paginate: 10              # по 10 постов на страницу
 paginate_path: "/page:num/"
 
-
+defaults:
+  - scope:
+      path: "assets/comments"
+    values:
+      sitemap: false
+  - scope:
+      path: "google6b56eb206c057dd4.html"
+    values:
+      sitemap: false
 
 
