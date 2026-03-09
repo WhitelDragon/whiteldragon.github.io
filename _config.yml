@@ -1,18 +1,50 @@
 title: Мой архив ВКонтакте (в разработке v0.170925.2)
-description: Личная стена
+description: "Личная стена — архив записей ВКонтакте от Whitel Dragon"
 url: https://whiteldragon.github.io
 baseurl: ""
+lang: ru
+locale: ru_RU
+
+author:
+  name: Whitel Dragon
+  url: https://t.me/WhliD
+
 ga4: "G-3L672NMKB9"
+
 plugins:
   - jekyll-sitemap
   - jekyll-feed
   - jekyll-seo-tag
   - jekyll-paginate
 
-paginate: 10              # по 10 постов на страницу
+paginate: 10
 paginate_path: "/page:num/"
 
+# Open Graph / соцсети
+social:
+  name: Whitel Dragon
+  links:
+    - https://t.me/WhliD
+
+# SEO: заголовок в поиске будет "Название поста | Мой архив ВКонтакте"
+tagline: "Архив записей ВКонтакте"
+
+# Мета-теги по умолчанию для постов и страниц
 defaults:
+  - scope:
+      path: ""
+      type: "posts"
+    values:
+      author: Whitel Dragon
+      lang: ru
+      sitemap: true
+  - scope:
+      path: ""
+      type: "pages"
+    values:
+      author: Whitel Dragon
+      lang: ru
+      sitemap: true
   - scope:
       path: "assets/comments"
     values:
@@ -21,5 +53,11 @@ defaults:
       path: "google6b56eb206c057dd4.html"
     values:
       sitemap: false
-
-
+  - scope:
+      path: "search.json"
+    values:
+      sitemap: false
+  - scope:
+      path: "photos.json"
+    values:
+      sitemap: false
