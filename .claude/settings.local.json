@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(grep -r sitemap: G:/User/Documents/GitHub/whiteldragon.github.io/assets/ --include=*.css --include=*.js -l)",
+      "Bash(for f:*)",
+      "Bash(do echo:*)",
+      "Read(//g/User/Documents/GitHub/whiteldragon.github.io/**)",
+      "Bash(done)",
+      "WebFetch(domain:whiteldragon.github.io)"
+    ]
+  }
+}

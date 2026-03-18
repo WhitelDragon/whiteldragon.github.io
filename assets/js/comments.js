@@ -1,4 +1,5 @@
 ---
+sitemap: false
 ---
 (() => {
   const CANDIDATE_BASES = [

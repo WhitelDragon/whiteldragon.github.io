@@ -46,7 +46,7 @@ defaults:
       lang: ru
       sitemap: true
   - scope:
-      path: "assets/comments"
+      path: "assets"
     values:
       sitemap: false
   - scope:

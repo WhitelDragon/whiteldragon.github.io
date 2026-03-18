@@ -11,8 +11,8 @@
   <link rel="alternate" hreflang="ru" href="{{ page.url | absolute_url }}">
   <link rel="alternate" hreflang="x-default" href="{{ page.url | absolute_url }}">
 
-  <!-- noindex для страниц пагинации (page2, page3 ...) -->
-  {% if paginator and paginator.page > 1 %}
+  <!-- noindex для страниц пагинации (page2, page3 ...) и страниц с noindex: true -->
+  {% if paginator and paginator.page > 1 or page.noindex %}
   <meta name="robots" content="noindex, follow">
   {% endif %}
 
