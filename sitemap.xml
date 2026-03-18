@@ -1,0 +1,35 @@
+---
+layout: null
+sitemap: false
+---
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd"
+        xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  {%- for post in site.posts -%}
+  {%- unless post.sitemap == false -%}
+  <url>
+    <loc>{{ site.url }}{{ post.url | replace:'index.html','' }}</loc>
+    {%- if post.date -%}
+    <lastmod>{{ post.date | date_to_xmlschema }}</lastmod>
+    {%- endif -%}
+  </url>
+  {%- endunless -%}
+  {%- endfor -%}
+  {%- for page in site.pages -%}
+  {%- unless page.sitemap == false
+      or page.url contains '/page'
+      or page.url == '/search.html'
+      or page.url == '/search.json'
+      or page.url == '/photos.json'
+      or page.url contains 'assets/comments'
+      or page.url contains 'google' -%}
+  <url>
+    <loc>{{ site.url }}{{ page.url | replace:'index.html','' }}</loc>
+    {%- if page.date -%}
+    <lastmod>{{ page.date | date_to_xmlschema }}</lastmod>
+    {%- endif -%}
+  </url>
+  {%- endunless -%}
+  {%- endfor -%}
+</urlset>
