@@ -1,4 +1,5 @@
 ---
+sitemap: false
 ---
 (() => {
   // Базовые пути (Liquid подставит baseurl проекта)
