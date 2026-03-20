@@ -1,0 +1,100 @@
+---
+layout: default
+title: "Обработанные фото-посты"
+permalink: /described.html
+noindex: true
+sitemap: false
+---
+
+<h1>Фото-посты с описаниями</h1>
+<p class="described-meta">
+  {% assign described_posts = site.posts | where: "described", true %}
+  Обработано постов: <strong>{{ described_posts | size }}</strong>
+</p>
+
+{% if described_posts.size == 0 %}
+  <p class="described-empty">Пока ни одного поста не обработано.</p>
+{% else %}
+  <div class="described-grid">
+    {% for post in described_posts %}
+      <article class="described-card">
+        <div class="described-card__meta">
+          <span class="date">{{ post.date | date: "%d %b %Y" }}</span>
+        </div>
+        <h2 class="described-card__title">
+          <a href="{{ post.url | relative_url }}">{{ post.title }}</a>
+        </h2>
+        {% if post.thumb %}
+          <div class="described-card__thumb">
+            <a href="{{ post.url | relative_url }}">
+              <img src="{{ post.thumb | relative_url }}" alt="{{ post.title }}" loading="lazy">
+            </a>
+          </div>
+        {% endif %}
+        {% if post.description_text %}
+          <p class="described-card__desc">{{ post.description_text }}</p>
+        {% endif %}
+      </article>
+    {% endfor %}
+  </div>
+{% endif %}
+
+<style>
+.described-meta {
+  color: #666;
+  margin-bottom: 1.5rem;
+  font-size: 0.95rem;
+}
+.described-empty {
+  color: #999;
+  font-style: italic;
+}
+.described-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.25rem;
+  margin-top: 1rem;
+}
+.described-card {
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.described-card__meta .date {
+  font-size: 0.8rem;
+  color: #888;
+}
+.described-card__title {
+  font-size: 1rem;
+  margin: 0;
+  line-height: 1.4;
+}
+.described-card__title a {
+  color: #1a1a2e;
+  text-decoration: none;
+}
+.described-card__title a:hover {
+  text-decoration: underline;
+}
+.described-card__thumb img {
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+  border-radius: 4px;
+  display: block;
+}
+.described-card__desc {
+  font-size: 0.85rem;
+  color: #555;
+  margin: 0;
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+</style>
