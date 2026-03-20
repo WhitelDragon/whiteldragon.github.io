@@ -1,5 +1,5 @@
-title: "WhiteL Dragon. Всё что осталось от страницы ВКонтакте."
-description: "Личная стена — архив записей ВКонтакте от Whitel Dragon"
+title: "WhiteL Dragon"
+description: "Всё что осталось от страницы ВКонтакте — личный архив Whitel Dragon"
 url: https://whiteldragon.github.io
 baseurl: ""
 lang: ru
@@ -27,7 +27,7 @@ social:
     - https://t.me/WhliD
 
 # SEO: заголовок в поиске будет "Название поста | Мой архив ВКонтакте"
-tagline: "Архив записей ВКонтакте"
+tagline: "Всё что осталось от страницы ВКонтакте"
 
 # Мета-теги по умолчанию для постов и страниц
 defaults:
@@ -59,5 +59,9 @@ defaults:
       sitemap: false
   - scope:
       path: "photos.json"
+    values:
+      sitemap: false
+  - scope:
+      path: "a108c9e675e04e9ba60801ccf336bb78.txt"
     values:
       sitemap: false

@@ -3,8 +3,6 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{{ page.title | default: site.title }}</title>
-
   {% seo %}
 
   <!-- hreflang для русскоязычного контента -->
@@ -42,6 +40,7 @@
     <div class="wrap">
       <div class="brand">
         <a href="{{ site.baseurl }}/">{{ site.title }}</a>
+        {% if site.tagline %}<span class="site-tagline">{{ site.tagline }}</span>{% endif %}
       </div>
       <div class="searchbox">
         <form class="site-search" action="{{ '/search.html' | relative_url }}" method="get" role="search">
@@ -104,5 +103,14 @@
   <script defer src="{{ '/assets/js/media-tiles.js' | relative_url }}"></script>
   <script defer src="{{ '/assets/js/autolink-bare-urls.js' | relative_url }}"></script>
   <script defer src="{{ '/assets/js/vk-photos.js' | relative_url }}"></script>
+
+  <!-- Добавляем пустой alt к изображениям без атрибута alt (SEO / a11y) -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      document.querySelectorAll('img:not([alt])').forEach(function (img) {
+        img.setAttribute('alt', '');
+      });
+    });
+  </script>
 </body>
 </html>
