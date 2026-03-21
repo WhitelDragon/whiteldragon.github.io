@@ -41,7 +41,7 @@
 
 </head>
 <body>
-  <header class="site-header">
+  <header class="site-header" data-pagefind-ignore>
     <div class="wrap">
       <div class="brand">
         <a href="{{ site.baseurl }}/">{{ site.title }}</a>
@@ -58,7 +58,7 @@
   </header>
 
   <div class="layout">
-    <aside class="sidebar">
+    <aside class="sidebar" data-pagefind-ignore>
       <!-- по умолчанию свёрнуто (нет open) -->
       <details class="archive">
         <summary>Архив по годам</summary>
@@ -80,7 +80,7 @@
     </main>
   </div>
 
-  <footer class="site-footer">
+  <footer class="site-footer" data-pagefind-ignore>
     <div class="wrap">
       <p>© {{ site.time | date: '%Y' }} — {{ site.title }}</p>
     </div>
