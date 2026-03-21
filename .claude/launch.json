@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "Jekyll serve",
+      "runtimeExecutable": "C:/Ruby34-x64/bin/ruby.exe",
+      "runtimeArgs": ["C:/Ruby34-x64/bin/jekyll", "serve", "--livereload"],
+      "port": 4000
+    }
+  ]
+}
