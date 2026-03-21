@@ -23,6 +23,17 @@ p { margin: .6em 0; }
 /* Якоря не прячутся под липкой шапкой */
 h2, h3, h4 { scroll-margin-top: 84px; }
 
+/* ====== Подвал ====== */
+.site-footer {
+  background: var(--brand); color: rgba(255,255,255,0.85);
+  margin-top: 40px;
+}
+.site-footer .wrap {
+  max-width: 980px; margin: 0 auto; padding: 12px 20px;
+  font-size: 0.85em;
+}
+.site-footer p { margin: 0; }
+
 /* ====== Шапка ====== */
 .site-header {
   position: sticky; top: 0; z-index: 1000;
