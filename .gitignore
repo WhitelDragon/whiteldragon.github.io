@@ -1,4 +1,7 @@
 _site/
+_site_sitemap_test/
+_site_probe/
+_site_build_probe/
 .sass-cache/
 .jekyll-cache/
 .jekyll-metadata

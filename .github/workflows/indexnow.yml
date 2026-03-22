@@ -61,16 +61,30 @@ jobs:
             return new Promise(r => setTimeout(r, ms));
           }
 
-          async function main() {
-            console.log('Fetching sitemap:', SITEMAP_URL);
-            const xml = await fetchUrl(SITEMAP_URL);
-
-            const allUrls = [];
+          function extractLocs(xml) {
+            const urls = [];
             const re = /<loc>(https?:\/\/[^<]+)<\/loc>/g;
             let m;
             while ((m = re.exec(xml)) !== null) {
-              allUrls.push(m[1].trim());
+              urls.push(m[1].trim());
             }
+            return urls;
+          }
+
+          async function collectUrlsFromSitemap(url) {
+            const xml = await fetchUrl(url);
+            if (xml.includes('<sitemapindex')) {
+              const childSitemaps = extractLocs(xml);
+              console.log('Found ' + childSitemaps.length + ' child sitemaps');
+              const nested = await Promise.all(childSitemaps.map(child => fetchUrl(child)));
+              return nested.flatMap(extractLocs);
+            }
+            return extractLocs(xml);
+          }
+
+          async function main() {
+            console.log('Fetching sitemap:', SITEMAP_URL);
+            const allUrls = await collectUrlsFromSitemap(SITEMAP_URL);
             console.log('Found ' + allUrls.length + ' URLs in sitemap');
 
             const postUrls = allUrls.filter(url => {
