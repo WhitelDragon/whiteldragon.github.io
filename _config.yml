@@ -20,9 +20,14 @@ paginate: 10
 paginate_path: "/page:num/"
 
 exclude:
+  - vendor
+  - .bundle
   - _site_probe
   - _site_build_probe
   - _site_sitemap_test
+  - _site_ruby_probe
+  - _site_ruby_process_probe
+  - _site_ruby_process_probe2
 
 # Open Graph / соцсети
 social:
