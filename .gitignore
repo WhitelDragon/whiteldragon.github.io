@@ -2,6 +2,9 @@ _site/
 _site_sitemap_test/
 _site_probe/
 _site_build_probe/
+_site_ruby_probe/
+_site_ruby_process_probe/
+_site_ruby_process_probe2/
 .sass-cache/
 .jekyll-cache/
 .jekyll-metadata
