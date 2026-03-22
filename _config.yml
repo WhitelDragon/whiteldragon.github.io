@@ -12,13 +12,17 @@ author:
 ga4: "G-3L672NMKB9"
 
 plugins:
-  - jekyll-sitemap
   - jekyll-feed
   - jekyll-seo-tag
   - jekyll-paginate
 
 paginate: 10
 paginate_path: "/page:num/"
+
+exclude:
+  - _site_probe
+  - _site_build_probe
+  - _site_sitemap_test
 
 # Open Graph / соцсети
 social:
@@ -58,10 +62,22 @@ defaults:
     values:
       sitemap: false
   - scope:
+      path: "search.html"
+    values:
+      sitemap: false
+  - scope:
       path: "photos.json"
     values:
       sitemap: false
   - scope:
+      path: "archive.html"
+    values:
+      sitemap: false
+  - scope:
       path: "a108c9e675e04e9ba60801ccf336bb78.txt"
+    values:
+      sitemap: false
+  - scope:
+      path: "tools/post-studio.html"
     values:
       sitemap: false
