@@ -5,8 +5,13 @@ _site_build_probe/
 _site_ruby_probe/
 _site_ruby_process_probe/
 _site_ruby_process_probe2/
+_site_bundle_check/
+_site_fullcheck/
+_site_ci_mimic/
+_site_layout_check/
 .sass-cache/
 .jekyll-cache/
 .jekyll-metadata
+.bundle/
 .claude/
 Gemfile.lock
