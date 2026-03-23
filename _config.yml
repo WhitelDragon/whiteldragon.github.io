@@ -44,6 +44,7 @@ defaults:
       path: ""
       type: "posts"
     values:
+      layout: post
       author: Whitel Dragon
       lang: ru
       sitemap: true
