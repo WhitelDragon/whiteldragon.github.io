@@ -1,0 +1,36 @@
+---
+layout: default
+title: Статьи
+permalink: /articles.html
+---
+
+<h1>Статьи</h1>
+
+{% assign articles = site.articles | sort: 'date' | reverse %}
+
+{% if articles.size == 0 %}
+  <p style="color:#999; font-style:italic;">Пока нет статей.</p>
+{% else %}
+  <div class="articles-grid">
+    {% for article in articles %}
+      <article class="article-card">
+        <div class="article-card__meta">
+          <span class="date">{{ article.date | date: "%d %b %Y" }}</span>
+        </div>
+        <h2 class="article-card__title">
+          <a href="{{ article.url | relative_url }}">{{ article.title }}</a>
+        </h2>
+        {% if article.description %}
+          <p class="article-card__desc">{{ article.description }}</p>
+        {% endif %}
+        {% if article.tags.size > 0 %}
+          <div class="article-card__tags">
+            {% for tag in article.tags %}
+              <span class="article-tag">{{ tag }}</span>
+            {% endfor %}
+          </div>
+        {% endif %}
+      </article>
+    {% endfor %}
+  </div>
+{% endif %}

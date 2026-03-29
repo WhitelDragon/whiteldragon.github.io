@@ -77,7 +77,7 @@
     {%- endif -%}
     <figure class="{{ figure_class }}">
       <video controls playsinline
-             preload="{{ include.preload | default: 'metadata' }}"{{ poster_attr }}{% if include.autoplay %} autoplay{% endif %}{% if include.muted %} muted{% endif %}{% if include.loop %} loop{% endif %}
+             preload="{{ include.preload | default: 'metadata' }}"{{ poster_attr }}{% if include.autoplay %} autoplay{% endif %}{% if include.muted %} muted{% endif %}{% if include.loop %} loop{% endif %}{% if include.title %} title="{{ include.title | escape }}" aria-label="{{ include.title | escape }}"{% endif %}
              style="max-width:100%">
         <source src="{{ url }}" type="{{ mime }}">
         Ваш браузер не поддерживает видео.

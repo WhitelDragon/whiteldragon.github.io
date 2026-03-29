@@ -1,0 +1,28 @@
+---
+layout: default
+---
+
+<article class="post article" data-pagefind-body>
+  <h1 data-pagefind-weight="10">{{ page.title }}</h1>
+  <p class="date">{{ page.date | date: '%d %b %Y' }}</p>
+
+  <!-- Метаданные для Pagefind -->
+  <span hidden data-pagefind-meta="date:{{ page.date | date: '%d %b %Y' }}"></span>
+  <span hidden data-pagefind-sort="date:{{ page.date | date: '%Y-%m-%d' }}"></span>
+
+  {% if page.description %}
+    <p class="article-description">{{ page.description }}</p>
+  {% endif %}
+
+  {% if page.tags.size > 0 %}
+    <div class="article-card__tags" style="margin-bottom: 1rem;">
+      {% for tag in page.tags %}
+        <span class="article-tag">{{ tag }}</span>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  {{ content }}
+
+  <p class="article-back"><a href="{{ '/articles.html' | relative_url }}">&larr; Все статьи</a></p>
+</article>
