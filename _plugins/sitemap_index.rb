@@ -71,7 +71,16 @@ module Jekyll
         collection.docs.each { |doc| docs << entry_for(site, doc) }
       end
 
-      docs.compact.uniq { |entry| entry[:loc] }.sort_by { |entry| entry[:loc] }
+      entries = docs.compact.uniq { |entry| entry[:loc] }.sort_by { |entry| entry[:loc] }
+
+      # Автоматический lastmod для главной страницы = дата самого свежего поста
+      home_url = site.config["url"].to_s.sub(%r{/*$}, "") + "/"
+      latest = entries.map { |e| e[:lastmod] }.compact.max
+      entries.each do |entry|
+        entry[:lastmod] = latest if entry[:loc] == home_url && entry[:lastmod].nil? && latest
+      end
+
+      entries
     end
 
     def entry_for(site, doc)
@@ -131,7 +140,8 @@ module Jekyll
           doc.data["last_modified_at"]
         end
 
-      value.respond_to?(:xmlschema) ? value.xmlschema : nil
+      return nil unless value
+      value.respond_to?(:strftime) ? value.strftime("%Y-%m-%d") : nil
     end
 
     def build_urlset(entries)
