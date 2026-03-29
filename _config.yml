@@ -20,6 +20,11 @@ plugins:
 paginate: 10
 paginate_path: "/page:num/"
 
+collections:
+  articles:
+    output: true
+    permalink: /articles/:slug/
+
 exclude:
   - vendor
   - .bundle
@@ -46,6 +51,14 @@ defaults:
       type: "posts"
     values:
       layout: post
+      author: Whitel Dragon
+      lang: ru
+      sitemap: true
+  - scope:
+      path: ""
+      type: "articles"
+    values:
+      layout: article
       author: Whitel Dragon
       lang: ru
       sitemap: true
