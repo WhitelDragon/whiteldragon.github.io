@@ -1,0 +1,15 @@
+{%- assign video_id = include.id | strip -%}
+{%- assign video_label = include.label | default: page.title | default: 'YouTube video' -%}
+{%- assign start_param = include.start | default: '' | strip -%}
+{%- if video_id != '' -%}
+<figure class="media media-youtube youtube-embed">
+  <iframe
+    loading="lazy"
+    allowfullscreen
+    referrerpolicy="strict-origin-when-cross-origin"
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+    title="{{ video_label | escape }}"
+    src="https://www.youtube-nocookie.com/embed/{{ video_id | escape }}?rel=0{% if start_param != '' %}&start={{ start_param | escape }}{% endif %}">
+  </iframe>
+</figure>
+{%- endif -%}

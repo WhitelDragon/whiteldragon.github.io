@@ -15,3 +15,7 @@ _site_layout_check/
 .bundle/
 .claude/
 Gemfile.lock
+tools/
+temp/
+_temp/
+assets/img/articles/smertelnaya-drama-v-fullertone/trojnaya-mokruha-furri.mp4

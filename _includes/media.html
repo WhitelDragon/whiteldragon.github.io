@@ -1,32 +1,29 @@
 {%- comment -%}
-Универсальная обёртка медиа (картинки — квадратные превью с раскрытием).
+Universal media include.
 
-Использование (всегда полный путь):
-  {% include media.html f="/assets/img/2025/slug/photo.jpg" alt="..." %}
-  {% include media.html f="/assets/video/2025/slug/clip.mp4" poster="/assets/img/2025/slug/poster.jpg" %}
-  {% include media.html f="/assets/audio/2025/slug/voice.m4a" %}
+Usage:
+  {% include media.html f="/assets/img/example.jpg" alt="Description" %}
+  {% include media.html f="/assets/video/clip.mp4" title="Clip title" %}
+  {% include media.html f="/assets/audio/voice.m4a" %}
 
-Параметры:
-  f          — обязателен. Абсолютный путь (/assets/...) или http(s)
-  alt, cap, class, width, height — стандартно
-  poster     — для видео
-  preload    — metadata|auto|none (по умолчанию metadata)
-  autoplay, muted, loop — флаги для видео
-  noexpand   — если указать, картинка не кликабельна
-  full       — если указать, для этой картинки ОТКЛЮЧИТЬ квадратное превью (сразу полноразмерная)
-  thumb      — размер плитки в px (по умолчанию 220). Пример: thumb=180
+Supported params:
+  f/src, alt, cap, class, width, height, poster,
+  preload, autoplay, muted, loop, noexpand, full, thumb, title
 {%- endcomment -%}
 
 {%- assign src = include.f | default: include.src | default: '' | strip -%}
 {%- unless src == '' or src == nil -%}
-
   {%- assign ext = src | split: '.' | last | downcase -%}
   {%- assign is_http = src contains '://' -%}
-  {%- if is_http -%}{% assign url = src %}{%- else -%}{% assign url = src | relative_url %}{%- endif -%}
+  {%- if is_http -%}
+    {%- assign url = src -%}
+  {%- else -%}
+    {%- assign url = src | relative_url -%}
+  {%- endif -%}
 
-  {%- assign img_exts = 'jpg,jpeg,png,webp,gif,avif,svg' | split: ',' -%}
-  {%- assign vid_exts = 'mp4,webm,ogv' | split: ',' -%}
-  {%- assign aud_exts = 'mp3,ogg,wav,m4a,flac' | split: ',' -%}
+  {%- assign img_exts = 'jpg,jpeg,png,webp,gif,avif,svg,bmp' | split: ',' -%}
+  {%- assign vid_exts = 'mp4,webm,ogv,m3u8,m4v,mov,mkv' | split: ',' -%}
+  {%- assign aud_exts = 'mp3,ogg,wav,m4a,flac,oga' | split: ',' -%}
 
   {%- if img_exts contains ext -%}
     {%- assign kind = 'img' -%}
@@ -43,44 +40,53 @@
     {%- assign figure_class = figure_class | append: ' ' | append: include.class -%}
   {%- endif -%}
 
-  {%- capture caption_html -%}{% if include.cap and include.cap != '' %}<figcaption>{{ include.cap }}</figcaption>{% endif %}{%- endcapture -%}
+  {%- capture caption_html -%}
+    {% if include.cap and include.cap != '' %}<figcaption>{{ include.cap }}</figcaption>{% endif %}
+  {%- endcapture -%}
 
   {%- if kind == 'img' -%}
-    {%- assign is_thumb = true -%}{% if include.full %}{% assign is_thumb = false %}{% endif -%}
-    {%- capture thumb_style -%}{% if include.thumb %} style="--thumb-size: {{ include.thumb | append: 'px' }}"{% endif %}{%- endcapture -%}
+    {%- assign img_alt = include.alt | default: include.cap | default: page.title | default: 'Изображение' -%}
+    {%- assign is_thumb = true -%}
+    {%- if include.full -%}{% assign is_thumb = false %}{%- endif -%}
+    {%- capture thumb_style -%}
+      {% if include.thumb %} style="--thumb-size: {{ include.thumb | append: 'px' }}"{% endif %}
+    {%- endcapture -%}
     <figure class="{{ figure_class }}{% if is_thumb %} expandable thumb{% else %} expandable{% endif %}"{% if is_thumb %}{{ thumb_style }}{% endif %}{% unless include.noexpand %} tabindex="0" role="button" aria-expanded="false"{% endunless %}>
-      <img src="{{ url }}"
-           alt="{{ include.alt | default: '' | escape }}"
-           loading="lazy" decoding="async"{% if include.width %} width="{{ include.width | escape }}"{% endif %}{% if include.height %} height="{{ include.height | escape }}"{% endif %}>
+      <img src="{{ url }}" alt="{{ img_alt | escape }}" loading="lazy" decoding="async"{% if include.width %} width="{{ include.width | escape }}"{% endif %}{% if include.height %} height="{{ include.height | escape }}"{% endif %}>
       {{ caption_html }}
     </figure>
 
   {%- elsif kind == 'audio' -%}
+    {%- assign audio_label = include.title | default: include.cap | default: page.title | default: 'Аудио' -%}
     {%- assign mime = 'audio/' | append: ext -%}
     {%- if ext == 'm4a' -%}{% assign mime = 'audio/mp4' %}{%- endif -%}
     <figure class="{{ figure_class }}">
-      <audio controls preload="{{ include.preload | default: 'metadata' }}">
+      <audio controls preload="{{ include.preload | default: 'metadata' }}" title="{{ audio_label | escape }}" aria-label="{{ audio_label | escape }}">
         <source src="{{ url }}" type="{{ mime }}">
-        Ваш браузер не поддерживает аудио.
+        Your browser does not support audio.
       </audio>
       {{ caption_html }}
     </figure>
 
   {%- elsif kind == 'video' -%}
+    {%- assign video_label = include.title | default: include.cap | default: page.title | default: 'Видео' -%}
     {%- assign mime = 'video/' | append: ext -%}
     {%- if ext == 'ogv' -%}{% assign mime = 'video/ogg' %}{%- endif -%}
+    {%- if ext == 'm3u8' -%}{% assign mime = 'application/vnd.apple.mpegurl' %}{%- endif -%}
     {%- assign poster_attr = '' -%}
     {%- if include.poster and include.poster != '' -%}
       {%- assign p = include.poster | strip -%}
-      {%- if p contains '://' -%}{% assign poster_url = p %}{%- else -%}{% assign poster_url = p | relative_url %}{%- endif -%}
+      {%- if p contains '://' -%}
+        {%- assign poster_url = p -%}
+      {%- else -%}
+        {%- assign poster_url = p | relative_url -%}
+      {%- endif -%}
       {%- assign poster_attr = ' poster="' | append: poster_url | append: '"' -%}
     {%- endif -%}
     <figure class="{{ figure_class }}">
-      <video controls playsinline
-             preload="{{ include.preload | default: 'metadata' }}"{{ poster_attr }}{% if include.autoplay %} autoplay{% endif %}{% if include.muted %} muted{% endif %}{% if include.loop %} loop{% endif %}{% if include.title %} title="{{ include.title | escape }}" aria-label="{{ include.title | escape }}"{% endif %}
-             style="max-width:100%">
+      <video controls playsinline preload="{{ include.preload | default: 'metadata' }}"{{ poster_attr }}{% if ext == 'm3u8' %} data-hls="{{ url }}"{% endif %}{% if include.autoplay %} autoplay{% endif %}{% if include.muted %} muted{% endif %}{% if include.loop %} loop{% endif %} title="{{ video_label | escape }}" aria-label="{{ video_label | escape }}" style="max-width:100%">
         <source src="{{ url }}" type="{{ mime }}">
-        Ваш браузер не поддерживает видео.
+        Your browser does not support video.
       </video>
       {{ caption_html }}
     </figure>
@@ -88,5 +94,5 @@
   {%- else -%}
     <p><a href="{{ url }}">{{ src }}</a></p>
   {%- endif -%}
-
 {%- endunless -%}
+
