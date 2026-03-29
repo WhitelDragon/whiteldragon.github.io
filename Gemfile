@@ -10,5 +10,7 @@ gem "jekyll-feed"
 gem "kramdown-parser-gfm"
 gem "base64"
 gem "bigdecimal"
+gem "tzinfo"
+gem "tzinfo-data"
 
 

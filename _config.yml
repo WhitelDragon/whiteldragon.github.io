@@ -4,6 +4,7 @@ url: https://whiteldragon.github.io
 baseurl: ""
 lang: ru
 locale: ru_RU
+timezone: Europe/Moscow
 
 author:
   name: Whitel Dragon
