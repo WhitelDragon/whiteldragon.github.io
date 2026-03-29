@@ -2,9 +2,10 @@
 name: Deploy Jekyll with Pagefind
 
 on:
-  push:
-    branches: ["main"]    # если основная ветка другая — поменяй
   workflow_dispatch:
+  # push отключён — используем pages.yml
+  # push:
+  #   branches: ["main"]
 
 permissions:
   contents: read
