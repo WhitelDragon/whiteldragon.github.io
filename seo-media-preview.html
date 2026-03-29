@@ -1,0 +1,89 @@
+---
+layout: default
+title: "SEO Preview: media attrs"
+permalink: /seo-media-preview.html
+---
+
+<article class="post">
+  <h1>Превью SEO-атрибутов медиа</h1>
+  <p class="date">Служебная страница: проверка <code>alt/title/aria-label</code></p>
+
+  {% assign payload = site.data.furrycriminal_media_attrs %}
+  {% if payload and payload.items %}
+    <p>
+      Постов обновлено: <strong>{{ payload.posts_updated }}</strong>,
+      медиа: <strong>{{ payload.media_total }}</strong>.
+    </p>
+
+    <style>
+      .seo-preview-wrap {
+        overflow-x: auto;
+      }
+      .seo-preview-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 14px;
+      }
+      .seo-preview-table th,
+      .seo-preview-table td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        vertical-align: top;
+      }
+      .seo-preview-table th {
+        background: #f5f5f5;
+        font-weight: 700;
+      }
+      .seo-preview-muted {
+        color: #666;
+        font-size: 12px;
+      }
+      .seo-preview-code {
+        font-family: Consolas, "Courier New", monospace;
+        font-size: 12px;
+        word-break: break-all;
+      }
+    </style>
+
+    <div class="seo-preview-wrap">
+      <table class="seo-preview-table">
+        <thead>
+          <tr>
+            <th>Post ID</th>
+            <th>Тип</th>
+            <th>Путь медиа</th>
+            <th>SEO-атрибут</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in payload.items %}
+            <tr>
+              <td>
+                <a href="{{ item.post_url }}" target="_blank" rel="noreferrer">{{ item.post_id }}</a>
+              </td>
+              <td>{{ item.kind }}</td>
+              <td>
+                <div class="seo-preview-code">{{ item.path }}</div>
+              </td>
+              <td>
+                {% if item.alt %}
+                  <div><strong>alt:</strong> {{ item.alt }}</div>
+                {% endif %}
+                {% if item.title %}
+                  <div><strong>title:</strong> {{ item.title }}</div>
+                {% endif %}
+                {% if item.aria_label %}
+                  <div><strong>aria-label:</strong> {{ item.aria_label }}</div>
+                {% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <p>Данные не найдены. Сначала синхронизируй JSON в <code>_data</code>.</p>
+    <pre class="seo-preview-code">python tools\sync_media_attrs_preview.py --source _temp\furrycriminal_filtred_dump\manual_media_attrs.json</pre>
+  {% endif %}
+</article>
+

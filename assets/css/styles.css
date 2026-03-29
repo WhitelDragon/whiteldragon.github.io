@@ -126,7 +126,12 @@ main { max-width: 760px; margin: 0 auto; padding: 0; }
   max-width: 760px;
   box-shadow: 0 2px 6px rgba(0,0,0,.08);
 }
-.post h2 { margin-top: 0; color: var(--brand); }
+.post h1,
+.post h2,
+.post h2 a {
+  color: var(--text);
+}
+.post h2 { margin-top: 0; }
 .post .date { font-size: .85rem; color: var(--muted); margin-bottom: 10px; }
 
 /* Фото, подставленные скриптом */
@@ -183,30 +188,7 @@ main { max-width: 760px; margin: 0 auto; padding: 0; }
 
 
 /* ====== Sidebar navigation (Статьи и т.д.) ====== */
-.sidebar-nav {
-  margin-bottom: 4px;
-}
-.sidebar-nav a,
-.sidebar-nav a:link,
-.sidebar-nav a:visited,
-.sidebar-nav a:hover,
-.sidebar-nav a:active {
-  display: block;
-  font-size: 1.08rem;
-  font-weight: 700;
-  color: var(--text);
-  cursor: pointer;
-  text-decoration: none;
-}
-.sidebar-nav a::before {
-  content: "▶";
-  display: inline-block;
-  margin-right: 0.35em;
-  font-size: 0.92em;
-}
-.sidebar-nav a:hover {
-  text-decoration: none;
-}
+.articles-nav { margin-bottom: 4px; }
 
 /* ====== Articles listing ====== */
 .articles-grid {
@@ -288,6 +270,27 @@ figure.media img, figure.media video, figure.media audio {
   display: block;
   margin-left: auto;
   margin-right: auto;
+}
+figure.media-youtube {
+  max-width: 100%;
+}
+figure.media-youtube iframe {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  aspect-ratio: 16 / 9;
+  height: auto;
+  border: 0;
+  border-radius: 12px;
+  background: #000;
+  margin-left: auto;
+  margin-right: auto;
+}
+/* Vertical videos: keep a reasonable viewport-friendly size */
+figure.media-video video {
+  width: auto;
+  max-width: min(100%, 480px);
+  max-height: 75vh;
 }
 figure.media figcaption { color: #666; font-size: .9rem; margin-top: .4rem; }
 

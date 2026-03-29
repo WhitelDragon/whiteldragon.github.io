@@ -59,9 +59,9 @@
 
   <div class="layout">
     <aside class="sidebar" data-pagefind-ignore>
-      <nav class="sidebar-nav">
-        <a href="{{ '/articles.html' | relative_url }}">Статьи</a>
-      </nav>
+      <details class="archive articles-nav">
+        <summary data-href="{{ '/articles.html' | relative_url }}">Статьи</summary>
+      </details>
       <!-- по умолчанию свёрнуто (нет open) -->
       <details class="archive">
         <summary>Архив по годам</summary>
@@ -93,7 +93,8 @@
   <script>
     (function () {
       var layout = document.querySelector('.layout');
-      var d = document.querySelector('.sidebar details.archive');
+      var d = document.querySelector('.sidebar details.archive:not(.articles-nav)');
+      var articleSummary = document.querySelector('.sidebar details.articles-nav > summary[data-href]');
       if (!layout || !d) return;
       function apply() {
         layout.classList.toggle('side-open', d.open);
@@ -102,6 +103,14 @@
       if (!d.open && d.hasAttribute('open')) d.removeAttribute('open');
       d.addEventListener('toggle', apply);
       apply();
+
+      if (articleSummary) {
+        articleSummary.addEventListener('click', function (e) {
+          e.preventDefault();
+          var href = articleSummary.getAttribute('data-href');
+          if (href) window.location.href = href;
+        });
+      }
     })();
   </script>
 
@@ -109,6 +118,8 @@
    <!--  <script defer src="{{ '/assets/js/vk-preclean.js' | relative_url }}"></script> -->
   <script defer src="{{ '/assets/js/comments.js' | relative_url }}"></script>
   <script defer src="{{ '/assets/js/media-tiles.js' | relative_url }}"></script>
+  <script defer src="{{ '/assets/js/hls-video.js' | relative_url }}"></script>
+  <script defer src="{{ '/assets/js/auto-pause-videos.js' | relative_url }}"></script>
   <script defer src="{{ '/assets/js/autolink-bare-urls.js' | relative_url }}"></script>
   <script defer src="{{ '/assets/js/vk-photos.js' | relative_url }}"></script>
 

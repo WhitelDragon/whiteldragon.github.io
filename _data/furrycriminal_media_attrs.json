@@ -1,0 +1,979 @@
+{
+  "version": 1,
+  "posts_updated": 81,
+  "media_total": 120,
+  "items": [
+    {
+      "post_id": 8,
+      "post_url": "https://t.me/furrycriminal_filtred/8",
+      "index": 1,
+      "kind": "image",
+      "path": "_temp/furrycriminal_filtred_dump/media/images/8_01.jpg",
+      "alt": "Изображение из поста Telegram №8 (медиа 1)"
+    },
+    {
+      "post_id": 10,
+      "post_url": "https://t.me/furrycriminal_filtred/10",
+      "index": 1,
+      "kind": "image",
+      "path": "_temp/furrycriminal_filtred_dump/media/images/10_01.jpg",
+      "alt": "Изображение к посту: у Них климат другой..."
+    },
+    {
+      "post_id": 11,
+      "post_url": "https://t.me/furrycriminal_filtred/11",
+      "index": 1,
+      "kind": "image",
+      "path": "_temp/furrycriminal_filtred_dump/media/images/11_01.jpg",
+      "alt": "Изображение к посту: Часы настоящего Мужчины."
+    },
+    {
+      "post_id": 12,
+      "post_url": "https://t.me/furrycriminal_filtred/12",
+      "index": 1,
+      "kind": "image",
+      "path": "_temp/furrycriminal_filtred_dump/media/images/12_01.jpg",
+      "alt": "Изображение к посту: Вайтл и Лео Гепард (Павел Краснов). 👑 Забустить канал 👑 Подписывайтесь на"
+    },
+    {
+      "post_id": 13,
+      "post_url": "https://t.me/furrycriminal_filtred/13",
+      "index": 1,
+      "kind": "video",
+      "path": "_temp/furrycriminal_filtred_dump/media/videos/13_01.mp4",
+      "title": "Видео к посту: Для фурря этот выбор, сложнее \"дилеммы вагонетки\". 👑 Забустить канал 👑 Подписывайтесь",
+      "aria_label": "Видео к посту: Для фурря этот выбор, сложнее \"дилеммы вагонетки\". 👑 Забустить канал 👑 Подписывайтесь"
+    },
+    {
+      "post_id": 14,
+      "post_url": "https://t.me/furrycriminal_filtred/14",
+      "index": 1,
+      "kind": "image",
+      "path": "_temp/furrycriminal_filtred_dump/media/images/14_01.jpg",
+      "alt": "Изображение к посту: Иногда я вспоминаю старые времена и то, как тогда всё было беззаботно..."
+    },
+    {
+      "post_id": 14,
+      "post_url": "https://t.me/furrycriminal_filtred/14",
+      "index": 2,
+      "kind": "image",
+      "path": "_temp/furrycriminal_filtred_dump/media/images/14_02.jpg",
+      "alt": "Изображение к посту: Иногда я вспоминаю старые времена и то, как тогда всё было беззаботно..."
+    },
+    {
+      "post_id": 17,
+      "post_url": "https://t.me/furrycriminal_filtred/17",
+      "index": 1,
+      "kind": "image",
+      "path": "_temp/furrycriminal_filtred_dump/media/images/17_01.jpg",
+      "alt": "Изображение из поста Telegram №17 (медиа 1)"
+    },
+    {
+      "post_id": 18,
+      "post_url": "https://t.me/furrycriminal_filtred/18",
+      "index": 1,
+      "kind": "image",
+      "path": "_temp/furrycriminal_filtred_dump/media/images/18_01.jpg",
+      "alt": "Изображение к посту: Нет, не стало."
+    },
+    {
+      "post_id": 19,
+      "post_url": "https://t.me/furrycriminal_filtred/19",
+      "index": 1,
+      "kind": "image",
+      "path": "_temp/furrycriminal_filtred_dump/media/images/19_01.jpg",
+      "alt": "Изображение к посту: Коротко о моей жизни."
+    },
+    {
+      "post_id": 22,
+      "post_url": "https://t.me/furrycriminal_filtred/22",
+      "index": 1,
+      "kind": "image",
+      "path": "_temp/furrycriminal_filtred_dump/media/images/22_01.jpg",
+      "alt": "Изображение к посту: Раз уж вспомнилось. Интересная история была, хорошо верифицированная. Я даже с \"Александр(а)"
+    },
+    {
+      "post_id": 24,
+      "post_url": "https://t.me/furrycriminal_filtred/24",
+      "index": 1,
+      "kind": "image",
+      "path": "_temp/furrycriminal_filtred_dump/media/images/24_01.jpg",
+      "alt": "Изображение из поста Telegram №24 (медиа 1)"
+    },
+    {
+      "post_id": 25,
+      "post_url": "https://t.me/furrycriminal_filtred/25",
+      "index": 1,
+      "kind": "image",
+      "path": "_temp/furrycriminal_filtred_dump/media/images/25_01.jpg",
+      "alt": "Изображение к посту: Тут, я бы только за него порадовался. Поработав у фурря чернорабочим на"
+    },
+    {
+      "post_id": 25,
+      "post_url": "https://t.me/furrycriminal_filtred/25",
+      "index": 2,
+      "kind": "image",
+      "path": "_temp/furrycriminal_filtred_dump/media/images/25_02.jpg",
+      "alt": "Изображение к посту: Тут, я бы только за него порадовался. Поработав у фурря чернорабочим на"
+    },
+    {
+      "post_id": 25,
+      "post_url": "https://t.me/furrycriminal_filtred/25",
+      "index": 3,
+      "kind": "image",
+      "path": "_temp/furrycriminal_filtred_dump/media/images/25_03.jpg",
+      "alt": "Изображение к посту: Тут, я бы только за него порадовался. Поработав у фурря чернорабочим на"
+    },
+    {
+      "post_id": 25,
+      "post_url": "https://t.me/furrycriminal_filtred/25",
+      "index": 4,
+      "kind": "image",
+      "path": "_temp/furrycriminal_filtred_dump/media/images/25_04.jpg",
+      "alt": "Изображение к посту: Тут, я бы только за него порадовался. Поработав у фурря чернорабочим на"
+    },
+    {
+      "post_id": 25,
+      "post_url": "https://t.me/furrycriminal_filtred/25",
+      "index": 5,
+      "kind": "image",
+      "path": "_temp/furrycriminal_filtred_dump/media/images/25_05.jpg",
+      "alt": "Изображение к посту: Тут, я бы только за него порадовался. Поработав у фурря чернорабочим на"
+    },
+    {
+      "post_id": 30,
+      "post_url": "https://t.me/furrycriminal_filtred/30",
+      "index": 1,
+      "kind": "image",
+      "path": "_temp/furrycriminal_filtred_dump/media/images/30_01.jpg",
+      "alt": "Изображение к посту: ТГК: t.me/+qdWvT-A8VuNmODlh Steam: krutoypisun228 SC: lololegbebra DS: lover_meme 👁‍🗨 👁‍🗨 Telegraph: TheFoxLife"
+    },
+    {
+      "post_id": 31,
+      "post_url": "https://t.me/furrycriminal_filtred/31",
+      "index": 1,
+      "kind": "image",
+      "path": "_temp/furrycriminal_filtred_dump/media/images/31_01.jpg",
+      "alt": "Изображение к посту: Вот за это мы воюем... 👑 Забустить канал 👑 Подписывайтесь на канал,"
+    },
+    {
+      "post_id": 31,
+      "post_url": "https://t.me/furrycriminal_filtred/31",
+      "index": 2,
+      "kind": "image",
+      "path": "_temp/furrycriminal_filtred_dump/media/images/31_02.jpg",
+      "alt": "Изображение к посту: Вот за это мы воюем... 👑 Забустить канал 👑 Подписывайтесь на канал,"
+    },
+    {
+      "post_id": 31,
+      "post_url": "https://t.me/furrycriminal_filtred/31",
+      "index": 3,
+      "kind": "image",
+      "path": "_temp/furrycriminal_filtred_dump/media/images/31_03.jpg",
+      "alt": "Изображение к посту: Вот за это мы воюем... 👑 Забустить канал 👑 Подписывайтесь на канал,"
+    },
+    {
+      "post_id": 34,
+      "post_url": "https://t.me/furrycriminal_filtred/34",
+      "index": 1,
+      "kind": "image",
+      "path": "_temp/furrycriminal_filtred_dump/media/images/34_01.jpg",
+      "alt": "Изображение из поста Telegram №34 (медиа 1)"
+    },
+    {
+      "post_id": 36,
+      "post_url": "https://t.me/furrycriminal_filtred/36",
+      "index": 1,
+      "kind": "image",
+      "path": "_temp/furrycriminal_filtred_dump/media/images/36_01.jpg",
+      "alt": "Изображение к посту: На критику, особенно от знакомых, всё же стоит обращать внимание. Однако же,"
+    },
+    {
+      "post_id": 36,
+      "post_url": "https://t.me/furrycriminal_filtred/36",
+      "index": 2,
+      "kind": "image",
+      "path": "_temp/furrycriminal_filtred_dump/media/images/36_02.jpg",
+      "alt": "Изображение к посту: На критику, особенно от знакомых, всё же стоит обращать внимание. Однако же,"
+    },
+    {
+      "post_id": 38,
+      "post_url": "https://t.me/furrycriminal_filtred/38",
+      "index": 1,
+      "kind": "image",
+      "path": "_temp/furrycriminal_filtred_dump/media/images/38_01.jpg",
+      "alt": "Изображение к посту: Некоторые посты, из рубрики \"московский фурриёб\", как мне показалось - были вне"
+    },
+    {
+      "post_id": 38,
+      "post_url": "https://t.me/furrycriminal_filtred/38",
+      "index": 2,
+      "kind": "image",
+      "path": "_temp/furrycriminal_filtred_dump/media/images/38_02.jpg",
+      "alt": "Изображение к посту: Некоторые посты, из рубрики \"московский фурриёб\", как мне показалось - были вне"
+    },
+    {
+      "post_id": 38,
+      "post_url": "https://t.me/furrycriminal_filtred/38",
+      "index": 3,
+      "kind": "image",
+      "path": "_temp/furrycriminal_filtred_dump/media/images/38_03.jpg",
+      "alt": "Изображение к посту: Некоторые посты, из рубрики \"московский фурриёб\", как мне показалось - были вне"
+    },
+    {
+      "post_id": 38,
+      "post_url": "https://t.me/furrycriminal_filtred/38",
+      "index": 4,
+      "kind": "image",
+      "path": "_temp/furrycriminal_filtred_dump/media/images/38_04.jpg",
+      "alt": "Изображение к посту: Некоторые посты, из рубрики \"московский фурриёб\", как мне показалось - были вне"
+    },
+    {
+      "post_id": 38,
+      "post_url": "https://t.me/furrycriminal_filtred/38",
+      "index": 5,
+      "kind": "image",
+      "path": "_temp/furrycriminal_filtred_dump/media/images/38_05.jpg",
+      "alt": "Изображение к посту: Некоторые посты, из рубрики \"московский фурриёб\", как мне показалось - были вне"
+    },
+    {
+      "post_id": 43,
+      "post_url": "https://t.me/furrycriminal_filtred/43",
+      "index": 1,
+      "kind": "image",
+      "path": "_temp/furrycriminal_filtred_dump/media/images/43_01.jpg",
+      "alt": "Изображение к посту: Наши самые не брезгливые эксперты изучают биографию \"обычного фурря\". 👑 Забустить канал"
+    },
+    {
+      "post_id": 44,
+      "post_url": "https://t.me/furrycriminal_filtred/44",
+      "index": 1,
+      "kind": "image",
+      "path": "_temp/furrycriminal_filtred_dump/media/images/44_01.jpg",
+      "alt": "Изображение к посту: Написал мне тот, кого я давно знаю. Просто написал, радостный такой был,"
+    },
+    {
+      "post_id": 45,
+      "post_url": "https://t.me/furrycriminal_filtred/45",
+      "index": 1,
+      "kind": "image",
+      "path": "_temp/furrycriminal_filtred_dump/media/images/45_01.jpg",
+      "alt": "Изображение к посту: Чуть остудимся фоткой из серии \"у них климат другой\". 👑 Забустить канал"
+    },
+    {
+      "post_id": 46,
+      "post_url": "https://t.me/furrycriminal_filtred/46",
+      "index": 1,
+      "kind": "image",
+      "path": "_temp/furrycriminal_filtred_dump/media/images/46_01.jpg",
+      "alt": "Изображение к посту: Рубрика: Обычный фуррь. Критика, особенно конструктивная, при правильной работе с ней -"
+    },
+    {
+      "post_id": 46,
+      "post_url": "https://t.me/furrycriminal_filtred/46",
+      "index": 2,
+      "kind": "image",
+      "path": "_temp/furrycriminal_filtred_dump/media/images/46_02.jpg",
+      "alt": "Изображение к посту: Рубрика: Обычный фуррь. Критика, особенно конструктивная, при правильной работе с ней -"
+    },
+    {
+      "post_id": 46,
+      "post_url": "https://t.me/furrycriminal_filtred/46",
+      "index": 3,
+      "kind": "image",
+      "path": "_temp/furrycriminal_filtred_dump/media/images/46_03.jpg",
+      "alt": "Изображение к посту: Рубрика: Обычный фуррь. Критика, особенно конструктивная, при правильной работе с ней -"
+    },
+    {
+      "post_id": 46,
+      "post_url": "https://t.me/furrycriminal_filtred/46",
+      "index": 4,
+      "kind": "image",
+      "path": "_temp/furrycriminal_filtred_dump/media/images/46_04.jpg",
+      "alt": "Изображение к посту: Рубрика: Обычный фуррь. Критика, особенно конструктивная, при правильной работе с ней -"
+    },
+    {
+      "post_id": 50,
+      "post_url": "https://t.me/furrycriminal_filtred/50",
+      "index": 1,
+      "kind": "image",
+      "path": "_temp/furrycriminal_filtred_dump/media/images/50_01.jpg",
+      "alt": "Изображение к посту: Кто знает, куда пропал солнечный дракоша Verle Dragon? Очень переживаю за него."
+    },
+    {
+      "post_id": 51,
+      "post_url": "https://t.me/furrycriminal_filtred/51",
+      "index": 1,
+      "kind": "image",
+      "path": "_temp/furrycriminal_filtred_dump/media/images/51_01.jpg",
+      "alt": "Изображение к посту: Время напоминалок от Гугла, с февральскими \"файлами Эпштейна\". Время воспоминаний о давно"
+    },
+    {
+      "post_id": 51,
+      "post_url": "https://t.me/furrycriminal_filtred/51",
+      "index": 2,
+      "kind": "image",
+      "path": "_temp/furrycriminal_filtred_dump/media/images/51_02.jpg",
+      "alt": "Изображение к посту: Время напоминалок от Гугла, с февральскими \"файлами Эпштейна\". Время воспоминаний о давно"
+    },
+    {
+      "post_id": 51,
+      "post_url": "https://t.me/furrycriminal_filtred/51",
+      "index": 3,
+      "kind": "video",
+      "path": "_temp/furrycriminal_filtred_dump/media/videos/51_03.mp4",
+      "title": "Видео к посту: Время напоминалок от Гугла, с февральскими \"файлами Эпштейна\". Время воспоминаний о давно",
+      "aria_label": "Видео к посту: Время напоминалок от Гугла, с февральскими \"файлами Эпштейна\". Время воспоминаний о давно"
+    },
+    {
+      "post_id": 58,
+      "post_url": "https://t.me/furrycriminal_filtred/58",
+      "index": 1,
+      "kind": "image",
+      "path": "_temp/furrycriminal_filtred_dump/media/images/58_01.jpg",
+      "alt": "Изображение к посту: Следуя высочайшим стандартам журналистики, предоставим слово нашему комнатному альфа самцу. Конечно, мы"
+    },
+    {
+      "post_id": 58,
+      "post_url": "https://t.me/furrycriminal_filtred/58",
+      "index": 2,
+      "kind": "image",
+      "path": "_temp/furrycriminal_filtred_dump/media/images/58_02.jpg",
+      "alt": "Изображение к посту: Следуя высочайшим стандартам журналистики, предоставим слово нашему комнатному альфа самцу. Конечно, мы"
+    },
+    {
+      "post_id": 58,
+      "post_url": "https://t.me/furrycriminal_filtred/58",
+      "index": 3,
+      "kind": "image",
+      "path": "_temp/furrycriminal_filtred_dump/media/images/58_03.jpg",
+      "alt": "Изображение к посту: Следуя высочайшим стандартам журналистики, предоставим слово нашему комнатному альфа самцу. Конечно, мы"
+    },
+    {
+      "post_id": 61,
+      "post_url": "https://t.me/furrycriminal_filtred/61",
+      "index": 1,
+      "kind": "image",
+      "path": "_temp/furrycriminal_filtred_dump/media/images/61_01.jpg",
+      "alt": "Изображение к посту: Как и наш любитель, совать член в не самых живых животных, я"
+    },
+    {
+      "post_id": 61,
+      "post_url": "https://t.me/furrycriminal_filtred/61",
+      "index": 2,
+      "kind": "image",
+      "path": "_temp/furrycriminal_filtred_dump/media/images/61_02.jpg",
+      "alt": "Изображение к посту: Как и наш любитель, совать член в не самых живых животных, я"
+    },
+    {
+      "post_id": 61,
+      "post_url": "https://t.me/furrycriminal_filtred/61",
+      "index": 3,
+      "kind": "image",
+      "path": "_temp/furrycriminal_filtred_dump/media/images/61_03.jpg",
+      "alt": "Изображение к посту: Как и наш любитель, совать член в не самых живых животных, я"
+    },
+    {
+      "post_id": 61,
+      "post_url": "https://t.me/furrycriminal_filtred/61",
+      "index": 4,
+      "kind": "image",
+      "path": "_temp/furrycriminal_filtred_dump/media/images/61_04.jpg",
+      "alt": "Изображение к посту: Как и наш любитель, совать член в не самых живых животных, я"
+    },
+    {
+      "post_id": 65,
+      "post_url": "https://t.me/furrycriminal_filtred/65",
+      "index": 1,
+      "kind": "image",
+      "path": "_temp/furrycriminal_filtred_dump/media/images/65_01.jpg",
+      "alt": "Изображение к посту: Переживаю для нашего солнечного дракошу Verle Dragon. Кроме того что он пропал"
+    },
+    {
+      "post_id": 65,
+      "post_url": "https://t.me/furrycriminal_filtred/65",
+      "index": 2,
+      "kind": "image",
+      "path": "_temp/furrycriminal_filtred_dump/media/images/65_02.jpg",
+      "alt": "Изображение к посту: Переживаю для нашего солнечного дракошу Verle Dragon. Кроме того что он пропал"
+    },
+    {
+      "post_id": 67,
+      "post_url": "https://t.me/furrycriminal_filtred/67",
+      "index": 1,
+      "kind": "image",
+      "path": "_temp/furrycriminal_filtred_dump/media/images/67_01.jpg",
+      "alt": "Изображение к посту: Мнение одного из подписчиков, про образ жизни Verle Dragon. upd: вышел на"
+    },
+    {
+      "post_id": 68,
+      "post_url": "https://t.me/furrycriminal_filtred/68",
+      "index": 1,
+      "kind": "image",
+      "path": "_temp/furrycriminal_filtred_dump/media/images/68_01.jpg",
+      "alt": "Изображение к посту: Немного тарантиновских монологов из чатика фуррей-эмигрантов, по совместительству - клуба друзей яйцереза."
+    },
+    {
+      "post_id": 68,
+      "post_url": "https://t.me/furrycriminal_filtred/68",
+      "index": 2,
+      "kind": "image",
+      "path": "_temp/furrycriminal_filtred_dump/media/images/68_02.jpg",
+      "alt": "Изображение к посту: Немного тарантиновских монологов из чатика фуррей-эмигрантов, по совместительству - клуба друзей яйцереза."
+    },
+    {
+      "post_id": 70,
+      "post_url": "https://t.me/furrycriminal_filtred/70",
+      "index": 1,
+      "kind": "image",
+      "path": "_temp/furrycriminal_filtred_dump/media/images/70_01.jpg",
+      "alt": "Изображение к посту: Мне кажется, Тайсеру стоит задуматься о копирайтере, что бы писать более продающие"
+    },
+    {
+      "post_id": 70,
+      "post_url": "https://t.me/furrycriminal_filtred/70",
+      "index": 2,
+      "kind": "image",
+      "path": "_temp/furrycriminal_filtred_dump/media/images/70_02.jpg",
+      "alt": "Изображение к посту: Мне кажется, Тайсеру стоит задуматься о копирайтере, что бы писать более продающие"
+    },
+    {
+      "post_id": 72,
+      "post_url": "https://t.me/furrycriminal_filtred/72",
+      "index": 1,
+      "kind": "image",
+      "path": "_temp/furrycriminal_filtred_dump/media/images/72_01.jpg",
+      "alt": "Изображение к посту: Нам нужно потерпеть. Оно того стоит, да и выбора у нас нет."
+    },
+    {
+      "post_id": 73,
+      "post_url": "https://t.me/furrycriminal_filtred/73",
+      "index": 1,
+      "kind": "image",
+      "path": "_temp/furrycriminal_filtred_dump/media/images/73_01.jpg",
+      "alt": "Изображение из поста Telegram №73 (медиа 1)"
+    },
+    {
+      "post_id": 75,
+      "post_url": "https://t.me/furrycriminal_filtred/75",
+      "index": 1,
+      "kind": "image",
+      "path": "_temp/furrycriminal_filtred_dump/media/images/75_01.jpg",
+      "alt": "Изображение к посту: Ещё немного забавного от секты драконов - нудистов . Зайдя в их"
+    },
+    {
+      "post_id": 75,
+      "post_url": "https://t.me/furrycriminal_filtred/75",
+      "index": 2,
+      "kind": "image",
+      "path": "_temp/furrycriminal_filtred_dump/media/images/75_02.jpg",
+      "alt": "Изображение к посту: Ещё немного забавного от секты драконов - нудистов . Зайдя в их"
+    },
+    {
+      "post_id": 75,
+      "post_url": "https://t.me/furrycriminal_filtred/75",
+      "index": 3,
+      "kind": "image",
+      "path": "_temp/furrycriminal_filtred_dump/media/images/75_03.jpg",
+      "alt": "Изображение к посту: Ещё немного забавного от секты драконов - нудистов . Зайдя в их"
+    },
+    {
+      "post_id": 75,
+      "post_url": "https://t.me/furrycriminal_filtred/75",
+      "index": 4,
+      "kind": "image",
+      "path": "_temp/furrycriminal_filtred_dump/media/images/75_04.jpg",
+      "alt": "Изображение к посту: Ещё немного забавного от секты драконов - нудистов . Зайдя в их"
+    },
+    {
+      "post_id": 75,
+      "post_url": "https://t.me/furrycriminal_filtred/75",
+      "index": 5,
+      "kind": "image",
+      "path": "_temp/furrycriminal_filtred_dump/media/images/75_05.jpg",
+      "alt": "Изображение к посту: Ещё немного забавного от секты драконов - нудистов . Зайдя в их"
+    },
+    {
+      "post_id": 75,
+      "post_url": "https://t.me/furrycriminal_filtred/75",
+      "index": 6,
+      "kind": "image",
+      "path": "_temp/furrycriminal_filtred_dump/media/images/75_06.jpg",
+      "alt": "Изображение к посту: Ещё немного забавного от секты драконов - нудистов . Зайдя в их"
+    },
+    {
+      "post_id": 75,
+      "post_url": "https://t.me/furrycriminal_filtred/75",
+      "index": 7,
+      "kind": "image",
+      "path": "_temp/furrycriminal_filtred_dump/media/images/75_07.jpg",
+      "alt": "Изображение к посту: Ещё немного забавного от секты драконов - нудистов . Зайдя в их"
+    },
+    {
+      "post_id": 75,
+      "post_url": "https://t.me/furrycriminal_filtred/75",
+      "index": 8,
+      "kind": "image",
+      "path": "_temp/furrycriminal_filtred_dump/media/images/75_08.jpg",
+      "alt": "Изображение к посту: Ещё немного забавного от секты драконов - нудистов . Зайдя в их"
+    },
+    {
+      "post_id": 83,
+      "post_url": "https://t.me/furrycriminal_filtred/83",
+      "index": 1,
+      "kind": "image",
+      "path": "_temp/furrycriminal_filtred_dump/media/images/83_01.jpg",
+      "alt": "Изображение к посту: Кусь - образовательный. Ловушка невозвратных потерь (или sunk cost fallacy) — это"
+    },
+    {
+      "post_id": 84,
+      "post_url": "https://t.me/furrycriminal_filtred/84",
+      "index": 1,
+      "kind": "image",
+      "path": "_temp/furrycriminal_filtred_dump/media/images/84_01.jpg",
+      "alt": "Изображение к посту: Ещё немного рандомных \"февраль, лучшие моменты\" по мнению Гугл фото. Русфуренция давно"
+    },
+    {
+      "post_id": 84,
+      "post_url": "https://t.me/furrycriminal_filtred/84",
+      "index": 2,
+      "kind": "image",
+      "path": "_temp/furrycriminal_filtred_dump/media/images/84_02.jpg",
+      "alt": "Изображение к посту: Ещё немного рандомных \"февраль, лучшие моменты\" по мнению Гугл фото. Русфуренция давно"
+    },
+    {
+      "post_id": 84,
+      "post_url": "https://t.me/furrycriminal_filtred/84",
+      "index": 3,
+      "kind": "image",
+      "path": "_temp/furrycriminal_filtred_dump/media/images/84_03.jpg",
+      "alt": "Изображение к посту: Ещё немного рандомных \"февраль, лучшие моменты\" по мнению Гугл фото. Русфуренция давно"
+    },
+    {
+      "post_id": 87,
+      "post_url": "https://t.me/furrycriminal_filtred/87",
+      "index": 1,
+      "kind": "image",
+      "path": "_temp/furrycriminal_filtred_dump/media/images/87_01.jpg",
+      "alt": "Изображение к посту: Наш челябинский пусечка Джаспер отметился фоткой со Славой Марлоу. Интересно, это Славик"
+    },
+    {
+      "post_id": 88,
+      "post_url": "https://t.me/furrycriminal_filtred/88",
+      "index": 1,
+      "kind": "image",
+      "path": "_temp/furrycriminal_filtred_dump/media/images/88_01.jpg",
+      "alt": "Изображение к посту: Продолжение истории о нашем злобном лисике Эрвине. Который очень любит внимание, половые"
+    },
+    {
+      "post_id": 88,
+      "post_url": "https://t.me/furrycriminal_filtred/88",
+      "index": 2,
+      "kind": "image",
+      "path": "_temp/furrycriminal_filtred_dump/media/images/88_02.jpg",
+      "alt": "Изображение к посту: Продолжение истории о нашем злобном лисике Эрвине. Который очень любит внимание, половые"
+    },
+    {
+      "post_id": 88,
+      "post_url": "https://t.me/furrycriminal_filtred/88",
+      "index": 3,
+      "kind": "image",
+      "path": "_temp/furrycriminal_filtred_dump/media/images/88_03.jpg",
+      "alt": "Изображение к посту: Продолжение истории о нашем злобном лисике Эрвине. Который очень любит внимание, половые"
+    },
+    {
+      "post_id": 88,
+      "post_url": "https://t.me/furrycriminal_filtred/88",
+      "index": 4,
+      "kind": "video",
+      "path": "_temp/furrycriminal_filtred_dump/media/videos/88_04.mp4",
+      "title": "Видео к посту: Продолжение истории о нашем злобном лисике Эрвине. Который очень любит внимание, половые",
+      "aria_label": "Видео к посту: Продолжение истории о нашем злобном лисике Эрвине. Который очень любит внимание, половые"
+    },
+    {
+      "post_id": 92,
+      "post_url": "https://t.me/furrycriminal_filtred/92",
+      "index": 1,
+      "kind": "image",
+      "path": "_temp/furrycriminal_filtred_dump/media/images/92_01.jpg",
+      "alt": "Изображение к посту: А как у Эрвина дела сейчас? Возможно кто-то задался этим вопросом, уже"
+    },
+    {
+      "post_id": 92,
+      "post_url": "https://t.me/furrycriminal_filtred/92",
+      "index": 2,
+      "kind": "image",
+      "path": "_temp/furrycriminal_filtred_dump/media/images/92_02.jpg",
+      "alt": "Изображение к посту: А как у Эрвина дела сейчас? Возможно кто-то задался этим вопросом, уже"
+    },
+    {
+      "post_id": 94,
+      "post_url": "https://t.me/furrycriminal_filtred/94",
+      "index": 1,
+      "kind": "video",
+      "path": "_temp/furrycriminal_filtred_dump/media/videos/94_01.mp4",
+      "title": "Видео к посту: #Джаспер @yiff_god",
+      "aria_label": "Видео к посту: #Джаспер @yiff_god"
+    },
+    {
+      "post_id": 95,
+      "post_url": "https://t.me/furrycriminal_filtred/95",
+      "index": 1,
+      "kind": "image",
+      "path": "_temp/furrycriminal_filtred_dump/media/images/95_01.jpg",
+      "alt": "Изображение к посту: 💔 Буквально я. В те времена, когда ещё верил, хоть кому-то и"
+    },
+    {
+      "post_id": 96,
+      "post_url": "https://t.me/furrycriminal_filtred/96",
+      "index": 1,
+      "kind": "image",
+      "path": "_temp/furrycriminal_filtred_dump/media/images/96_01.jpg",
+      "alt": "Изображение к посту: По Телеграмм прокатилась массовая блокировка пабликов с элитным RL фурри порно. Это,"
+    },
+    {
+      "post_id": 98,
+      "post_url": "https://t.me/furrycriminal_filtred/98",
+      "index": 1,
+      "kind": "image",
+      "path": "_temp/furrycriminal_filtred_dump/media/images/98_01.jpg",
+      "alt": "Изображение к посту: Дедуля пытается спасти своё творение - старейший в ВСЖ драконочатик . В"
+    },
+    {
+      "post_id": 98,
+      "post_url": "https://t.me/furrycriminal_filtred/98",
+      "index": 2,
+      "kind": "image",
+      "path": "_temp/furrycriminal_filtred_dump/media/images/98_02.jpg",
+      "alt": "Изображение к посту: Дедуля пытается спасти своё творение - старейший в ВСЖ драконочатик . В"
+    },
+    {
+      "post_id": 100,
+      "post_url": "https://t.me/furrycriminal_filtred/100",
+      "index": 1,
+      "kind": "image",
+      "path": "_temp/furrycriminal_filtred_dump/media/images/100_01.jpg",
+      "alt": "Изображение к посту: Я 34-летний KHHV* по собственному выбору, потому что не нахожу привлекательными 99,999%"
+    },
+    {
+      "post_id": 101,
+      "post_url": "https://t.me/furrycriminal_filtred/101",
+      "index": 1,
+      "kind": "video",
+      "path": "_temp/furrycriminal_filtred_dump/media/videos/101_01.mp4",
+      "title": "Видео к посту: Бежать некуда. 👑 Забустить канал 👑 Усиленный кусь. Думайте.",
+      "aria_label": "Видео к посту: Бежать некуда. 👑 Забустить канал 👑 Усиленный кусь. Думайте."
+    },
+    {
+      "post_id": 102,
+      "post_url": "https://t.me/furrycriminal_filtred/102",
+      "index": 1,
+      "kind": "image",
+      "path": "_temp/furrycriminal_filtred_dump/media/images/102_01.jpg",
+      "alt": "Изображение к посту: Поработал, немного, с архивом своей древней страницы ВК и обнаружит неприятное. До"
+    },
+    {
+      "post_id": 102,
+      "post_url": "https://t.me/furrycriminal_filtred/102",
+      "index": 2,
+      "kind": "image",
+      "path": "_temp/furrycriminal_filtred_dump/media/images/102_02.jpg",
+      "alt": "Изображение к посту: Поработал, немного, с архивом своей древней страницы ВК и обнаружит неприятное. До"
+    },
+    {
+      "post_id": 106,
+      "post_url": "https://t.me/furrycriminal_filtred/106",
+      "index": 1,
+      "kind": "image",
+      "path": "_temp/furrycriminal_filtred_dump/media/images/106_01.jpg",
+      "alt": "Изображение к посту: И вновь, наше растрёпанное золотце. 👑 Забустить канал 👑 Подписывайтесь на канал,"
+    },
+    {
+      "post_id": 107,
+      "post_url": "https://t.me/furrycriminal_filtred/107",
+      "index": 1,
+      "kind": "image",
+      "path": "_temp/furrycriminal_filtred_dump/media/images/107_01.jpg",
+      "alt": "Изображение к посту: !!! Информация обновлена !!! Я искренне надеялся, что в чате пАжилых из"
+    },
+    {
+      "post_id": 112,
+      "post_url": "https://t.me/furrycriminal_filtred/112",
+      "index": 1,
+      "kind": "image",
+      "path": "_temp/furrycriminal_filtred_dump/media/images/112_01.jpg",
+      "alt": "Изображение к посту: Как интересно лисик, а, с чего это я, вдруг, твой парень? То"
+    },
+    {
+      "post_id": 114,
+      "post_url": "https://t.me/furrycriminal_filtred/114",
+      "index": 1,
+      "kind": "image",
+      "path": "_temp/furrycriminal_filtred_dump/media/images/114_01.jpg",
+      "alt": "Изображение к посту: Наша фурри - Лариса Долина , оказывается... оказывается. Не донат отслюнявила, а"
+    },
+    {
+      "post_id": 114,
+      "post_url": "https://t.me/furrycriminal_filtred/114",
+      "index": 2,
+      "kind": "image",
+      "path": "_temp/furrycriminal_filtred_dump/media/images/114_02.jpg",
+      "alt": "Изображение к посту: Наша фурри - Лариса Долина , оказывается... оказывается. Не донат отслюнявила, а"
+    },
+    {
+      "post_id": 114,
+      "post_url": "https://t.me/furrycriminal_filtred/114",
+      "index": 3,
+      "kind": "image",
+      "path": "_temp/furrycriminal_filtred_dump/media/images/114_03.jpg",
+      "alt": "Изображение к посту: Наша фурри - Лариса Долина , оказывается... оказывается. Не донат отслюнявила, а"
+    },
+    {
+      "post_id": 117,
+      "post_url": "https://t.me/furrycriminal_filtred/117",
+      "index": 1,
+      "kind": "video",
+      "path": "_temp/furrycriminal_filtred_dump/media/videos/117_01.mp4",
+      "title": "Видео к посту: Анонс новой документалки от \"Усиленный кусь\". 👑 Забустить канал 👑 Подписывайтесь на",
+      "aria_label": "Видео к посту: Анонс новой документалки от \"Усиленный кусь\". 👑 Забустить канал 👑 Подписывайтесь на"
+    },
+    {
+      "post_id": 124,
+      "post_url": "https://t.me/furrycriminal_filtred/124",
+      "index": 1,
+      "kind": "video",
+      "path": "_temp/furrycriminal_filtred_dump/media/videos/124_01.mp4",
+      "title": "Видео к посту: Уважаемые подписчики,хотел бы задаться вопросом а есть ли среди нас такие которые",
+      "aria_label": "Видео к посту: Уважаемые подписчики,хотел бы задаться вопросом а есть ли среди нас такие которые"
+    },
+    {
+      "post_id": 126,
+      "post_url": "https://t.me/furrycriminal_filtred/126",
+      "index": 1,
+      "kind": "image",
+      "path": "_temp/furrycriminal_filtred_dump/media/images/126_01.jpg",
+      "alt": "Изображение к посту: Быть коммунистом в эпоху когда накоплен определённый исторический опыт подобного, и существуют"
+    },
+    {
+      "post_id": 126,
+      "post_url": "https://t.me/furrycriminal_filtred/126",
+      "index": 2,
+      "kind": "image",
+      "path": "_temp/furrycriminal_filtred_dump/media/images/126_02.jpg",
+      "alt": "Изображение к посту: Быть коммунистом в эпоху когда накоплен определённый исторический опыт подобного, и существуют"
+    },
+    {
+      "post_id": 126,
+      "post_url": "https://t.me/furrycriminal_filtred/126",
+      "index": 3,
+      "kind": "video",
+      "path": "_temp/furrycriminal_filtred_dump/media/videos/126_03.mp4",
+      "title": "Видео к посту: Быть коммунистом в эпоху когда накоплен определённый исторический опыт подобного, и существуют",
+      "aria_label": "Видео к посту: Быть коммунистом в эпоху когда накоплен определённый исторический опыт подобного, и существуют"
+    },
+    {
+      "post_id": 126,
+      "post_url": "https://t.me/furrycriminal_filtred/126",
+      "index": 4,
+      "kind": "video",
+      "path": "_temp/furrycriminal_filtred_dump/media/videos/126_04.mp4",
+      "title": "Видео к посту: Быть коммунистом в эпоху когда накоплен определённый исторический опыт подобного, и существуют",
+      "aria_label": "Видео к посту: Быть коммунистом в эпоху когда накоплен определённый исторический опыт подобного, и существуют"
+    },
+    {
+      "post_id": 132,
+      "post_url": "https://t.me/furrycriminal_filtred/132",
+      "index": 1,
+      "kind": "image",
+      "path": "_temp/furrycriminal_filtred_dump/media/images/132_01.jpg",
+      "alt": "Изображение к посту: Год 2017. Если бы у меня было что-то нормальное, а не Жигули"
+    },
+    {
+      "post_id": 132,
+      "post_url": "https://t.me/furrycriminal_filtred/132",
+      "index": 2,
+      "kind": "image",
+      "path": "_temp/furrycriminal_filtred_dump/media/images/132_02.jpg",
+      "alt": "Изображение к посту: Год 2017. Если бы у меня было что-то нормальное, а не Жигули"
+    },
+    {
+      "post_id": 132,
+      "post_url": "https://t.me/furrycriminal_filtred/132",
+      "index": 3,
+      "kind": "image",
+      "path": "_temp/furrycriminal_filtred_dump/media/images/132_03.jpg",
+      "alt": "Изображение к посту: Год 2017. Если бы у меня было что-то нормальное, а не Жигули"
+    },
+    {
+      "post_id": 132,
+      "post_url": "https://t.me/furrycriminal_filtred/132",
+      "index": 4,
+      "kind": "image",
+      "path": "_temp/furrycriminal_filtred_dump/media/images/132_04.jpg",
+      "alt": "Изображение к посту: Год 2017. Если бы у меня было что-то нормальное, а не Жигули"
+    },
+    {
+      "post_id": 136,
+      "post_url": "https://t.me/furrycriminal_filtred/136",
+      "index": 1,
+      "kind": "image",
+      "path": "_temp/furrycriminal_filtred_dump/media/images/136_01.jpg",
+      "alt": "Изображение к посту: Буквально угрожают новым \"Крукусом\". Но вы не путайте - это другое. В"
+    },
+    {
+      "post_id": 137,
+      "post_url": "https://t.me/furrycriminal_filtred/137",
+      "index": 1,
+      "kind": "video",
+      "path": "_temp/furrycriminal_filtred_dump/media/videos/137_01.mp4",
+      "title": "Видео из поста Telegram №137 (медиа 1)",
+      "aria_label": "Видео из поста Telegram №137 (медиа 1)"
+    },
+    {
+      "post_id": 138,
+      "post_url": "https://t.me/furrycriminal_filtred/138",
+      "index": 1,
+      "kind": "image",
+      "path": "_temp/furrycriminal_filtred_dump/media/images/138_01.jpg",
+      "alt": "Изображение к посту: У них климат другой"
+    },
+    {
+      "post_id": 139,
+      "post_url": "https://t.me/furrycriminal_filtred/139",
+      "index": 1,
+      "kind": "image",
+      "path": "_temp/furrycriminal_filtred_dump/media/images/139_01.jpg",
+      "alt": "Изображение к посту: Было немного скучно, а драммы, шизолисики и расчленёнка надоели. Нашел секту драконов-нудистов..."
+    },
+    {
+      "post_id": 139,
+      "post_url": "https://t.me/furrycriminal_filtred/139",
+      "index": 2,
+      "kind": "image",
+      "path": "_temp/furrycriminal_filtred_dump/media/images/139_02.jpg",
+      "alt": "Изображение к посту: Было немного скучно, а драммы, шизолисики и расчленёнка надоели. Нашел секту драконов-нудистов..."
+    },
+    {
+      "post_id": 139,
+      "post_url": "https://t.me/furrycriminal_filtred/139",
+      "index": 3,
+      "kind": "image",
+      "path": "_temp/furrycriminal_filtred_dump/media/images/139_03.jpg",
+      "alt": "Изображение к посту: Было немного скучно, а драммы, шизолисики и расчленёнка надоели. Нашел секту драконов-нудистов..."
+    },
+    {
+      "post_id": 139,
+      "post_url": "https://t.me/furrycriminal_filtred/139",
+      "index": 4,
+      "kind": "image",
+      "path": "_temp/furrycriminal_filtred_dump/media/images/139_04.jpg",
+      "alt": "Изображение к посту: Было немного скучно, а драммы, шизолисики и расчленёнка надоели. Нашел секту драконов-нудистов..."
+    },
+    {
+      "post_id": 139,
+      "post_url": "https://t.me/furrycriminal_filtred/139",
+      "index": 5,
+      "kind": "image",
+      "path": "_temp/furrycriminal_filtred_dump/media/images/139_05.jpg",
+      "alt": "Изображение к посту: Было немного скучно, а драммы, шизолисики и расчленёнка надоели. Нашел секту драконов-нудистов..."
+    },
+    {
+      "post_id": 139,
+      "post_url": "https://t.me/furrycriminal_filtred/139",
+      "index": 6,
+      "kind": "image",
+      "path": "_temp/furrycriminal_filtred_dump/media/images/139_06.jpg",
+      "alt": "Изображение к посту: Было немного скучно, а драммы, шизолисики и расчленёнка надоели. Нашел секту драконов-нудистов..."
+    },
+    {
+      "post_id": 145,
+      "post_url": "https://t.me/furrycriminal_filtred/145",
+      "index": 1,
+      "kind": "image",
+      "path": "_temp/furrycriminal_filtred_dump/media/images/145_01.jpg",
+      "alt": "Изображение к посту: РДК заявил о гибели своего основателя Дениса «WhiteRex» Капустина Согласно сообщению в"
+    },
+    {
+      "post_id": 147,
+      "post_url": "https://t.me/furrycriminal_filtred/147",
+      "index": 1,
+      "kind": "video",
+      "path": "_temp/furrycriminal_filtred_dump/media/videos/147_01.mp4",
+      "title": "Видео к посту: С учётом темпов наступления наша заинтересованность в выводе ВСУ с занимаемых территорий",
+      "aria_label": "Видео к посту: С учётом темпов наступления наша заинтересованность в выводе ВСУ с занимаемых территорий"
+    },
+    {
+      "post_id": 149,
+      "post_url": "https://t.me/furrycriminal_filtred/149",
+      "index": 1,
+      "kind": "video",
+      "path": "_temp/furrycriminal_filtred_dump/media/videos/149_01.mp4",
+      "title": "Видео к посту: В Белграде у Бранкова моста закрашивают граффити «Когда армия вернется на Косово…».",
+      "aria_label": "Видео к посту: В Белграде у Бранкова моста закрашивают граффити «Когда армия вернется на Косово…»."
+    },
+    {
+      "post_id": 150,
+      "post_url": "https://t.me/furrycriminal_filtred/150",
+      "index": 1,
+      "kind": "image",
+      "path": "_temp/furrycriminal_filtred_dump/media/images/150_01.jpg",
+      "alt": "Изображение к посту: Кусь подслушивает"
+    },
+    {
+      "post_id": 151,
+      "post_url": "https://t.me/furrycriminal_filtred/151",
+      "index": 1,
+      "kind": "image",
+      "path": "_temp/furrycriminal_filtred_dump/media/images/151_01.jpg",
+      "alt": "Изображение к посту: Пожалуйста!!!! Не надо дохлого додика из рдк сюда постить!!! Кому он интересен?"
+    },
+    {
+      "post_id": 152,
+      "post_url": "https://t.me/furrycriminal_filtred/152",
+      "index": 1,
+      "kind": "image",
+      "path": "_temp/furrycriminal_filtred_dump/media/images/152_01.jpg",
+      "alt": "Изображение к посту: юньчикс, 17, москва – трансдевушка из московской области. интересует дружба, а может"
+    },
+    {
+      "post_id": 154,
+      "post_url": "https://t.me/furrycriminal_filtred/154",
+      "index": 1,
+      "kind": "image",
+      "path": "_temp/furrycriminal_filtred_dump/media/images/154_01.jpg",
+      "alt": "Изображение к посту: Русы привезли контрабандные вкусняшки. Обидно, чё. Я худой и спокойный уже который"
+    },
+    {
+      "post_id": 156,
+      "post_url": "https://t.me/furrycriminal_filtred/156",
+      "index": 1,
+      "kind": "image",
+      "path": "_temp/furrycriminal_filtred_dump/media/images/156_01.jpg",
+      "alt": "Изображение к посту: Почти шедевр . В некотором плане, я могу его понять. Условный понаехавший"
+    },
+    {
+      "post_id": 156,
+      "post_url": "https://t.me/furrycriminal_filtred/156",
+      "index": 2,
+      "kind": "image",
+      "path": "_temp/furrycriminal_filtred_dump/media/images/156_02.jpg",
+      "alt": "Изображение к посту: Почти шедевр . В некотором плане, я могу его понять. Условный понаехавший"
+    },
+    {
+      "post_id": 158,
+      "post_url": "https://t.me/furrycriminal_filtred/158",
+      "index": 1,
+      "kind": "image",
+      "path": "_temp/furrycriminal_filtred_dump/media/images/158_01.jpg",
+      "alt": "Изображение к посту: Оружие Судного Дня выкатывается на позицию. Глядя на видосики с Суперновы, к"
+    },
+    {
+      "post_id": 159,
+      "post_url": "https://t.me/furrycriminal_filtred/159",
+      "index": 1,
+      "kind": "image",
+      "path": "_temp/furrycriminal_filtred_dump/media/images/159_01.jpg",
+      "alt": "Изображение из поста Telegram №159 (медиа 1)"
+    }
+  ]
+}
