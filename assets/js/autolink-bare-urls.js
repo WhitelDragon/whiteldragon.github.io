@@ -49,19 +49,38 @@
     var figure = document.createElement('figure');
     figure.className = 'media media-youtube youtube-embed';
 
-    var iframe = document.createElement('iframe');
-    iframe.loading = 'lazy';
-    iframe.allowFullscreen = true;
-    iframe.referrerPolicy = 'strict-origin-when-cross-origin';
-    iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
-    iframe.title = label || 'YouTube preview';
-    iframe.src =
-      'https://www.youtube-nocookie.com/embed/' +
+    var card = document.createElement('a');
+    card.className = 'youtube-card';
+    card.href =
+      'https://www.youtube.com/watch?v=' +
       encodeURIComponent(id) +
-      '?rel=0' +
-      (start ? '&start=' + encodeURIComponent(start) : '');
+      (start ? '&t=' + encodeURIComponent(start) : '');
+    card.target = '_blank';
+    card.rel = 'nofollow noopener noreferrer';
+    card.setAttribute('aria-label', label || 'YouTube preview');
 
-    figure.appendChild(iframe);
+    var img = document.createElement('img');
+    img.loading = 'lazy';
+    img.decoding = 'async';
+    img.alt = label || 'YouTube preview';
+    img.src = 'https://i.ytimg.com/vi/' + encodeURIComponent(id) + '/hqdefault.jpg';
+
+    var overlay = document.createElement('span');
+    overlay.className = 'youtube-card-overlay';
+
+    var play = document.createElement('span');
+    play.className = 'youtube-play';
+    play.setAttribute('aria-hidden', 'true');
+
+    var text = document.createElement('span');
+    text.className = 'youtube-card-text';
+    text.textContent = 'Открыть на YouTube';
+
+    overlay.appendChild(play);
+    overlay.appendChild(text);
+    card.appendChild(img);
+    card.appendChild(overlay);
+    figure.appendChild(card);
     return figure;
   }
 
