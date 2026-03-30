@@ -2,14 +2,27 @@
 {%- assign video_label = include.label | default: page.title | default: 'YouTube video' -%}
 {%- assign start_param = include.start | default: '' | strip -%}
 {%- if video_id != '' -%}
+{%- assign watch_url = 'https://www.youtube.com/watch?v=' | append: video_id -%}
+{%- if start_param != '' -%}
+  {%- assign watch_url = watch_url | append: '&t=' | append: start_param -%}
+{%- endif -%}
+{%- assign thumb_url = 'https://i.ytimg.com/vi/' | append: video_id | append: '/hqdefault.jpg' -%}
 <figure class="media media-youtube youtube-embed">
-  <iframe
-    loading="lazy"
-    allowfullscreen
-    referrerpolicy="strict-origin-when-cross-origin"
-    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-    title="{{ video_label | escape }}"
-    src="https://www.youtube-nocookie.com/embed/{{ video_id | escape }}?rel=0{% if start_param != '' %}&start={{ start_param | escape }}{% endif %}">
-  </iframe>
+  <a
+    class="youtube-card"
+    href="{{ watch_url | escape }}"
+    target="_blank"
+    rel="nofollow noopener noreferrer"
+    aria-label="{{ video_label | escape }}">
+    <img
+      src="{{ thumb_url | escape }}"
+      alt="{{ video_label | escape }}"
+      loading="lazy"
+      decoding="async">
+    <span class="youtube-card-overlay">
+      <span class="youtube-play" aria-hidden="true"></span>
+      <span class="youtube-card-text">Открыть на YouTube</span>
+    </span>
+  </a>
 </figure>
 {%- endif -%}
