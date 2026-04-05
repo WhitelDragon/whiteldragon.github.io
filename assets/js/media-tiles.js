@@ -3,6 +3,14 @@
   function toggle(fig) {
     fig.classList.toggle('expanded');
     fig.setAttribute('aria-expanded', fig.classList.contains('expanded') ? 'true' : 'false');
+    // Lazy-load full image on first expand
+    if (fig.classList.contains('expanded')) {
+      var img = fig.querySelector('img[data-src]');
+      if (img && img.dataset.src) {
+        img.src = img.dataset.src;
+        delete img.dataset.src;
+      }
+    }
   }
 
   document.addEventListener('click', function (e) {

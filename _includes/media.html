@@ -8,7 +8,8 @@ Usage:
 
 Supported params:
   f/src, alt, cap, class, width, height, poster,
-  preload, autoplay, muted, loop, noexpand, full, thumb, title
+  preload, autoplay, muted, loop, noexpand, full, thumb, title,
+  thumb_f  — path to thumbnail image; if set, shown initially; full image (f=) loads on expand
 {%- endcomment -%}
 
 {%- assign src = include.f | default: include.src | default: '' | strip -%}
@@ -51,8 +52,21 @@ Supported params:
     {%- capture thumb_style -%}
       {% if include.thumb %} style="--thumb-size: {{ include.thumb | append: 'px' }}"{% endif %}
     {%- endcapture -%}
+    {%- comment -%}thumb_f: separate thumbnail path → src=thumb, data-src=full (lazy loaded on expand){%- endcomment -%}
+    {%- assign thumb_src = '' -%}
+    {%- assign full_data_src = '' -%}
+    {%- if include.thumb_f and include.thumb_f != '' -%}
+      {%- assign tf = include.thumb_f | strip -%}
+      {%- if tf contains '://' -%}
+        {%- assign thumb_src = tf -%}
+      {%- else -%}
+        {%- assign thumb_src = tf | relative_url -%}
+      {%- endif -%}
+      {%- assign full_data_src = url -%}
+    {%- endif -%}
+    {%- assign img_display_src = thumb_src | default: url -%}
     <figure class="{{ figure_class }}{% if is_thumb %} expandable thumb{% else %} expandable{% endif %}"{% if is_thumb %}{{ thumb_style }}{% endif %}{% unless include.noexpand %} tabindex="0" role="button" aria-expanded="false"{% endunless %}>
-      <img src="{{ url }}" alt="{{ img_alt | escape }}" loading="lazy" decoding="async"{% if include.width %} width="{{ include.width | escape }}"{% endif %}{% if include.height %} height="{{ include.height | escape }}"{% endif %}>
+      <img src="{{ img_display_src }}" alt="{{ img_alt | escape }}" loading="lazy" decoding="async"{% if full_data_src != '' %} data-src="{{ full_data_src }}"{% endif %}{% if include.width %} width="{{ include.width | escape }}"{% endif %}{% if include.height %} height="{{ include.height | escape }}"{% endif %}>
       {{ caption_html }}
     </figure>
 
