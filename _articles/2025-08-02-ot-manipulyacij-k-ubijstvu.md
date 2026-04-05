@@ -25,7 +25,7 @@ tags: [фурри, расследование, абьюз, насилие]
   "description": "Брукс Альберт Банчер (известный в фурри-фэндоме как DizzyOrca), впоследствии осуждённый за убийство партнёра Фина Ортеги, даёт интервью в период жизни на парковке для бездомных в Сан-Хосе.",
   "contentUrl": "https://whiteldragon.github.io/assets/video/ot-manipulyacij-k-ubijstvu/buncher-homeless/index.m3u8",
   "thumbnailUrl": "https://whiteldragon.github.io/assets/img/articles/ot-manipulyacij-k-ubijstvu/buncher-interview.jpg",
-  "uploadDate": "2025-08-02"
+  "uploadDate": "2025-08-02T12:00:00+03:00"
 }
 </script>
 
