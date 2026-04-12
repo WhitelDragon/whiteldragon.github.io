@@ -9,12 +9,13 @@ permalink: /search.json
     {%- for post in site.posts -%}
       {%- unless first -%},{%- endunless -%}
       {%- assign first = false -%}
+      {%- capture post_thumb -%}{%- include find-thumb.html post=post -%}{%- endcapture -%}
       {
         "title": {{ post.title | jsonify }},
         "url": {{ post.url | absolute_url | jsonify }},
         "date": {{ post.date | date_to_xmlschema | jsonify }},
         "excerpt": {{ post.excerpt | strip_html | strip_newlines | truncate: 220 | jsonify }},
-        "thumb": {%- include find-thumb.html post=post -%}
+        "thumb": {{ post_thumb | jsonify }}
       }
     {%- endfor -%}
   ]
