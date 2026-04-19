@@ -97,6 +97,42 @@ h2, h3, h4 { scroll-margin-top: 84px; }
 .year-list a { text-decoration: none; }
 .year-list a:hover { text-decoration: underline; }
 
+/* Соцсети в сайдбаре */
+.social-links {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-top: 18px;
+  padding-top: 14px;
+  border-top: 1px solid #e5e7eb;
+}
+.social-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 4px 0;
+  border-radius: 8px;
+  text-decoration: none;
+  color: #1f2937;
+  font-weight: 600;
+  font-size: .95rem;
+  transition: background-color .15s ease, color .15s ease;
+  align-self: flex-start;
+}
+.social-link svg {
+  width: 22px;
+  height: 22px;
+  flex: 0 0 22px;
+}
+.social-link:hover { text-decoration: none; }
+.social-link--youtube { color: #c4302b; }
+.social-link--youtube:hover { background: #fde8e7; color: #a21b17; }
+.social-link--telegram { color: #0088cc; }
+.social-link--telegram:hover { background: #e3f2fd; color: #006699; }
+/* Неактивная страница — приглушённый серый */
+.social-link--inactive { color: #9ca3af; opacity: .7; }
+.social-link--inactive:hover { background: #f3f4f6; color: #6b7280; opacity: 1; }
+
 /* ====== Левая панель (очень широкие экраны) ======
    На очень широких экранах выносим сайдбар отдельно слева,
    чтобы он не сдвигал и не опускал основную ленту. Контент остаётся по центру. */
