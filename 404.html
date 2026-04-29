@@ -1,0 +1,61 @@
+---
+layout: default
+title: "404 — Граница №1 поста"
+description: "Эта страница пересекла границу. Дракон на посту."
+permalink: /404.html
+sitemap: false
+noindex: true
+---
+
+<div class="error-404">
+  <figure class="error-404__art">
+    <img src="{{ '/assets/img/404-dragon.jpg' | relative_url }}"
+         alt="Белый дракон на снежном утёсе и пограничник у знака «Граница №1 поста»"
+         width="2000" height="1600" loading="eager" decoding="async">
+  </figure>
+
+  <div class="error-404__content" style="text-align:left">
+    <p class="error-404__code">404</p>
+    <h1 class="error-404__title">Граница №1 поста</h1>
+    <p class="error-404__subtitle">
+      Похоже, эта страница пересекла границу — или её здесь никогда и не было.<br>
+      Дракон на посту, но проводить тебя сможет только обратно.
+    </p>
+
+    <nav class="error-404__nav" aria-label="Куда дальше">
+      <a href="{{ '/' | relative_url }}" class="error-404__btn error-404__btn--primary">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" width="20" height="20">
+          <path fill="currentColor" d="M12 3 2 12h3v8h6v-6h2v6h6v-8h3z"/>
+        </svg>
+        <span>На главную</span>
+      </a>
+
+      <a href="https://t.me/furcriminal" class="error-404__btn" target="_blank" rel="noopener noreferrer">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" width="20" height="20">
+          <path fill="currentColor" d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0Zm5.894 8.221-1.97 9.28c-.145.658-.537.818-1.084.51l-3-2.21-1.446 1.394c-.16.16-.294.294-.603.294l.216-3.053 5.56-5.023c.242-.213-.054-.334-.373-.121L8.48 13.63l-2.96-.924c-.643-.204-.657-.643.136-.953l11.566-4.458c.538-.196 1.006.128.832.927Z"/>
+        </svg>
+        <span>Telegram</span>
+      </a>
+
+      <a href="https://www.youtube.com/@WhLiD" class="error-404__btn" target="_blank" rel="noopener noreferrer">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" width="20" height="20">
+          <path fill="currentColor" d="M23.498 6.186a3.02 3.02 0 0 0-2.122-2.136C19.505 3.5 12 3.5 12 3.5s-7.505 0-9.376.55A3.02 3.02 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.02 3.02 0 0 0 2.122 2.136c1.871.55 9.376.55 9.376.55s7.505 0 9.376-.55a3.02 3.02 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814ZM9.545 15.568V8.432L15.818 12l-6.273 3.568Z"/>
+        </svg>
+        <span>YouTube</span>
+      </a>
+    </nav>
+
+    <p class="error-404__hint">
+      <a href="{{ '/search.html' | relative_url }}">Поиск по сайту</a> ·
+      <a href="{{ '/archive.html' | relative_url }}">Архив</a> ·
+      <a href="{{ '/articles.html' | relative_url }}">Статьи</a>
+    </p>
+
+    <p class="error-404__ps">
+      <span class="error-404__ps-label">P.S.</span>
+      Эта страница создана нейросетью по запросу:<br>
+      <q class="error-404__ps-quote">«Сделай страницу 404 из этой фотографии. Последний абзац&nbsp;удали».</q><br>
+      <span class="error-404__ps-wink">Последний абзац — удалён.</span>
+    </p>
+  </div>
+</div>

@@ -15,5 +15,13 @@ layout: default
   <span hidden data-pagefind-sort="date:{{ page.date | date: '%Y-%m-%d' }}"></span>
 
   {{ content }}
+
+  {% if page.description contains 'Из дневника ВайтЛа ВКонтакте' %}
+  <p class="post-vk-origin">
+    <span class="post-vk-origin__icon" aria-hidden="true">📖</span>
+    {{ page.description }}
+  </p>
+  {% endif %}
+
   <div class="hidden-comments" style="display:none"></div>
 </article>
