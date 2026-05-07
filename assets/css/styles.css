@@ -299,6 +299,75 @@ main { max-width: 760px; margin: 0 auto; padding: 0; }
   font-size: 0.9rem;
 }
 
+/* ====== Цитаты в постах и статьях ====== */
+.post blockquote.cite,
+.article blockquote.cite {
+  position: relative;
+  margin: 1.4em 0 1.4em 2em;
+  padding: 0.9em 1.2em 0.9em 2.6em;
+  background: linear-gradient(180deg, rgba(99, 102, 241, .04) 0%, rgba(56, 189, 248, .04) 100%);
+  border-left: 4px solid var(--brand);
+  border-radius: 0 10px 10px 0;
+  color: #2c2c2c;
+  font-style: italic;
+  line-height: 1.55;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, .04);
+}
+.post blockquote.cite::before,
+.article blockquote.cite::before {
+  content: "\201C";              /* большая открывающая кавычка „ */
+  position: absolute;
+  left: 0.45em;
+  top: -0.05em;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 3em;
+  line-height: 1;
+  color: var(--brand);
+  opacity: 0.32;
+  font-style: normal;
+  pointer-events: none;
+}
+.post blockquote.cite p,
+.article blockquote.cite p {
+  margin: 0.3em 0;
+}
+.post blockquote.cite p:first-child,
+.article blockquote.cite p:first-child {
+  margin-top: 0;
+}
+.post blockquote.cite p:last-child,
+.article blockquote.cite p:last-child {
+  margin-bottom: 0;
+}
+/* Вложенные cite — ещё более тонко */
+.post blockquote.cite blockquote.cite,
+.article blockquote.cite blockquote.cite {
+  margin: 0.6em 0 0.2em;
+  padding: 0.5em 0.9em 0.5em 1.6em;
+  background: rgba(255, 255, 255, .5);
+  border-left-width: 3px;
+  font-size: 0.95em;
+}
+.post blockquote.cite blockquote.cite::before,
+.article blockquote.cite blockquote.cite::before {
+  font-size: 2em;
+  left: 0.3em;
+  top: 0.05em;
+}
+/* Мобильные — поменьше отступы */
+@media (max-width: 600px) {
+  .post blockquote.cite,
+  .article blockquote.cite {
+    margin: 1.1em 0 1.1em 0.8em;
+    padding: 0.7em 1em 0.7em 2em;
+  }
+  .post blockquote.cite::before,
+  .article blockquote.cite::before {
+    font-size: 2.3em;
+    left: 0.35em;
+  }
+}
+
 figure.media { margin: 1.25rem 0; }
 figure.media img, figure.media video {
   max-width: 100%;
