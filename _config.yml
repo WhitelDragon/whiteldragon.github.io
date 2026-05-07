@@ -34,7 +34,6 @@ exclude:
   - _site_ruby_probe
   - _site_ruby_process_probe
   - _site_ruby_process_probe2
-  - worker.js
   - wrangler.jsonc
   - node_modules
 
