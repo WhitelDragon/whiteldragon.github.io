@@ -12,5 +12,5 @@ gem "base64"
 gem "bigdecimal"
 gem "tzinfo"
 gem "tzinfo-data"
-
+gem "jekyll-sitemap"
 
