@@ -1,3 +1,4 @@
 User-agent: *
 Allow: /
 Sitemap: https://whiteldragon.github.io/sitemap.xml
+Sitemap: https://whiteldragon.github.io/video-sitemap.xml
