@@ -1,0 +1,115 @@
+---
+layout: default
+---
+
+{%- assign pid = page.id | split: '/' | last -%}
+{%- assign p = nil -%}
+{%- for item in site.data.personas -%}
+  {%- if item.id == pid -%}
+    {%- assign p = item -%}
+    {%- break -%}
+  {%- endif -%}
+{%- endfor -%}
+
+{%- if p == nil -%}
+  <p>Персоналия не найдена: <code>{{ pid }}</code></p>
+{%- else -%}
+
+<nav class="breadcrumb" aria-label="Навигация">
+  <a href="{{ '/personas.html' | relative_url }}">Персоналии</a>
+  <span class="breadcrumb__sep">›</span>
+  <span class="breadcrumb__current">{{ p.nick }}</span>
+</nav>
+
+<div class="persona-page">
+  <div class="persona-page__head">
+    {% if p.photo %}
+      <img class="persona-page__photo" src="{{ p.photo | relative_url }}" alt="{{ p.nick }}">
+    {% else %}
+      <div class="persona-page__photo-placeholder" aria-hidden="true">?</div>
+    {% endif %}
+
+    <div class="persona-page__info">
+      <h1 class="persona-page__nick">{{ p.nick }}</h1>
+      {% if p.realname %}
+        <p class="persona-page__realname">{{ p.realname }}</p>
+      {% endif %}
+
+      <div class="persona-page__badges">
+        <span class="persona-badge persona-badge--accent">~{{ p.mentions }}&nbsp;пост.</span>
+        {% if p.period %}
+          <span class="persona-badge">{{ p.period }}</span>
+        {% endif %}
+      </div>
+
+      {% if p.aliases and p.aliases.size > 0 %}
+        <ul class="persona-page__aliases">
+          {% for a in p.aliases %}
+            <li class="persona-alias">{{ a }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    </div>
+  </div>
+
+  <section class="persona-page__section">
+    <h2 class="persona-page__h2">О персоналии</h2>
+    <div class="persona-page__about">
+      {% if p.about %}
+        {{ p.about | markdownify }}
+      {% else %}
+        <p>{{ p.description | default: p.summary }}</p>
+      {% endif %}
+    </div>
+  </section>
+
+  {%- assign post_list = site.data.persona_posts[pid] -%}
+  {%- if post_list and post_list.size > 0 -%}
+    <section class="persona-page__section">
+      <h2 class="persona-page__h2">Посты, где упоминается</h2>
+      <ul class="persona-posts">
+        {% for item in post_list %}
+          <li class="persona-posts__item">
+            <div class="persona-posts__meta">
+              <span class="persona-posts__date">{{ item.date }}</span>
+              <a class="persona-posts__title" href="{{ item.url | relative_url }}">
+                {{ item.title | default: item.slug }}
+              </a>
+            </div>
+            {% if item.description and item.description != '' %}
+              <p class="persona-posts__desc">{{ item.description }}</p>
+            {% endif %}
+          </li>
+        {% endfor %}
+      </ul>
+    </section>
+  {%- endif -%}
+
+  {%- assign related = p.related -%}
+  {%- if related and related.size > 0 -%}
+    <section class="persona-page__section">
+      <h2 class="persona-page__h2">Связанные персоналии</h2>
+      <div class="persona-related">
+        {% for rid in related %}
+          {%- assign rp = nil -%}
+          {%- for item in site.data.personas -%}
+            {%- if item.id == rid -%}{%- assign rp = item -%}{%- break -%}{%- endif -%}
+          {%- endfor -%}
+          {%- if rp -%}
+            <a class="persona-related__card" href="{{ '/personas/' | append: rp.id | append: '/' | relative_url }}">
+              {% if rp.photo %}
+                <img class="persona-related__photo" src="{{ rp.photo | relative_url }}" alt="{{ rp.nick }}">
+              {% else %}
+                <div class="persona-related__photo-placeholder" aria-hidden="true">?</div>
+              {% endif %}
+              <span class="persona-related__nick">{{ rp.nick }}</span>
+              <span class="persona-related__count">~{{ rp.mentions }}&nbsp;пост.</span>
+            </a>
+          {%- endif -%}
+        {% endfor %}
+      </div>
+    </section>
+  {%- endif -%}
+</div>
+
+{%- endif -%}

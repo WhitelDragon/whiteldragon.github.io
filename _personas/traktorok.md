@@ -1,0 +1,4 @@
+---
+id: traktorok
+title: "Тракторок"
+---

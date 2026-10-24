@@ -24,6 +24,9 @@ collections:
   articles:
     output: true
     permalink: /articles/:slug/
+  personas:
+    output: true
+    permalink: /personas/:name/
 
 exclude:
   - vendor
@@ -61,6 +64,14 @@ defaults:
       type: "articles"
     values:
       layout: article
+      author: Whitel Dragon
+      lang: ru
+      sitemap: true
+  - scope:
+      path: ""
+      type: "personas"
+    values:
+      layout: persona
       author: Whitel Dragon
       lang: ru
       sitemap: true

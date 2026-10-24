@@ -1,0 +1,4 @@
+---
+id: technofox
+title: "Технофокс"
+---

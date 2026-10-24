@@ -1,0 +1,36 @@
+---
+layout: default
+title: Персоналии
+permalink: /personas.html
+description: "Люди, о которых часто писалось в паблике — фигуранты скандалов, участники фурри-сообщества и другие персонажи."
+---
+
+<h1>Персоналии</h1>
+<p class="personas-intro">Люди, которым посвящено больше всего материалов в блоге. Сортировка — по числу упоминаний.</p>
+
+{% assign sorted_personas = site.data.personas | sort: 'mentions' | reverse %}
+
+<div class="personas-grid">
+  {% for p in sorted_personas %}
+  <a class="persona-card" href="{{ '/personas/' | append: p.id | append: '/' | relative_url }}">
+    {% if p.photo %}
+      <img class="persona-card__photo" src="{{ p.photo | relative_url }}" alt="{{ p.nick }}">
+    {% else %}
+      <div class="persona-card__photo-placeholder" aria-hidden="true">?</div>
+    {% endif %}
+    <div class="persona-card__body">
+      <div class="persona-card__header">
+        <span class="persona-card__nick">{{ p.nick }}</span>
+        <span class="persona-card__count">~{{ p.mentions }}&nbsp;пост.</span>
+      </div>
+      {% if p.realname %}
+      <p class="persona-card__realname">{{ p.realname }}</p>
+      {% elsif p.aliases %}
+      <p class="persona-card__realname">{{ p.aliases | first }}</p>
+      {% endif %}
+      <p class="persona-card__summary">{{ p.description | default: p.summary }}</p>
+      <span class="persona-card__period">{{ p.period }}</span>
+    </div>
+  </a>
+  {% endfor %}
+</div>
