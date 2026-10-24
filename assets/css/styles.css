@@ -324,52 +324,6 @@ main { max-width: 760px; margin: 0 auto; padding: 0; }
   font-size: 0.9rem;
 }
 
-/* ====== Комментарии из Telegram под постом ====== */
-.post .tg-comments {
-  margin: 2rem 0 0;
-  padding-top: 1rem;
-  border-top: 1px solid #e5e7eb;
-}
-.post .tg-comments > summary {
-  cursor: pointer;
-  font-weight: 600;
-  color: var(--brand);
-  padding: 4px 0;
-}
-.post .tg-comments__note {
-  font-size: 0.85rem;
-  color: #6b7280;
-  margin: 0.5rem 0 1rem;
-}
-.post .tg-comment {
-  margin: 0 0 0.9rem;
-  padding: 0.5rem 0.75rem;
-  border-left: 3px solid rgba(63,81,181,.25);
-  background: rgba(63,81,181,.03);
-  border-radius: 0 8px 8px 0;
-}
-.post .tg-comment:target {
-  border-left-color: var(--brand);
-  background: rgba(63,81,181,.09);
-}
-.post .tg-comment__head {
-  font-size: 0.85rem;
-  margin-bottom: 0.25rem;
-}
-.post .tg-comment__reply {
-  color: #6b7280;
-  text-decoration: none;
-}
-.post .tg-comment__date {
-  color: #9ca3af;
-  margin-left: 0.4em;
-}
-.post .tg-comment__video,
-.post .tg-comment__asr {
-  font-size: 0.85rem;
-  margin: 0.3rem 0;
-}
-
 /* ====== Цитаты в постах и статьях ====== */
 .post blockquote.cite,
 .article blockquote.cite {
