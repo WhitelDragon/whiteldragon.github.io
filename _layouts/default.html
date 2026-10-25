@@ -9,8 +9,10 @@
   <link rel="alternate" hreflang="ru" href="{{ page.url | absolute_url }}">
   <link rel="alternate" hreflang="x-default" href="{{ page.url | absolute_url }}">
 
-  <!-- noindex для страниц пагинации (page2, page3 ...) и страниц с noindex: true -->
-  {% if paginator and paginator.page > 1 or page.noindex %}
+  <!-- noindex только для страниц с noindex: true. Ленту (page2, page3 ...) не закрываем: долгий noindex
+       Google со временем трактует как nofollow, и старые посты перестают находиться по ссылкам.
+       В sitemap лента не попадает (её отбрасывает _plugins/sitemap_index.rb). -->
+  {% if page.noindex %}
   <meta name="robots" content="noindex, follow">
   {% endif %}
 

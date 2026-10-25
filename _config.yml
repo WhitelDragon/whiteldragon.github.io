@@ -107,10 +107,6 @@ defaults:
     values:
       sitemap: false
   - scope:
-      path: "archive.html"
-    values:
-      sitemap: false
-  - scope:
       path: "a108c9e675e04e9ba60801ccf336bb78.txt"
     values:
       sitemap: false
