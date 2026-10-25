@@ -91,6 +91,10 @@ defaults:
     values:
       sitemap: false
   - scope:
+      path: "google9698fdb16a9d733a.html"   # подтверждение прав сервисного аккаунта seo-queue (VPS)
+    values:
+      sitemap: false
+  - scope:
       path: "search.json"
     values:
       sitemap: false
